@@ -109,6 +109,9 @@ def _run_scoped_command(*, company, project, scope_type, operation_id, command, 
         require_project(company, project, ability="engineering.package.read" if command.startswith("engineering.package.") else "engineering.read", actor=actor, lock=True)
     if scope_type == "Project" and command.startswith("field."):
         require_project(company, project, ability="field.read", actor=actor, lock=True)
+    if scope_type == 'Project' and command.startswith('quality_safety.'):
+        from cipher_aec.quality_safety.contracts import ability as quality_safety_ability
+        require_project(company, project, ability=quality_safety_ability(command.split('.')[1]), actor=actor, lock=True)
     request_hash = digest({"command": command, "company": company, "project": project, "payload": payload})
     if scope_type == "Company":
         request_hash = digest({"scope_type": "Company", "command": command, "company": company, "project": None, "payload": payload})
@@ -256,7 +259,13 @@ def _authorize_receipt(actor, command, company, project, result, scope_type="Pro
             from cipher_aec.integrations.distribution import authorize_receipt as authorize_distribution
             authorize_distribution(actor, company, result, lock=True)
         return
-    if command.startswith("field."):
+    if command.startswith('offline.field.'):
+        from cipher_aec.field_offline.service import authorize_receipt as authorize_offline
+        authorize_offline(actor, company, project, result, lock=True)
+    elif command.startswith('quality_safety.'):
+        from cipher_aec.quality_safety.service import authorize_command_receipt
+        authorize_command_receipt(actor, command, company, project, result, lock=True)
+    elif command.startswith("field."):
         from cipher_aec.field.service import authorize_receipt as authorize_field
         authorize_field(actor, company, project, result, lock=True)
     elif command.startswith("document.control."):

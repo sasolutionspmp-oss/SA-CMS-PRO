@@ -107,7 +107,9 @@ class SemanticService:
         value=self._load(key,scope)
         if not value or operation_id not in value['jobs']:
             raise DomainError('not_found','This semantic job is not available.',404)
-        return self._summary(value['jobs'][operation_id])
+        job=value['jobs'][operation_id]
+        self._snapshots(scope,job['selectors'],actor)
+        return self._summary(job)
 
     def _durable(self):
         if not self.store.durable:
@@ -180,6 +182,7 @@ class SemanticService:
         if not value or operation_id not in value['jobs']:
             raise DomainError('not_found','This semantic job is not available.',404)
         expected=value['version']; job=value['jobs'][operation_id]
+        self._snapshots(scope,job['selectors'],actor)
         if job['status']!='deleted': job.update(status='cancelled',lease=None,lease_until=0)
         if value['active_generation']==job['generation']: value['active_generation']=None
         self._save(key,value,expected)

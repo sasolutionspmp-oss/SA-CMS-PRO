@@ -1,0 +1,279 @@
+{
+  "schema": "cipher.source-lane-handoff.v1",
+  "package": "FLD-03",
+  "base_commit": "0147603655624c3ad66ef73f6921a06805abff9a",
+  "source_frozen": true,
+  "qualification": "host-verified; native-unexecuted",
+  "shared_files_mutated": false,
+  "preexisting_files_compared_unchanged": 1896,
+  "new_files": [
+    {
+      "path": "apps/cipher/docs/framework/FLD03_QUALITY_SAFETY.md",
+      "sha256": "9cafe771ed197dabfca79b753302841b9712bd704b5addf0ba82554c8d86bf33",
+      "bytes": 6466
+    },
+    {
+      "path": "apps/cipher/docs/framework/fragments/fld03-quality-safety/api-definitions.json",
+      "sha256": "c23d77dfcbb20e75e4ad1259199b4ca1a9886ca275cc28bfee8f074ac9fb4f71",
+      "bytes": 69333
+    },
+    {
+      "path": "apps/cipher/docs/framework/fragments/fld03-quality-safety/engineering-seed-test-only.patch",
+      "sha256": "1da2dff05c7965b50cc4d7c9953d9761f0343c4a65ba9cf4e96051b85018587f",
+      "bytes": 2885
+    },
+    {
+      "path": "apps/cipher/docs/framework/fragments/fld03-quality-safety/host-successor-104.txt",
+      "sha256": "6e83fc65bf021bfeebb4f2470bb8b7665a2025028d50e4ccb3992602ae24d0da",
+      "bytes": 104
+    },
+    {
+      "path": "apps/cipher/docs/framework/fragments/fld03-quality-safety/independent-review.md",
+      "sha256": "78a578acf0d333652fb0450a916585f1389a28eaafdc1e056a8a7a03f4c8d602",
+      "bytes": 1442
+    },
+    {
+      "path": "apps/cipher/docs/framework/fragments/fld03-quality-safety/README.md",
+      "sha256": "c16767e94510cb2b582f6b42aec913bb9c0d6f0d879a3e6a5fe0633e4860ecf1",
+      "bytes": 2325
+    },
+    {
+      "path": "apps/cipher/docs/framework/fragments/fld03-quality-safety/shared-integration.patch",
+      "sha256": "065d738eb45b08976344cf8e0aac05256240c21ff2a68a120e65e74ff40ed5c3",
+      "bytes": 17246
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_quality_safety/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_quality_safety/doctype/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_quality_safety/doctype/cipher_incident_evidence_registration/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_quality_safety/doctype/cipher_incident_evidence_registration/cipher_incident_evidence_registration.json",
+      "sha256": "4564c0740490ead7f706caef777dd8f83f852f96e1c69e913f1f5682cdb92b5a",
+      "bytes": 1444
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_quality_safety/doctype/cipher_incident_evidence_registration/cipher_incident_evidence_registration.py",
+      "sha256": "99d24496b9b1182a9c1e382c903805e356d7e2cd74d85f30ce6d438eab47d356",
+      "bytes": 161
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_quality_safety/doctype/cipher_quality_safety_decision/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_quality_safety/doctype/cipher_quality_safety_decision/cipher_quality_safety_decision.json",
+      "sha256": "1250445fdd656b2074a4d576760cbbd4bb788c9ac46ca7b3da2a1b0f4a46492c",
+      "bytes": 2169
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_quality_safety/doctype/cipher_quality_safety_decision/cipher_quality_safety_decision.py",
+      "sha256": "bbb8a8bc8fd6319eea419eb096a6fffd9502a2cb89e9e2027bd11b2218fa48bd",
+      "bytes": 136
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_quality_safety/doctype/cipher_quality_safety_record/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_quality_safety/doctype/cipher_quality_safety_record/cipher_quality_safety_record.json",
+      "sha256": "d8fdc3943506fd37527f9d8ac134cbc13cd24ce19192cceebfd3b51bfed85bf2",
+      "bytes": 1916
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_quality_safety/doctype/cipher_quality_safety_record/cipher_quality_safety_record.py",
+      "sha256": "015e84b6dcb87d27ac808c912d0f6841ee6e0a44fd5307400294f660623c4d8d",
+      "bytes": 134
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_quality_safety/doctype/cipher_quality_safety_revision/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_quality_safety/doctype/cipher_quality_safety_revision/cipher_quality_safety_revision.json",
+      "sha256": "7ab347710872a8ef43cd15566b49642060f2368fb133afcaa11f41557bbadb71",
+      "bytes": 2055
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_quality_safety/doctype/cipher_quality_safety_revision/cipher_quality_safety_revision.py",
+      "sha256": "1e781ee27f280c51e7a3fa8acb6215a1181d369b03485ae887bf7a371c7fa5e0",
+      "bytes": 136
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_quality_safety/doctype/cipher_safety_incident/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_quality_safety/doctype/cipher_safety_incident/cipher_safety_incident.json",
+      "sha256": "71ce1aa78191534e6e56dff85465b07c2d1b9cad455370ee9945c882776b8976",
+      "bytes": 1910
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_quality_safety/doctype/cipher_safety_incident/cipher_safety_incident.py",
+      "sha256": "9ad6ca2a365fb0f44910a15db42574af5894796548e7d7f718f1cfef978e0f52",
+      "bytes": 129
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_quality_safety/doctype/cipher_safety_incident_decision/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_quality_safety/doctype/cipher_safety_incident_decision/cipher_safety_incident_decision.json",
+      "sha256": "40a8a5a56fbe35eb9b4a0667de7a2064c9c42c614da1d4ff7144c1491ec3b7a8",
+      "bytes": 2170
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_quality_safety/doctype/cipher_safety_incident_decision/cipher_safety_incident_decision.py",
+      "sha256": "e0ba5e26f6e2a1bfb50fab1ded6b5b0be7ab69c244ec821e9b4ba8e0b76f15bc",
+      "bytes": 137
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_quality_safety/doctype/cipher_safety_incident_revision/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_quality_safety/doctype/cipher_safety_incident_revision/cipher_safety_incident_revision.json",
+      "sha256": "d31fe34891438281f9fbf0df22dc419f469ab6fed74f9dda78056089dfe65ac7",
+      "bytes": 2056
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_quality_safety/doctype/cipher_safety_incident_revision/cipher_safety_incident_revision.py",
+      "sha256": "8b4831e87d93ba3f232ca71a047f9127096b420887963ae497f91d1f1d4817ac",
+      "bytes": 137
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/quality_safety/__init__.py",
+      "sha256": "bfd4e05f2eb40fa5d6d823dfa828aa05d902f4c1873d674d08a3df768a2b8b5e",
+      "bytes": 53
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/quality_safety/api.py",
+      "sha256": "77bb721d92b24dbbfef6267bbc9fa12f665ec6488cb0a8f4b657faa6cd7b0b14",
+      "bytes": 1574
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/quality_safety/contracts.py",
+      "sha256": "cb85a33bc99959c2f82ab88d56cc4b834e7910034dff90131f60ba2cd79960ec",
+      "bytes": 8921
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/quality_safety/evidence.py",
+      "sha256": "4013af93afbd0e758eee714ede97395da3d83ae82f982b6719d1c7ec1e012803",
+      "bytes": 3581
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/quality_safety/install.py",
+      "sha256": "d9e8d3f868ca5c2b13a1f415eafc30e0514f077deb2c6f93677c040e03672d64",
+      "bytes": 902
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/quality_safety/privacy.py",
+      "sha256": "027569bb9c0c642798da91879e51cc29979a1ea4db54ed9d9218113caf328eb5",
+      "bytes": 11205
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/quality_safety/README.md",
+      "sha256": "4ae7ebc59caf21de4bf8411466e0024759670701df2fd9797584e71b4ca93922",
+      "bytes": 3957
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/quality_safety/records.py",
+      "sha256": "4875c9dfb48897642b9f270774fcf3927cd5a78b1a5f47876c2336990c78c731",
+      "bytes": 7103
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/quality_safety/repository.py",
+      "sha256": "d44e0ef8834674e0d991af44fd26bf5411f7d818587102024bf1467cd81546a4",
+      "bytes": 4072
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/quality_safety/route-contracts.json",
+      "sha256": "320c255c4337bbf51a707c0fa13bd80ec6b5d358858402f7eeb012be963d47d8",
+      "bytes": 589
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/quality_safety/schemas/api-v1.schema.json",
+      "sha256": "8a2ce00573ef56b5e1ee337abc8fe1b2697469085661b9c7e60b52643ca0d7c2",
+      "bytes": 75956
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/quality_safety/service.py",
+      "sha256": "c2e37ef87defb3d27c20304e37953fcd6b570654519010d4a59cbed83b782f07",
+      "bytes": 21673
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/quality_safety/sources.py",
+      "sha256": "3d5794c4dd56e666f2f1a236428aba55fa8312cd98df1d3f202a3ed54aaaf5eb",
+      "bytes": 712
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/quality_safety_fixtures.py",
+      "sha256": "e41778f476dac47841f0f64ed64e9f4ff24abb6fc6ad579016645291d21af789",
+      "bytes": 10568
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_quality_safety.py",
+      "sha256": "1ee37b7f1a1f4d1f3f04e4e5635266fc2af81025baefbdea160b1e0c5a630a85",
+      "bytes": 18518
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_quality_safety_contracts.py",
+      "sha256": "9bcd6bee66b24a4cc471c671d707ce8f2a240c1cbaa248ba22ea93506664b7ce",
+      "bytes": 5455
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_quality_safety_native.py",
+      "sha256": "38358517d4b3355d1c95f8bbd1b3e31f943a4f373c528d1ed0eb78036083fe44",
+      "bytes": 9004
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_quality_safety_privacy.py",
+      "sha256": "e35e6ad8829e3ab7e5c233e3782f049ec852f3e9d060b08432f00ba3b1968f70",
+      "bytes": 9684
+    },
+    {
+      "path": "external-regression/test_engineering_contracts_successor.py",
+      "sha256": "be6da1c679a07c2629bac8c6368421e849d0923790421b50184566afd6f2f0b6",
+      "bytes": 17064
+    }
+  ],
+  "test_results": {
+    "focused_host": {
+      "tests": 26,
+      "passed": 26
+    },
+    "wsl_original_composition": {
+      "tests": 104,
+      "passed": 103,
+      "failed": 1,
+      "failure": "preexisting brittle default-grant expression assertion at test_engineering_contracts.py:89"
+    },
+    "wsl_corrected_successor_composition": {
+      "tests": 104,
+      "passed": 104,
+      "seconds": 15.232
+    },
+    "native": {
+      "prepared_cases": 4,
+      "executed": false
+    }
+  },
+  "required_shared_fragment": "apps/cipher/docs/framework/fragments/fld03-quality-safety/shared-integration.patch",
+  "test_only_correction": "apps/cipher/docs/framework/fragments/fld03-quality-safety/engineering-seed-test-only.patch"
+}

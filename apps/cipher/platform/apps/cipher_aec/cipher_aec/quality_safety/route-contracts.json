@@ -1,0 +1,18 @@
+{
+  "requests": {
+    "upload_evidence": "QsUploadEvidenceRequest",
+    "create_record": "QsCreateRecordRequest",
+    "revise_record": "QsReviseRecordRequest",
+    "transition": "QsTransitionRequest",
+    "get_record": "QsGetRecordRequest",
+    "list_records": "QsListRecordsRequest"
+  },
+  "responses": {
+    "upload_evidence": "QsUploadEvidenceResponse",
+    "create_record": "QsCreateRecordResponse",
+    "revise_record": "QsReviseRecordResponse",
+    "transition": "QsTransitionResponse",
+    "get_record": "QsGetResponse",
+    "list_records": "QsListResponse"
+  }
+}

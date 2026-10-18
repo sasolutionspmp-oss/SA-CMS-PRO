@@ -1,0 +1,34 @@
+--- a/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_engineering_contracts.py
++++ b/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_engineering_contracts.py
+@@ -85,9 +85,28 @@
+             if 'Response Revision' in doctype or 'Disposition Revision' in doctype:self.assertIn('source_revision',fields)
+     def test_explicit_engineering_duties_are_not_default_fixture_grants(self):
+         import ast
+-        tree=ast.parse((ROOT/'install.py').read_text());seed=next(n for n in tree.body if isinstance(n,ast.FunctionDef) and n.name=='seed_synthetic');expressions=[ast.unparse(n.iter) for n in ast.walk(seed) if isinstance(n,ast.For)]
+-        self.assertIn('sorted(PROJECT_ABILITIES - ENGINEERING_ABILITIES - DOCUMENT_CONTROL_ABILITIES)',expressions)
+-        self.assertNotIn('sorted(PROJECT_ABILITIES)',expressions)
++        # Evaluate the actual default grant iterable with the source's current
++        # capability sets. Additional explicit groups must not make the test
++        # depend on one historical spelling of the subtraction expression.
++        context=ast.parse((ROOT/'governance/context.py').read_text())
++        abilities={}
++        try:
++            from cipher_aec.quality_safety.contracts import ABILITIES as quality_safety
++            abilities['QUALITY_SAFETY_ABILITIES']=quality_safety
++        except ImportError:
++            pass
++        for node in context.body:
++            if isinstance(node,ast.Assign) and len(node.targets)==1 and isinstance(node.targets[0],ast.Name) and node.targets[0].id.endswith('ABILITIES'):
++                abilities[node.targets[0].id]=eval(compile(ast.Expression(node.value),'<capability sets>','eval'),{'__builtins__':{},'frozenset':frozenset},abilities)
++        tree=ast.parse((ROOT/'install.py').read_text())
++        seed=next(n for n in tree.body if isinstance(n,ast.FunctionDef) and n.name=='seed_synthetic')
++        loops=[n for n in ast.walk(seed) if isinstance(n,ast.For) and isinstance(n.target,ast.Name) and n.target.id=='ability' and any(isinstance(c,ast.Name) and c.id=='PROJECT_ABILITIES' for c in ast.walk(n.iter))]
++        self.assertEqual(len(loops),1)
++        granted=set(eval(compile(ast.Expression(loops[0].iter),'<default Project grants>','eval'),{'__builtins__':{},'sorted':sorted},abilities))
++        restricted=set().union(*(abilities.get(name,set()) for name in ('ENGINEERING_ABILITIES','DOCUMENT_CONTROL_ABILITIES','FIELD_ABILITIES','SEMANTIC_ABILITIES','QUALITY_SAFETY_ABILITIES')))
++        self.assertEqual(granted,abilities['PROJECT_ABILITIES']-restricted)
++        self.assertFalse(granted & restricted)
++        self.assertIn('project.write',granted)
+     def test_bounded_keyset_page_and_scope_cursor_denial(self):
+         from cipher_aec.api import paging
+         with fixtures() as (state,rules,repo,sources,service,gov):

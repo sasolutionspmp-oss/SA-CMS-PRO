@@ -1,0 +1,17 @@
+{
+  "apps/cipher/docs/framework/evidence/r3/fld02-offline/01-offline-service.log": "d564b70d292ae863034584026b0305adcb2a0741681fee7689cb53062e9e512c",
+  "apps/cipher/docs/framework/evidence/r3/fld02-offline/02-offline-fixture-corrected.log": "16b1195adbda731bc68568b9a09853a1d7aa7e7a3e0dae89da82ee1a8187d1ec",
+  "apps/cipher/docs/framework/evidence/r3/fld02-offline/03-offline-recovery-regressions.log": "00d88934b753c7fb30eb4c53feddc2507f9af4cd4b06428d8c181b8971bd048b",
+  "apps/cipher/docs/framework/evidence/r3/fld02-offline/04-persistence-host.initial.log": "5033d3525b350a6a7369d4e2400bb17118e1472ef176e98afa71729d012b9859",
+  "apps/cipher/docs/framework/evidence/r3/fld02-offline/04-persistence-host.log": "4e070d22d4756513bf0e89b1245a04f78754de171c9d9faa58f72958f9b39092",
+  "apps/cipher/docs/framework/evidence/r3/fld02-offline/05-fld01-fld02-combined.log": "30c5912cc6f46b69e2497270ee1d7efaa67b67bdb3646b36eff81b17ad84eec1",
+  "apps/cipher/docs/framework/evidence/r3/fld02-offline/06-staged-participant-failing-first.log": "fe6d4fee8330a8b4cbb733956d3901a68efbf049a3937cf3b50c031069a1959d",
+  "apps/cipher/docs/framework/evidence/r3/fld02-offline/07-staged-participant-fixed.log": "2268633952e13010309305a96d060b7a28b4637a82bffada310484e96a55814e",
+  "apps/cipher/docs/framework/evidence/r3/fld02-offline/08-fld01-fld02-final-host.log": "db59373c9c5ea4e9f92767eab17324853a6e08b1959f418e04cd2e65ef8bf00c",
+  "apps/cipher/docs/framework/evidence/r3/fld02-offline/BASE.json": "99877d53c51803d782d4c978b03f5c172caa1a917c26738f488a8b37c3e94e06",
+  "apps/cipher/docs/framework/evidence/r3/fld02-offline/BASELINE_SOURCE_INVENTORY.json": "8383fbfdb0ca4bb00d1712cff34e9f5a0df660a6bb32d8c79179b6acfe7a12cd",
+  "apps/cipher/docs/framework/evidence/r3/fld02-offline/HOST_VERIFICATION.json": "9a5b381cac109ddd892e84f83d335882d9d7d2189bdc84c9a98f1949e4d0ece6",
+  "apps/cipher/docs/framework/evidence/r3/fld02-offline/INDEPENDENT_REVIEW.md": "17d523abb2b5d844b23cf39f3365e21ed640f8a87d51df903ad86e7a9dde12a7",
+  "apps/cipher/docs/framework/evidence/r3/fld02-offline/QUALIFIED_SOURCE_INVENTORY.json": "f155a6157cddb459520772c2317013fa098fe96d2ccc851f075d30dd671f5cd2",
+  "apps/cipher/docs/framework/evidence/r3/fld02-offline/SOURCE_SHA256.json": "d9b41ae5548b2ca32e24be3b675872a521af794a901cf0dd426d91006047587f"
+}

@@ -1,0 +1,11 @@
+{
+  "schema": "cipher.fld0203.canonical-generator-fragment.v1",
+  "target": "apps/cipher/product/scripts/generate-api.mjs",
+  "preimage_lf_sha256": "26ebfe244cffcb3133f6ad2e82ca5ca4773c1f94f2d53315db49a29761822c2b",
+  "proposed_lf_sha256": "788cfe2c83e26d9d5a1c0d97c8d0fd7767a041bcfd27934840cb3aedf7d913ff",
+  "patch_sha256": "620bb8fc5ae53ed7ff082831df79fa6b1b56d9203b874b376f2a81d3b428d4a3",
+  "product_source_mutated": false,
+  "generation_executed": false,
+  "notes": "Root/UI generator owner must apply/review and regenerate once. This fragment adds only compiler root reachability/refinements; runtime domain schema shapes remain exact. No TypeScript copyback occurred.",
+  "owned_offline_generator_sha256": "db28a6c2a4a297b6665733111f8dcf5dad96f3160e20b0b111fc5555b834e7ca"
+}

@@ -9,6 +9,8 @@ const readCanonical = async path => canonicalText(await readFile(path, 'utf8'));
 
 for (const [sourcePath, destination, title] of [
   ['field/schemas/api-v1.schema.json', 'field.generated.ts', 'CipherFieldContract'],
+  ['field_offline/schemas/api-v1.schema.json', 'field-offline.generated.ts', 'CipherFieldOfflineContract'],
+  ['quality_safety/schemas/api-v1.schema.json', 'quality-safety.generated.ts', 'CipherQualitySafetyContract'],
   ['document_control/schemas/api-v1.schema.json', 'document-control.generated.ts', 'CipherDocumentControlContract'],
   ['engineering/schemas/api-v1.schema.json', 'engineering.generated.ts', 'CipherEngineeringContract'],
   ['engineering_packages/schemas/api-v1.schema.json', 'engineering-packages.generated.ts', 'CipherEngineeringPackagesContract'],
@@ -49,6 +51,28 @@ for (const [sourcePath, destination, title] of [
       fieldContracts.add(name);
     }
   }
+  const composedContracts = new Set();
+  const composedDomains = {
+    'field-offline.generated.ts': ['field_offline', ['register_device', 'revoke_device', 'stage_capture', 'get_capture', 'inspect_capture', 'apply_capture', 'discard_capture', 'resolve_capture']],
+    'quality-safety.generated.ts': ['quality_safety', ['upload_evidence', 'create_record', 'revise_record', 'transition', 'get_record', 'list_records']],
+  };
+  if (composedDomains[destination]) {
+    const [domain, expected] = composedDomains[destination];
+    const text = await readCanonical(new URL(`../../platform/apps/cipher_aec/cipher_aec/${domain}/route-contracts.json`, import.meta.url));
+    sourceTexts.push(text);
+    const routes = JSON.parse(text);
+    for (const group of ['requests', 'responses']) {
+      if (Object.keys(routes[group]).sort().join() !== [...expected].sort().join()) throw new Error(`Composed ${domain} ${group} routes differ.`);
+    }
+    // Add only compiler roots. Runtime consumes the unchanged published schema.
+    published.anyOf ||= [];
+    const reachable = new Set(published.anyOf.map(branch => branch.$ref));
+    for (const name of [...Object.values(routes.requests), ...Object.values(routes.responses)]) {
+      if (!published.$defs?.[name]) throw new Error(`Missing composed route definition: ${name}`);
+      if (!reachable.has(`#/$defs/${name}`)) { published.anyOf.push({ $ref: `#/$defs/${name}` }); reachable.add(`#/$defs/${name}`); }
+      composedContracts.add(name);
+    }
+  }
   if (destination === 'company-draft-saves.generated.ts') {
     const available = { ...published.$defs };
     for (const dependency of ['commercial/schemas/api-v1.schema.json', 'estimating/schemas/api-v1.schema.json', 'estimating/schemas/api-company-v2.schema.json']) {
@@ -74,7 +98,7 @@ for (const [sourcePath, destination, title] of [
     published = { ...published, $defs: definitions };
   }
   const schema = JSON.parse(JSON.stringify(published).replaceAll('"$defs"', '"definitions"').replaceAll('#/$defs/', '#/definitions/'));
-  if (destination === 'field.generated.ts') {
+  if (['field.generated.ts', 'field-offline.generated.ts', 'quality-safety.generated.ts'].includes(destination)) {
     // Runtime validates the unchanged original. Fold refinements for compiler
     // input so nonblank string constraints do not become object intersections.
     const typeShape = node => {
@@ -103,11 +127,14 @@ for (const [sourcePath, destination, title] of [
   const hash = createHash('sha256').update(sourceTexts.length === 1 ? source : JSON.stringify(sourceTexts)).digest('hex');
   let generated = await compile(schema, title, {
     unreachableDefinitions: true,
-    ...(['company-ricky-proposals.generated.ts', 'company-draft-saves.generated.ts', 'engineering-packages.generated.ts', 'document-control.generated.ts', 'field.generated.ts'].includes(destination) ? { ignoreMinAndMaxItems: true } : {}),
+    ...(['company-ricky-proposals.generated.ts', 'company-draft-saves.generated.ts', 'engineering-packages.generated.ts', 'document-control.generated.ts', 'field.generated.ts', 'field-offline.generated.ts', 'quality-safety.generated.ts'].includes(destination) ? { ignoreMinAndMaxItems: true } : {}),
     bannerComment: `/* Generated from cipher_aec/${sourcePath}. Do not edit.\n * Source SHA-256: ${hash}\n * Regenerate: npm run generate:api\n */`,
   });
   for (const name of documentContracts) {
     if (!generated.includes(`export interface ${name} `) && !generated.includes(`export type ${name} `)) throw new Error(`Document route contract was not exported: ${name}`);
+  }
+  for (const name of composedContracts) {
+    if (!generated.includes(`export interface ${name} `) && !generated.includes(`export type ${name} `)) throw new Error(`Composed route contract was not exported: ${name}`);
   }
   for (const name of fieldContracts) {
     if (!generated.includes(`export interface ${name} `) && !generated.includes(`export type ${name} `)) throw new Error(`Field route contract was not exported: ${name}`);

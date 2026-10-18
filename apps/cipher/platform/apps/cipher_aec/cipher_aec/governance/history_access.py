@@ -139,6 +139,17 @@ def readable(event, actor, company, project):
             kind = next(kind for kind, name in TYPES.items() if name == subject)
             read(kind, identifier, company, actor)
             return True
+        if subject == 'Cipher Field Offline Device':
+            if project is None:return False
+            from cipher_aec.field_offline.service import authorize_history_subject
+            authorize_history_subject(actor, company, project, subject, identifier)
+            return True
+        from cipher_aec.quality_safety.contracts import KINDS as QUALITY_SAFETY_KINDS
+        if subject in QUALITY_SAFETY_KINDS.values():
+            if project is None:return False
+            from cipher_aec.quality_safety.service import authorize_history
+            authorize_history(next(k for k,v in QUALITY_SAFETY_KINDS.items() if v==subject),identifier,company,project,actor,json.loads(event.details_json))
+            return True
         from cipher_aec.field.contracts import KINDS as FIELD_KINDS
         if subject in FIELD_KINDS.values():
             if project is None:return False

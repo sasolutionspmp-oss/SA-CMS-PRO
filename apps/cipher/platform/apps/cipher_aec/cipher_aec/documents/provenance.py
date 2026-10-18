@@ -87,6 +87,8 @@ def _document(row, *, lock=False):
 def authorize(row, actor, *, lock=False):
     """Current producer-source authorization; never follows its output document."""
     from cipher_aec.document_control.rights import authorize as authorize_rights
+    from cipher_aec.quality_safety.privacy import authorize_source as authorize_incident_source
+    authorize_incident_source(row, actor, lock=lock)
     authorize_rights(row,actor,lock=lock)
     if (row.get('scope_type') or 'Project') == 'Project':
         return

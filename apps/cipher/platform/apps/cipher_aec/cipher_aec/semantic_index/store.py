@@ -4,31 +4,17 @@ Durable mode is reserved for a dedicated worker transaction. Request handlers
 enqueue after commit; they must not commit another command's transaction.
 """
 from contextvars import ContextVar
-from contextlib import contextmanager
 import json
 import frappe
 from cipher_aec.api.contracts import canonical_json, digest
 from cipher_aec.api.errors import DomainError
 from cipher_aec.governance.context import trusted_write, require_trusted_write
 from .contracts import corpus_key, checkpoint
+from .transactions import dedicated_worker, require_clean_worker
 
 DOCTYPE='Cipher Semantic Corpus'
 MAX_STATE_BYTES=8*1024*1024
 _plan=ContextVar('semantic_checkpoint_plan',default=None)
-_worker=ContextVar('semantic_dedicated_worker',default=False)
-
-def require_clean_worker():
-    if not _worker.get() or getattr(frappe.db,'transaction_writes',None)!=0:
-        raise DomainError('semantic_worker_required','Semantic checkpoints require a clean dedicated worker transaction.',409)
-
-@contextmanager
-def dedicated_worker():
-    # Private process/queue entry boundary, never exposed as an RPC option.
-    if getattr(frappe.db,'transaction_writes',None)!=0:
-        raise DomainError('semantic_worker_required','Start semantic work in a clean dedicated worker transaction.',409)
-    token=_worker.set(True)
-    try: yield
-    finally: _worker.reset(token)
 
 def require_fresh_reads():
     # Pinned MariaDB/Frappe backend. Do not change isolation or commit a caller's
@@ -51,9 +37,14 @@ def validate_state(value):
 class FrappeStore:
     def __init__(self, *, durable=False):
         self.durable=durable
-        if durable: require_clean_worker()
+        self._owner=require_clean_worker() if durable else None
+
+    def _require_worker(self):
+        if require_clean_worker() is not self._owner:
+            raise DomainError('semantic_worker_required','This checkpoint belongs to another worker.',409)
 
     def load(self,key):
+        if self.durable: self._require_worker()
         require_fresh_reads()
         # Direct bounded exact-name access, never an unscoped DocType list.
         if not frappe.db.exists(DOCTYPE,key): return None
@@ -67,7 +58,20 @@ class FrappeStore:
         return value
 
     def save(self,key,expected,value):
-        if self.durable: require_clean_worker()
+        if not self.durable:
+            return self._save(key,expected,value)
+        try:
+            self._require_worker()
+            return self._save(key,expected,value)
+        except BaseException as error:
+            # Abort before SemanticService.run can attempt a recovery read/save.
+            # A stale store can never acquire another job's transaction.
+            from .transactions import _owner
+            if _owner.get() is self._owner:
+                self._owner.abort(error)
+            raise
+
+    def _save(self,key,expected,value):
         require_fresh_reads()
         validate_state(value)
         if key!=corpus_key(value['scope'],value['profile_id']) or value['version']!=expected+1:
@@ -85,8 +89,13 @@ class FrappeStore:
                 if rows:
                     doc=frappe.get_doc(DOCTYPE,key,for_update=True); doc.update(fields); doc.save(ignore_permissions=True)
                 else:
-                    frappe.get_doc({'doctype':DOCTYPE,'name':key,**fields}).insert(ignore_permissions=True,set_name=key)
-            if self.durable: frappe.db.commit()
+                    try:
+                        frappe.get_doc({'doctype':DOCTYPE,'name':key,**fields}).insert(ignore_permissions=True,set_name=key)
+                    except frappe.DuplicateEntryError:
+                        # At READ COMMITTED two absent-row readers can race to
+                        # insert the same corpus PK. Never overwrite the winner.
+                        raise DomainError('semantic_conflict','The semantic job changed. Refresh its status.',409) from None
+            if self.durable: self._owner.commit_checkpoint()
         finally: _plan.reset(token)
 
 def require_checkpoint_write(doc,value):

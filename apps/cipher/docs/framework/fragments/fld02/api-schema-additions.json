@@ -1,0 +1,3055 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "cipher.field.offline.api.v1",
+  "title": "FLD02 bounded offline documentary capture transport",
+  "description": "Input validation grants no device registration, current canonical Person authority, source rights, base revision standing, review, acceptance, financial effect or native qualification. Cross-field equality and replay lineage remain server checks.",
+  "$defs": {
+    "FoDailyDefinitionInput": {
+      "type": "object",
+      "properties": {
+        "local_date": {
+          "$ref": "#/$defs/FoDate"
+        },
+        "superintendent_user": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "weather": {
+          "type": "string",
+          "maxLength": 2000,
+          "pattern": "^[^\u0000]*$"
+        },
+        "weather_sources": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FoSourceInput"
+          },
+          "minItems": 0,
+          "maxItems": 8,
+          "uniqueItems": true
+        },
+        "crews": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 2000,
+            "pattern": "^[^\u0000]*$",
+            "minLength": 1,
+            "allOf": [
+              {
+                "pattern": "\\S"
+              }
+            ]
+          },
+          "minItems": 0,
+          "maxItems": 20
+        },
+        "activities": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 2000,
+            "pattern": "^[^\u0000]*$",
+            "minLength": 1,
+            "allOf": [
+              {
+                "pattern": "\\S"
+              }
+            ]
+          },
+          "minItems": 1,
+          "maxItems": 20
+        },
+        "delays": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 2000,
+            "pattern": "^[^\u0000]*$",
+            "minLength": 1,
+            "allOf": [
+              {
+                "pattern": "\\S"
+              }
+            ]
+          },
+          "minItems": 0,
+          "maxItems": 20
+        },
+        "visitors": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 2000,
+            "pattern": "^[^\u0000]*$",
+            "minLength": 1,
+            "allOf": [
+              {
+                "pattern": "\\S"
+              }
+            ]
+          },
+          "minItems": 0,
+          "maxItems": 20
+        }
+      },
+      "required": [
+        "local_date",
+        "superintendent_user",
+        "weather",
+        "weather_sources",
+        "crews",
+        "activities",
+        "delays",
+        "visitors"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "weather": {
+                "minLength": 1
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "weather_sources": {
+                "minItems": 1
+              }
+            }
+          }
+        }
+      ]
+    },
+    "FoDate": {
+      "type": "string",
+      "format": "date",
+      "minLength": 10,
+      "maxLength": 10
+    },
+    "FoSourceInput": {
+      "type": "object",
+      "properties": {
+        "revision_id": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "source_sha256": {
+          "$ref": "#/$defs/FoDigest"
+        },
+        "page": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200
+        },
+        "locator": {
+          "type": "string",
+          "maxLength": 1000,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        }
+      },
+      "required": [
+        "revision_id",
+        "source_sha256",
+        "page",
+        "locator"
+      ],
+      "additionalProperties": false
+    },
+    "FoDigest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "FoTicketDefinitionInput": {
+      "type": "object",
+      "properties": {
+        "local_date": {
+          "$ref": "#/$defs/FoDate"
+        },
+        "title": {
+          "type": "string",
+          "maxLength": 240,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "customer_name": {
+          "type": "string",
+          "maxLength": 240,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "location": {
+          "type": "string",
+          "maxLength": 240,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "work_description": {
+          "type": "string",
+          "maxLength": 10000,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "potential_change_reference": {
+          "type": "string",
+          "maxLength": 240,
+          "pattern": "^[^\u0000]*$"
+        },
+        "lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FoTicketLineInput"
+          },
+          "minItems": 1,
+          "maxItems": 40
+        }
+      },
+      "required": [
+        "local_date",
+        "title",
+        "customer_name",
+        "location",
+        "work_description",
+        "potential_change_reference",
+        "lines"
+      ],
+      "additionalProperties": false
+    },
+    "FoTicketLineInput": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "enum": [
+            "labor",
+            "equipment",
+            "material"
+          ]
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 1000,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "quantity": {
+          "$ref": "#/$defs/FoQuantityValue"
+        },
+        "unit": {
+          "type": "string",
+          "maxLength": 40,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "sources": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FoSourceInput"
+          },
+          "minItems": 1,
+          "maxItems": 8,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "kind",
+        "description",
+        "quantity",
+        "unit",
+        "sources"
+      ],
+      "additionalProperties": false
+    },
+    "FoQuantityValue": {
+      "type": "string",
+      "pattern": "^(?:0|[1-9][0-9]{0,11})(?:\\.[0-9]{1,6})?$",
+      "not": {
+        "pattern": "^0(?:\\.0{1,6})?$"
+      }
+    },
+    "FoPhotoInput": {
+      "type": "object",
+      "properties": {
+        "source": {
+          "$ref": "#/$defs/FoSourceInput"
+        },
+        "caption": {
+          "type": "string",
+          "maxLength": 1000,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "captured_at": {
+          "$ref": "#/$defs/FoTimestamp"
+        },
+        "representation": {
+          "enum": [
+            "source_image",
+            "photo_on_pdf_page"
+          ]
+        }
+      },
+      "required": [
+        "source",
+        "caption",
+        "captured_at",
+        "representation"
+      ],
+      "additionalProperties": false
+    },
+    "FoTimestamp": {
+      "type": "string",
+      "format": "date-time",
+      "maxLength": 40,
+      "pattern": "(?:[zZ]|[+-][0-9]{2}:[0-9]{2})$"
+    },
+    "FoQuantityDefinitionInput": {
+      "type": "object",
+      "properties": {
+        "original_event_id": {
+          "$ref": "#/$defs/FoUuid"
+        },
+        "supersedes_event_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FoUuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "kind": {
+          "enum": [
+            "installed",
+            "delivered"
+          ]
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 1000,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "wbs_code": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$"
+        },
+        "cost_code": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$"
+        },
+        "quantity": {
+          "$ref": "#/$defs/FoQuantityValue"
+        },
+        "unit": {
+          "type": "string",
+          "maxLength": 40,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "location": {
+          "type": "string",
+          "maxLength": 1000,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "sources": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FoSourceInput"
+          },
+          "minItems": 1,
+          "maxItems": 8,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "original_event_id",
+        "supersedes_event_id",
+        "kind",
+        "description",
+        "wbs_code",
+        "cost_code",
+        "quantity",
+        "unit",
+        "location",
+        "sources"
+      ],
+      "additionalProperties": false
+    },
+    "FoUuid": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$",
+      "format": "uuid"
+    },
+    "FoCreateRecordResponse": {
+      "type": "object",
+      "properties": {
+        "family": {
+          "$ref": "#/$defs/FoFamily"
+        },
+        "header": {
+          "$ref": "#/$defs/FoHeader"
+        },
+        "revision": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/FoDailyRevision"
+            },
+            {
+              "$ref": "#/$defs/FoTicketRevision"
+            }
+          ]
+        },
+        "history_id": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "operation": {
+          "$ref": "#/$defs/FoOperation"
+        },
+        "quantities": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FoQuantity"
+          },
+          "minItems": 0,
+          "maxItems": 40
+        }
+      },
+      "required": [
+        "family",
+        "header",
+        "revision",
+        "history_id",
+        "operation",
+        "quantities"
+      ],
+      "additionalProperties": false,
+      "oneOf": [
+        {
+          "properties": {
+            "family": {
+              "const": "daily"
+            },
+            "header": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/FoDailyHeader"
+                },
+                {
+                  "properties": {
+                    "status": {
+                      "const": "draft"
+                    },
+                    "last_decision": {
+                      "type": "null"
+                    }
+                  }
+                }
+              ]
+            },
+            "revision": {
+              "$ref": "#/$defs/FoDailyRevision"
+            }
+          }
+        },
+        {
+          "properties": {
+            "family": {
+              "const": "ticket"
+            },
+            "header": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/FoTicketHeader"
+                },
+                {
+                  "properties": {
+                    "status": {
+                      "const": "draft"
+                    },
+                    "last_decision": {
+                      "type": "null"
+                    }
+                  }
+                }
+              ]
+            },
+            "revision": {
+              "$ref": "#/$defs/FoTicketRevision"
+            },
+            "quantities": {
+              "maxItems": 0
+            }
+          }
+        }
+      ]
+    },
+    "FoFamily": {
+      "enum": [
+        "daily",
+        "ticket"
+      ]
+    },
+    "FoHeader": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/FoUuid"
+        },
+        "company": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "project": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "scope_type": {
+          "const": "Project"
+        },
+        "author_person": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "author_user": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "created_at": {
+          "$ref": "#/$defs/FoTimestamp"
+        },
+        "status": {
+          "enum": [
+            "draft",
+            "submitted",
+            "reviewed",
+            "returned",
+            "accepted",
+            "acknowledged"
+          ]
+        },
+        "number": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "revision_number": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "current_revision": {
+          "$ref": "#/$defs/FoUuid"
+        },
+        "last_decision": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FoUuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "accepted_revision": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FoUuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "scope_type",
+        "author_person",
+        "author_user",
+        "created_at",
+        "status",
+        "number",
+        "revision_number",
+        "current_revision",
+        "last_decision",
+        "accepted_revision"
+      ],
+      "additionalProperties": false
+    },
+    "FoDailyRevision": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/FoUuid"
+        },
+        "company": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "project": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "scope_type": {
+          "const": "Project"
+        },
+        "author_person": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "author_user": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "created_at": {
+          "$ref": "#/$defs/FoTimestamp"
+        },
+        "status": {
+          "const": "recorded"
+        },
+        "parent_id": {
+          "$ref": "#/$defs/FoUuid"
+        },
+        "revision_number": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "predecessor": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FoUuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "prior_decision": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FoUuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "amendment_of": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FoUuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "amendment_reason": {
+          "type": "string",
+          "maxLength": 2000,
+          "pattern": "^[^\u0000]*$"
+        },
+        "photos": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FoPhoto"
+          },
+          "minItems": 0,
+          "maxItems": 12
+        },
+        "no_effects": {
+          "$ref": "#/$defs/FoNoEffects"
+        },
+        "definition": {
+          "$ref": "#/$defs/FoDailyDefinition"
+        },
+        "superintendent": {
+          "$ref": "#/$defs/FoPerson"
+        },
+        "quantity_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FoUuid"
+          },
+          "minItems": 0,
+          "maxItems": 40,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "scope_type",
+        "author_person",
+        "author_user",
+        "created_at",
+        "status",
+        "parent_id",
+        "revision_number",
+        "predecessor",
+        "prior_decision",
+        "amendment_of",
+        "amendment_reason",
+        "photos",
+        "no_effects",
+        "definition",
+        "superintendent",
+        "quantity_ids"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "amendment_of": {
+                "type": "null"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "amendment_reason": {
+                "not": {
+                  "pattern": "\\S"
+                }
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "amendment_reason": {
+                "pattern": "\\S"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "FoPhoto": {
+      "type": "object",
+      "properties": {
+        "source": {
+          "$ref": "#/$defs/FoCapturedSource"
+        },
+        "caption": {
+          "type": "string",
+          "maxLength": 1000,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "captured_at": {
+          "$ref": "#/$defs/FoTimestamp"
+        },
+        "representation": {
+          "enum": [
+            "source_image",
+            "photo_on_pdf_page"
+          ]
+        }
+      },
+      "required": [
+        "source",
+        "caption",
+        "captured_at",
+        "representation"
+      ],
+      "additionalProperties": false
+    },
+    "FoCapturedSource": {
+      "type": "object",
+      "properties": {
+        "revision_id": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "source_sha256": {
+          "$ref": "#/$defs/FoDigest"
+        },
+        "page": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200
+        },
+        "locator": {
+          "type": "string",
+          "maxLength": 1000,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "document_id": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "revision_number": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "byte_length": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "mime_type": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "page_count": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "required": [
+        "revision_id",
+        "source_sha256",
+        "page",
+        "locator",
+        "document_id",
+        "revision_number",
+        "byte_length",
+        "mime_type",
+        "page_count"
+      ],
+      "additionalProperties": false
+    },
+    "FoNoEffects": {
+      "type": "object",
+      "properties": {
+        "contract_change": {
+          "const": false
+        },
+        "budget_change": {
+          "const": false
+        },
+        "procurement_change": {
+          "const": false
+        },
+        "invoice_change": {
+          "const": false
+        },
+        "financial_posting": {
+          "const": false
+        },
+        "payroll_release": {
+          "const": false
+        },
+        "quality_certification": {
+          "const": false
+        },
+        "external_transmission": {
+          "const": false
+        }
+      },
+      "required": [
+        "contract_change",
+        "budget_change",
+        "procurement_change",
+        "invoice_change",
+        "financial_posting",
+        "payroll_release",
+        "quality_certification",
+        "external_transmission"
+      ],
+      "additionalProperties": false
+    },
+    "FoDailyDefinition": {
+      "type": "object",
+      "properties": {
+        "local_date": {
+          "$ref": "#/$defs/FoDate"
+        },
+        "superintendent_user": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "weather": {
+          "type": "string",
+          "maxLength": 2000,
+          "pattern": "^[^\u0000]*$"
+        },
+        "weather_sources": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FoCapturedSource"
+          },
+          "minItems": 0,
+          "maxItems": 8,
+          "uniqueItems": true
+        },
+        "crews": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 2000,
+            "pattern": "^[^\u0000]*$",
+            "minLength": 1,
+            "allOf": [
+              {
+                "pattern": "\\S"
+              }
+            ]
+          },
+          "minItems": 0,
+          "maxItems": 20
+        },
+        "activities": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 2000,
+            "pattern": "^[^\u0000]*$",
+            "minLength": 1,
+            "allOf": [
+              {
+                "pattern": "\\S"
+              }
+            ]
+          },
+          "minItems": 1,
+          "maxItems": 20
+        },
+        "delays": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 2000,
+            "pattern": "^[^\u0000]*$",
+            "minLength": 1,
+            "allOf": [
+              {
+                "pattern": "\\S"
+              }
+            ]
+          },
+          "minItems": 0,
+          "maxItems": 20
+        },
+        "visitors": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 2000,
+            "pattern": "^[^\u0000]*$",
+            "minLength": 1,
+            "allOf": [
+              {
+                "pattern": "\\S"
+              }
+            ]
+          },
+          "minItems": 0,
+          "maxItems": 20
+        }
+      },
+      "required": [
+        "local_date",
+        "superintendent_user",
+        "weather",
+        "weather_sources",
+        "crews",
+        "activities",
+        "delays",
+        "visitors"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "weather": {
+                "minLength": 1
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "weather_sources": {
+                "minItems": 1
+              }
+            }
+          }
+        }
+      ]
+    },
+    "FoPerson": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "person": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        }
+      },
+      "required": [
+        "user",
+        "person"
+      ],
+      "additionalProperties": false
+    },
+    "FoTicketRevision": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/FoUuid"
+        },
+        "company": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "project": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "scope_type": {
+          "const": "Project"
+        },
+        "author_person": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "author_user": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "created_at": {
+          "$ref": "#/$defs/FoTimestamp"
+        },
+        "status": {
+          "const": "recorded"
+        },
+        "parent_id": {
+          "$ref": "#/$defs/FoUuid"
+        },
+        "revision_number": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "predecessor": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FoUuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "prior_decision": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FoUuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "amendment_of": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FoUuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "amendment_reason": {
+          "type": "string",
+          "maxLength": 2000,
+          "pattern": "^[^\u0000]*$"
+        },
+        "photos": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FoPhoto"
+          },
+          "minItems": 0,
+          "maxItems": 12
+        },
+        "no_effects": {
+          "$ref": "#/$defs/FoNoEffects"
+        },
+        "definition": {
+          "$ref": "#/$defs/FoTicketDefinition"
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "scope_type",
+        "author_person",
+        "author_user",
+        "created_at",
+        "status",
+        "parent_id",
+        "revision_number",
+        "predecessor",
+        "prior_decision",
+        "amendment_of",
+        "amendment_reason",
+        "photos",
+        "no_effects",
+        "definition"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "amendment_of": {
+                "type": "null"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "amendment_reason": {
+                "not": {
+                  "pattern": "\\S"
+                }
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "amendment_reason": {
+                "pattern": "\\S"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "FoTicketDefinition": {
+      "type": "object",
+      "properties": {
+        "local_date": {
+          "$ref": "#/$defs/FoDate"
+        },
+        "title": {
+          "type": "string",
+          "maxLength": 240,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "customer_name": {
+          "type": "string",
+          "maxLength": 240,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "location": {
+          "type": "string",
+          "maxLength": 240,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "work_description": {
+          "type": "string",
+          "maxLength": 10000,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "potential_change_reference": {
+          "type": "string",
+          "maxLength": 240,
+          "pattern": "^[^\u0000]*$"
+        },
+        "lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FoTicketLine"
+          },
+          "minItems": 1,
+          "maxItems": 40
+        }
+      },
+      "required": [
+        "local_date",
+        "title",
+        "customer_name",
+        "location",
+        "work_description",
+        "potential_change_reference",
+        "lines"
+      ],
+      "additionalProperties": false
+    },
+    "FoTicketLine": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "enum": [
+            "labor",
+            "equipment",
+            "material"
+          ]
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 1000,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "quantity": {
+          "$ref": "#/$defs/FoQuantityValue"
+        },
+        "unit": {
+          "type": "string",
+          "maxLength": 40,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "sources": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FoCapturedSource"
+          },
+          "minItems": 1,
+          "maxItems": 8,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "kind",
+        "description",
+        "quantity",
+        "unit",
+        "sources"
+      ],
+      "additionalProperties": false
+    },
+    "FoOperation": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/FoUuid"
+        },
+        "status": {
+          "const": "succeeded"
+        },
+        "replayed": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "id",
+        "status",
+        "replayed"
+      ],
+      "additionalProperties": false
+    },
+    "FoQuantity": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/FoUuid"
+        },
+        "company": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "project": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "scope_type": {
+          "const": "Project"
+        },
+        "author_person": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "author_user": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "created_at": {
+          "$ref": "#/$defs/FoTimestamp"
+        },
+        "status": {
+          "const": "recorded"
+        },
+        "parent_id": {
+          "$ref": "#/$defs/FoUuid"
+        },
+        "source_revision": {
+          "$ref": "#/$defs/FoUuid"
+        },
+        "revision_number": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "original_event_id": {
+          "$ref": "#/$defs/FoUuid"
+        },
+        "supersedes_event_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FoUuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "definition": {
+          "$ref": "#/$defs/FoQuantityDefinition"
+        },
+        "no_effects": {
+          "$ref": "#/$defs/FoNoEffects"
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "scope_type",
+        "author_person",
+        "author_user",
+        "created_at",
+        "status",
+        "parent_id",
+        "source_revision",
+        "revision_number",
+        "original_event_id",
+        "supersedes_event_id",
+        "definition",
+        "no_effects"
+      ],
+      "additionalProperties": false
+    },
+    "FoQuantityDefinition": {
+      "type": "object",
+      "properties": {
+        "original_event_id": {
+          "$ref": "#/$defs/FoUuid"
+        },
+        "supersedes_event_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FoUuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "kind": {
+          "enum": [
+            "installed",
+            "delivered"
+          ]
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 1000,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "wbs_code": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$"
+        },
+        "cost_code": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$"
+        },
+        "quantity": {
+          "$ref": "#/$defs/FoQuantityValue"
+        },
+        "unit": {
+          "type": "string",
+          "maxLength": 40,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "location": {
+          "type": "string",
+          "maxLength": 1000,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "sources": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FoCapturedSource"
+          },
+          "minItems": 1,
+          "maxItems": 8,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "original_event_id",
+        "supersedes_event_id",
+        "kind",
+        "description",
+        "wbs_code",
+        "cost_code",
+        "quantity",
+        "unit",
+        "location",
+        "sources"
+      ],
+      "additionalProperties": false
+    },
+    "FoDailyHeader": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/FoUuid"
+        },
+        "company": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "project": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "scope_type": {
+          "const": "Project"
+        },
+        "author_person": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "author_user": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "created_at": {
+          "$ref": "#/$defs/FoTimestamp"
+        },
+        "status": {
+          "enum": [
+            "draft",
+            "submitted",
+            "reviewed",
+            "returned",
+            "accepted"
+          ]
+        },
+        "number": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "revision_number": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "current_revision": {
+          "$ref": "#/$defs/FoUuid"
+        },
+        "last_decision": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FoUuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "accepted_revision": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FoUuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "scope_type",
+        "author_person",
+        "author_user",
+        "created_at",
+        "status",
+        "number",
+        "revision_number",
+        "current_revision",
+        "last_decision",
+        "accepted_revision"
+      ],
+      "additionalProperties": false
+    },
+    "FoTicketHeader": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/FoUuid"
+        },
+        "company": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "project": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "scope_type": {
+          "const": "Project"
+        },
+        "author_person": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "author_user": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "created_at": {
+          "$ref": "#/$defs/FoTimestamp"
+        },
+        "status": {
+          "enum": [
+            "draft",
+            "submitted",
+            "reviewed",
+            "returned",
+            "accepted",
+            "acknowledged"
+          ]
+        },
+        "number": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "revision_number": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "current_revision": {
+          "$ref": "#/$defs/FoUuid"
+        },
+        "last_decision": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FoUuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "accepted_revision": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FoUuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "scope_type",
+        "author_person",
+        "author_user",
+        "created_at",
+        "status",
+        "number",
+        "revision_number",
+        "current_revision",
+        "last_decision",
+        "accepted_revision"
+      ],
+      "additionalProperties": false
+    },
+    "FoCaptureUuid": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$",
+      "format": "uuid"
+    },
+    "FoSyncOperation": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/FoCaptureUuid"
+        },
+        "status": {
+          "const": "succeeded"
+        },
+        "replayed": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "id",
+        "status",
+        "replayed"
+      ],
+      "additionalProperties": false
+    },
+    "FoCreateCommand": {
+      "type": "object",
+      "properties": {
+        "action": {
+          "const": "create"
+        },
+        "family": {
+          "enum": [
+            "daily",
+            "ticket"
+          ]
+        },
+        "definition": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/FoDailyDefinitionInput"
+            },
+            {
+              "$ref": "#/$defs/FoTicketDefinitionInput"
+            }
+          ]
+        },
+        "photos": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FoPhotoInput"
+          },
+          "minItems": 0,
+          "maxItems": 12
+        },
+        "quantities": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FoQuantityDefinitionInput"
+          },
+          "minItems": 0,
+          "maxItems": 40
+        }
+      },
+      "required": [
+        "action",
+        "family",
+        "definition",
+        "photos",
+        "quantities"
+      ],
+      "additionalProperties": false,
+      "oneOf": [
+        {
+          "properties": {
+            "family": {
+              "const": "daily"
+            },
+            "definition": {
+              "$ref": "#/$defs/FoDailyDefinitionInput"
+            }
+          }
+        },
+        {
+          "properties": {
+            "family": {
+              "const": "ticket"
+            },
+            "definition": {
+              "$ref": "#/$defs/FoTicketDefinitionInput"
+            },
+            "quantities": {
+              "maxItems": 0
+            }
+          }
+        }
+      ]
+    },
+    "FoReviseCommand": {
+      "type": "object",
+      "properties": {
+        "action": {
+          "const": "revise"
+        },
+        "family": {
+          "enum": [
+            "daily",
+            "ticket"
+          ]
+        },
+        "definition": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/FoDailyDefinitionInput"
+            },
+            {
+              "$ref": "#/$defs/FoTicketDefinitionInput"
+            }
+          ]
+        },
+        "photos": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FoPhotoInput"
+          },
+          "minItems": 0,
+          "maxItems": 12
+        },
+        "quantities": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FoQuantityDefinitionInput"
+          },
+          "minItems": 0,
+          "maxItems": 40
+        },
+        "record_id": {
+          "$ref": "#/$defs/FoUuid"
+        },
+        "expected_version": {
+          "$ref": "#/$defs/FoDigest"
+        },
+        "base_revision_id": {
+          "$ref": "#/$defs/FoUuid"
+        },
+        "base_revision_digest": {
+          "$ref": "#/$defs/FoDigest"
+        },
+        "amendment_reason": {
+          "type": "string",
+          "maxLength": 2000,
+          "pattern": "^[^\\u0000]*$"
+        }
+      },
+      "required": [
+        "action",
+        "family",
+        "definition",
+        "photos",
+        "quantities",
+        "record_id",
+        "expected_version",
+        "base_revision_id",
+        "base_revision_digest",
+        "amendment_reason"
+      ],
+      "additionalProperties": false,
+      "oneOf": [
+        {
+          "properties": {
+            "family": {
+              "const": "daily"
+            },
+            "definition": {
+              "$ref": "#/$defs/FoDailyDefinitionInput"
+            }
+          }
+        },
+        {
+          "properties": {
+            "family": {
+              "const": "ticket"
+            },
+            "definition": {
+              "$ref": "#/$defs/FoTicketDefinitionInput"
+            },
+            "quantities": {
+              "maxItems": 0
+            }
+          }
+        }
+      ]
+    },
+    "FoCommand": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/FoCreateCommand"
+        },
+        {
+          "$ref": "#/$defs/FoReviseCommand"
+        }
+      ]
+    },
+    "FoEnvelope": {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "cipher.field.offline.v1"
+        },
+        "device_id": {
+          "$ref": "#/$defs/FoCaptureUuid"
+        },
+        "capture_id": {
+          "$ref": "#/$defs/FoCaptureUuid"
+        },
+        "company": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "project": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "actor_person": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "actor_user": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "captured_at": {
+          "$ref": "#/$defs/FoTimestamp"
+        },
+        "command": {
+          "$ref": "#/$defs/FoCommand"
+        }
+      },
+      "required": [
+        "schema",
+        "device_id",
+        "capture_id",
+        "company",
+        "project",
+        "actor_person",
+        "actor_user",
+        "captured_at",
+        "command"
+      ],
+      "additionalProperties": false,
+      "description": "Immutable Project capture attribution; device ownership/current authority and exact source/base revision facts are verified by the server. Canonical UTF-8 JSON is limited to 256 KiB by the service.",
+      "x-max-json-bytes": 262144
+    },
+    "FoDeviceSummary": {
+      "type": "object",
+      "properties": {
+        "device_id": {
+          "$ref": "#/$defs/FoCaptureUuid"
+        },
+        "company": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "project": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "owner_person": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "registered_user": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "status": {
+          "enum": [
+            "active",
+            "revoked"
+          ]
+        },
+        "label": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        }
+      },
+      "required": [
+        "device_id",
+        "company",
+        "project",
+        "owner_person",
+        "registered_user",
+        "status",
+        "label"
+      ],
+      "additionalProperties": false
+    },
+    "FoCaptureSummary": {
+      "type": "object",
+      "properties": {
+        "capture_id": {
+          "$ref": "#/$defs/FoCaptureUuid"
+        },
+        "device_id": {
+          "$ref": "#/$defs/FoCaptureUuid"
+        },
+        "company": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "project": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "actor_person": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "actor_user": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "envelope_digest": {
+          "$ref": "#/$defs/FoDigest"
+        },
+        "status": {
+          "enum": [
+            "staged",
+            "committed",
+            "discarded",
+            "superseded"
+          ]
+        },
+        "payload_retained": {
+          "type": "boolean"
+        },
+        "replaces_capture_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FoCaptureUuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "replacement_capture_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FoCaptureUuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "capture_id",
+        "device_id",
+        "company",
+        "project",
+        "actor_person",
+        "actor_user",
+        "envelope_digest",
+        "status",
+        "payload_retained",
+        "replaces_capture_id",
+        "replacement_capture_id"
+      ],
+      "additionalProperties": false
+    },
+    "FoConflict": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "enum": [
+            "base_changed",
+            "record_state_changed",
+            "source_changed"
+          ]
+        },
+        "current_header_version": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FoDigest"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "current_revision_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FoUuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "current_revision_digest": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FoDigest"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "code",
+        "current_header_version",
+        "current_revision_id",
+        "current_revision_digest"
+      ],
+      "additionalProperties": false
+    },
+    "FoRegisterDeviceRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "project": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "operation_id": {
+          "$ref": "#/$defs/FoCaptureUuid"
+        },
+        "device_id": {
+          "$ref": "#/$defs/FoCaptureUuid"
+        },
+        "label": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        }
+      },
+      "required": [
+        "company",
+        "project",
+        "operation_id",
+        "device_id",
+        "label"
+      ],
+      "additionalProperties": false
+    },
+    "FoRevokeDeviceRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "project": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "operation_id": {
+          "$ref": "#/$defs/FoCaptureUuid"
+        },
+        "device_id": {
+          "$ref": "#/$defs/FoCaptureUuid"
+        },
+        "expected_version": {
+          "$ref": "#/$defs/FoDigest"
+        },
+        "reason": {
+          "type": "string",
+          "maxLength": 2000,
+          "pattern": "^[^\\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        }
+      },
+      "required": [
+        "company",
+        "project",
+        "operation_id",
+        "device_id",
+        "expected_version",
+        "reason"
+      ],
+      "additionalProperties": false
+    },
+    "FoStageCaptureRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "project": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "operation_id": {
+          "$ref": "#/$defs/FoCaptureUuid"
+        },
+        "envelope": {
+          "$ref": "#/$defs/FoEnvelope"
+        }
+      },
+      "required": [
+        "company",
+        "project",
+        "operation_id",
+        "envelope"
+      ],
+      "additionalProperties": false
+    },
+    "FoGetCaptureRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "project": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "capture_id": {
+          "$ref": "#/$defs/FoCaptureUuid"
+        }
+      },
+      "required": [
+        "company",
+        "project",
+        "capture_id"
+      ],
+      "additionalProperties": false
+    },
+    "FoInspectCaptureRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "project": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "capture_id": {
+          "$ref": "#/$defs/FoCaptureUuid"
+        }
+      },
+      "required": [
+        "company",
+        "project",
+        "capture_id"
+      ],
+      "additionalProperties": false
+    },
+    "FoApplyCaptureRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "project": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "operation_id": {
+          "$ref": "#/$defs/FoCaptureUuid"
+        },
+        "capture_id": {
+          "$ref": "#/$defs/FoCaptureUuid"
+        },
+        "expected_version": {
+          "$ref": "#/$defs/FoDigest"
+        }
+      },
+      "required": [
+        "company",
+        "project",
+        "operation_id",
+        "capture_id",
+        "expected_version"
+      ],
+      "additionalProperties": false
+    },
+    "FoDiscardCaptureRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "project": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "operation_id": {
+          "$ref": "#/$defs/FoCaptureUuid"
+        },
+        "capture_id": {
+          "$ref": "#/$defs/FoCaptureUuid"
+        },
+        "expected_version": {
+          "$ref": "#/$defs/FoDigest"
+        },
+        "reason": {
+          "type": "string",
+          "maxLength": 2000,
+          "pattern": "^[^\\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        }
+      },
+      "required": [
+        "company",
+        "project",
+        "operation_id",
+        "capture_id",
+        "expected_version",
+        "reason"
+      ],
+      "additionalProperties": false
+    },
+    "FoResolveCaptureRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "project": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "operation_id": {
+          "$ref": "#/$defs/FoCaptureUuid"
+        },
+        "capture_id": {
+          "$ref": "#/$defs/FoCaptureUuid"
+        },
+        "expected_version": {
+          "$ref": "#/$defs/FoDigest"
+        },
+        "replacement_envelope": {
+          "$ref": "#/$defs/FoEnvelope"
+        },
+        "reason": {
+          "type": "string",
+          "maxLength": 2000,
+          "pattern": "^[^\\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        }
+      },
+      "required": [
+        "company",
+        "project",
+        "operation_id",
+        "capture_id",
+        "expected_version",
+        "replacement_envelope",
+        "reason"
+      ],
+      "additionalProperties": false
+    },
+    "FoDeviceMutationResponse": {
+      "type": "object",
+      "properties": {
+        "device": {
+          "$ref": "#/$defs/FoDeviceSummary"
+        },
+        "device_version": {
+          "$ref": "#/$defs/FoDigest"
+        },
+        "operation": {
+          "$ref": "#/$defs/FoSyncOperation"
+        }
+      },
+      "required": [
+        "device",
+        "device_version",
+        "operation"
+      ],
+      "additionalProperties": false
+    },
+    "FoCaptureMutationResponse": {
+      "type": "object",
+      "properties": {
+        "capture": {
+          "$ref": "#/$defs/FoCaptureSummary"
+        },
+        "capture_version": {
+          "$ref": "#/$defs/FoDigest"
+        },
+        "operation": {
+          "$ref": "#/$defs/FoSyncOperation"
+        }
+      },
+      "required": [
+        "capture",
+        "capture_version",
+        "operation"
+      ],
+      "additionalProperties": false
+    },
+    "FoGetCaptureResponse": {
+      "type": "object",
+      "properties": {
+        "capture": {
+          "$ref": "#/$defs/FoCaptureSummary"
+        },
+        "capture_version": {
+          "$ref": "#/$defs/FoDigest"
+        },
+        "envelope": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FoEnvelope"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "original_receipt": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FoCreateRecordResponse"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "capture",
+        "capture_version",
+        "envelope",
+        "original_receipt"
+      ],
+      "additionalProperties": false
+    },
+    "FoInspectCaptureResponse": {
+      "type": "object",
+      "properties": {
+        "capture": {
+          "$ref": "#/$defs/FoCaptureSummary"
+        },
+        "capture_version": {
+          "$ref": "#/$defs/FoDigest"
+        },
+        "disposition": {
+          "enum": [
+            "ready",
+            "conflict",
+            "committed",
+            "discarded",
+            "superseded"
+          ]
+        },
+        "conflict": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FoConflict"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "original_receipt": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FoCreateRecordResponse"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "capture",
+        "capture_version",
+        "disposition",
+        "conflict",
+        "original_receipt"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "disposition": {
+                "const": "conflict"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "conflict": {
+                "$ref": "#/$defs/FoConflict"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "conflict": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "FoApplyCaptureResponse": {
+      "type": "object",
+      "properties": {
+        "capture": {
+          "$ref": "#/$defs/FoCaptureSummary"
+        },
+        "capture_version": {
+          "$ref": "#/$defs/FoDigest"
+        },
+        "original_receipt": {
+          "$ref": "#/$defs/FoCreateRecordResponse"
+        },
+        "replayed": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "capture",
+        "capture_version",
+        "original_receipt",
+        "replayed"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "anyOf": [
+    {
+      "$ref": "#/$defs/FoApplyCaptureRequest"
+    },
+    {
+      "$ref": "#/$defs/FoApplyCaptureResponse"
+    },
+    {
+      "$ref": "#/$defs/FoCaptureMutationResponse"
+    },
+    {
+      "$ref": "#/$defs/FoDeviceMutationResponse"
+    },
+    {
+      "$ref": "#/$defs/FoDiscardCaptureRequest"
+    },
+    {
+      "$ref": "#/$defs/FoGetCaptureRequest"
+    },
+    {
+      "$ref": "#/$defs/FoGetCaptureResponse"
+    },
+    {
+      "$ref": "#/$defs/FoInspectCaptureRequest"
+    },
+    {
+      "$ref": "#/$defs/FoInspectCaptureResponse"
+    },
+    {
+      "$ref": "#/$defs/FoRegisterDeviceRequest"
+    },
+    {
+      "$ref": "#/$defs/FoResolveCaptureRequest"
+    },
+    {
+      "$ref": "#/$defs/FoRevokeDeviceRequest"
+    },
+    {
+      "$ref": "#/$defs/FoStageCaptureRequest"
+    }
+  ]
+}

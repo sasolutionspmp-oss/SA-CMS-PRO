@@ -1,0 +1,10 @@
+{
+  "python": "3.14.4 (main, Jun 18 2026, 14:25:02) [GCC 15.2.0]",
+  "qualification": "Recorded host interpreter and dependencies; no native runtime/provider qualification.",
+  "recorded_dependencies": {
+    "Pillow": "12.3.0",
+    "fonttools": "4.67.0",
+    "jsonschema": "4.26.0",
+    "pypdf": "6.15.0"
+  }
+}

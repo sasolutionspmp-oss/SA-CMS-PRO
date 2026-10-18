@@ -1,0 +1,134 @@
+{
+  "captured_at": "2026-10-18T08:02:14.999722+00:00",
+  "status": "Source-only coherent external App complete; selected synthetic browser fixtures passed; no shared/native integration performed.",
+  "workspace": "C:\\Users\\TravisStaib\\Documents\\Codex\\2026-10-17\\cipher-local\\lane-work\\field-offline-app-20261017",
+  "source": {
+    "archive": "C:\\Users\\TravisStaib\\Documents\\Codex\\2026-10-17\\cipher-local\\lane-work\\field-offline-app-20261017\\field-offline-quality-app-source-20261018.tgz",
+    "sha256": "c0a963e916c8309eff4c753b749c86e2ec7881f9055269c9be55cf6c26aeabdd",
+    "bytes": 802702,
+    "product_files": 264,
+    "contract_and_boundary_files": 25,
+    "all_source_files": 289,
+    "archive_file_count": 294,
+    "archive_readback_verified": true,
+    "frozen_offline_files_adapted_only_in_external_snapshot": [
+      "apps/cipher/product/src/FieldOffline.tsx",
+      "apps/cipher/product/src/api/field-offline.generated.ts",
+      "apps/cipher/product/src/field-offline-vault.ts"
+    ]
+  },
+  "evidence_archive": {
+    "path": "C:\\Users\\TravisStaib\\Documents\\Codex\\2026-10-17\\cipher-local\\lane-work\\field-offline-app-20261017\\field-offline-quality-app-evidence-20261018.tgz",
+    "sha256": "386927cc4298e6fcf7275f1b72f18398f994d8a21b1299024fd9b76878ce3467",
+    "bytes": 23244559,
+    "final_reports_archive_readback_verified": true
+  },
+  "source_manifest_sha256": "7ec1e2496f1077cedf7d25c4778f7bb42369dba533b455344641f2952c2e4480",
+  "checks": {
+    "main": {
+      "report": "evidence/32-release-main138.json",
+      "startTime": "2026-10-18T07:59:11.207Z",
+      "duration": 64780.527,
+      "expected": 138,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "field": {
+      "report": "evidence/33-release-field30.json",
+      "startTime": "2026-10-18T07:59:11.233Z",
+      "duration": 23066.585,
+      "expected": 30,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "offline": {
+      "report": "evidence/34-release-offline61.json",
+      "startTime": "2026-10-18T07:59:11.202Z",
+      "duration": 36680.526000000005,
+      "expected": 61,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "new_app_quality": {
+      "report": "evidence/35-release-new-ui33.json",
+      "startTime": "2026-10-18T07:59:11.200Z",
+      "duration": 61024.275,
+      "expected": 33,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    }
+  },
+  "selected_total_passed": 262,
+  "selected_total_failed": 0,
+  "new_cases": {
+    "app_offline_cleanup_and_recovery": 21,
+    "quality_safety": 12
+  },
+  "generation_check": "evidence/29-release-generation-check.log",
+  "production_build": "evidence/30-release-build.log",
+  "production_fixture_build": "evidence/31-release-browser-build.log",
+  "container_source_matches_host_before_after_tests": true,
+  "canonical_schema_route_inputs_unchanged": true,
+  "baseline_product": {
+    "files": 237,
+    "unchanged_retained_files": 233,
+    "modified_files": 4,
+    "new_files": 27,
+    "missing_files": 0,
+    "archive_sha256": "0bc597e1bb32a0cf27241a03234de0eb46b63ea59d45559f399105d5b4037af2"
+  },
+  "frozen_offline_preserved": {
+    "bundle_sha256": "58f1233759230fd1f53d534ca02fcff02ef6aa71063e3a36ae789659d46f778e",
+    "freeze_manifest_sha256": "d1d9f3d6dc125c190b722e6a602215b695f075a40847355defa24fa6fd2ace02"
+  },
+  "implementation": {
+    "offline_route": "/projects/:project/field/offline",
+    "quality_route": "/projects/:project/quality-safety/records",
+    "restricted_incident_route": "/projects/:project/quality-safety/incidents",
+    "quality_api_routes": [
+      "upload_evidence",
+      "create_record",
+      "revise_record",
+      "transition",
+      "get_record",
+      "list_records"
+    ],
+    "cleanup": "Registered async cleanup is awaited before controlled Company/project replacement and logout. Failure holds the original context and reports storage uncertainty. Same-context navigation keeps the mounted vault.",
+    "unknown_results": "Original uncertain requests retain navigation/logout guards; later 403/404 and local purge do not prove cancellation. Matching receipt recovery uses the original request and UUID.",
+    "sensitive_records": "Restricted incident inputs are online only, excluded from ordinary UI history/counts, and server errors are generic. Current denial hides loaded accounts/evidence/history."
+  },
+  "environment": {
+    "container": "cipher-field-offline-app-validation-1017",
+    "isolated_work": "/home/frappe/offline-app-1018",
+    "image": "cipher-ui-validation",
+    "image_sha256": "2e0e712ddb4f65fa71d6e69fc4cc2cb7ef64ce36349878999e7659cfdbd066e5",
+    "node": "v24.22.0",
+    "playwright": "1.64.1",
+    "chrome": "156.0.8078.4",
+    "browser_path": "/ms-playwright/chromium-1248/chrome-linux64/chrome",
+    "cached_dependencies": "/home/frappe/cipher-build/product/node_modules",
+    "dependency_install_performed": false
+  },
+  "retained_failures": [
+    "01-before-generation.log: three stale generated files before canonical generation",
+    "03-typecheck.log: old Quality failure predicate narrowed false branch to never, corrected",
+    "05-build.log: invalid UTF-8 punctuation introduced in App edit, corrected and rebuilt",
+    "07-app-tests.log and 07-launch-failure: initial absent /usr/bin/chromium path",
+    "08-app-tests.log and 08-app-failures: deep-link project context reset plus incomplete fixture approval handler, corrected",
+    "11-typecheck.log: missing brace in new fixture, corrected",
+    "13-quality-tests.log and 13-quality-failure: overly exact UI5 notice locator, corrected",
+    "14-main138.log and archived main138-results: browser history state regression, corrected and final 138 passed",
+    "17-new-ui26.log and archived new-ui-results: UUID helper read before rendered update, corrected by waiting for the actual UUID"
+  ],
+  "limitations": [
+    "All APIs in these browser cases are explicit synthetic fixtures; actual Chromium IndexedDB/Web Crypto was exercised. No native HTTP persistence or production qualification is claimed.",
+    "No cold-offline startup or service worker is implemented or qualified; offline sealing is proved after the application is already loaded.",
+    "After local profile purge, the extra original-request recovery guard is mounted memory only. Deleted local recovery journals do not survive reload or browser closure; canonical server records and receipts remain separate.",
+    "This is the requested selected 262-case regression set, not a claim that every product test suite was rerun.",
+    "No shared App/global generator/backend files were copied back. No existing ERP runtime, provider, site, or native database was accessed or changed. No financial, award, signature, seal, external transmission, sensitive offline capture, or production action was performed."
+  ]
+}

@@ -20,6 +20,7 @@ from cipher_aec.api.errors import DomainError
 from cipher_aec.tests.test_semantic_index_service import ACTOR, SELECTOR, SCOPE, fixture
 
 STORE_MODULE = 'cipher_aec.semantic_index.store'
+TRANSACTIONS_MODULE = 'cipher_aec.semantic_index.transactions'
 CONTROLLER_MODULE = 'cipher_aec.cipher_semantic_index.doctype.cipher_semantic_corpus.cipher_semantic_corpus'
 
 
@@ -133,13 +134,13 @@ def native_projection_fixture():
         return controller.CipherSemanticCorpus(state.rows[name], new=False)
 
     stubs = {
-        'frappe': module('frappe', db=db, get_doc=get_doc),
+        'frappe': module('frappe', db=db, get_doc=get_doc, DuplicateEntryError=type('DuplicateEntryError', (Exception,), {})),
         'frappe.model': module('frappe.model', __path__=[]),
         'frappe.model.document': module('frappe.model.document', Document=ProjectionDocument),
         'cipher_aec.governance.context': module('cipher_aec.governance.context', trusted_write=trusted_write,
                                                require_trusted_write=require_trusted_write),
     }
-    names = set([STORE_MODULE, CONTROLLER_MODULE, *stubs])
+    names = set([STORE_MODULE, TRANSACTIONS_MODULE, CONTROLLER_MODULE, *stubs])
     # Importing a controller also attaches each new package to its parent.
     # Preserve those attributes, including when the package was initially absent.
     for name in list(names):
@@ -153,14 +154,14 @@ def native_projection_fixture():
         parent_name, attribute = name.rsplit('.', 1)
         parent = sys.modules.get(parent_name)
         attributes[name] = (parent, getattr(parent, attribute, missing) if parent else missing)
-    saved = {name: sys.modules.pop(name) for name in (STORE_MODULE, CONTROLLER_MODULE) if name in sys.modules}
+    saved = {name: sys.modules.pop(name) for name in (STORE_MODULE, TRANSACTIONS_MODULE, CONTROLLER_MODULE) if name in sys.modules}
     try:
         with patch.dict(sys.modules, stubs):
             store = importlib.import_module(STORE_MODULE)
             controller = importlib.import_module(CONTROLLER_MODULE)
             yield state, db, store, controller, trusted_write
     finally:
-        for name in (STORE_MODULE, CONTROLLER_MODULE):
+        for name in (STORE_MODULE, TRANSACTIONS_MODULE, CONTROLLER_MODULE):
             sys.modules.pop(name, None)
         sys.modules.update(saved)
         for name, (original_parent, original_attribute) in attributes.items():
@@ -339,29 +340,21 @@ class SemanticCheckpointStoreTests(unittest.TestCase):
         self.assertEqual(self.state.commits, 0)
         self.assertFalse(self.store.durable)
 
-    def test_durable_store_requires_clean_dedicated_worker_at_construction_and_every_save(self):
+    def test_durable_store_refuses_counter_only_admission_without_owned_worker_context(self):
         self.assert_code('semantic_worker_required', lambda: self.store_module.FrappeStore(durable=True))
-        for writes in (1, None, '0'):
+        for writes in (0, 1, None, '0'):
             self.db.transaction_writes = writes
             with self.subTest(writes=writes):
+                # This legacy projection fixture has no native job, actual local
+                # DB, physical connection or callback managers. A zero counter
+                # cannot establish ownership. Full worker lifecycle/recovery is
+                # exercised by the separate actual-transaction host regression.
                 self.assert_code('semantic_worker_required', lambda: self.store_module.dedicated_worker().__enter__())
-        self.db.transaction_writes = 0
-        with self.store_module.dedicated_worker():
-            durable = self.store_module.FrappeStore(durable=True)
-            self.db.transaction_writes = 1
-            self.assert_code('semantic_worker_required', lambda: durable.save(self.key, 0, self.value))
-            self.assertFalse(self.state.rows)
-            self.db.transaction_writes = 0
-            durable.save(self.key, 0, self.value)
-            self.assertEqual(self.state.commits, 1)
-            self.assertEqual(self.db.transaction_writes, 0)
-            durable.save(self.key, 1, self.successor())
-            self.assertEqual(self.state.commits, 2)
-            self.assertEqual(self.db.transaction_writes, 0)
-        value = self.successor()
-        value['version'] = 3
-        self.assert_code('semantic_worker_required', lambda: durable.save(self.key, 2, value))
-        self.assertEqual(self.state.commits, 2)
+                self.assert_code('semantic_worker_required', lambda: self.store_module.dedicated_worker(entry='rebuild').__enter__())
+                self.assert_code('semantic_worker_required', lambda: self.store_module.FrappeStore(durable=True))
+                self.assertEqual(self.db.transaction_writes, writes)
+        self.assertEqual(self.state.commits, 0)
+        self.assertFalse(self.state.rows)
 
     def test_unavailable_transaction_counter_cannot_establish_worker_admission(self):
         # The class default is also removed in this explicit unsupported DB.
@@ -382,6 +375,29 @@ class SemanticCheckpointStoreTests(unittest.TestCase):
         self.store.save(self.key, 0, self.value)
         self.assertEqual(self.store.load(self.key), self.value)
         self.assertEqual(self.state.commits, 0)
+
+
+    def test_first_insert_duplicate_is_safe_conflict_without_request_commit(self):
+        duplicate = self.store_module.frappe.DuplicateEntryError('private SQL endpoint')
+        self.state.persistence_error = duplicate
+        error = self.assert_code('semantic_conflict', lambda: self.store.save(self.key, 0, self.value))
+        self.assertEqual(error.status, 409)
+        self.assertNotIn('private', error.message)
+        self.assertIsNone(error.__cause__)
+        self.assertIsNone(self.store_module._plan.get())
+        self.assertEqual(self.state.commits, 0)
+        self.assertFalse(self.state.rows)
+
+    def test_duplicate_during_update_remains_original_persistence_fault(self):
+        self.store.save(self.key, 0, self.value)
+        duplicate = self.store_module.frappe.DuplicateEntryError('update failure')
+        self.state.persistence_error = duplicate
+        with self.assertRaises(self.store_module.frappe.DuplicateEntryError) as error:
+            self.store.save(self.key, 1, self.successor())
+        self.assertIs(error.exception, duplicate)
+        self.assertEqual(self.store.load(self.key), self.value)
+        self.assertEqual(self.state.commits, 0)
+        self.assertIsNone(self.store_module._plan.get())
 
 
 if __name__ == '__main__':

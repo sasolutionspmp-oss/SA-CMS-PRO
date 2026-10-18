@@ -142,3 +142,14 @@ for _field_type in _FIELD_KINDS.values():
 # Semantic checkpoint plaintext is available only through current-source services.
 permission_query_conditions["Cipher Semantic Corpus"] = "cipher_aec.semantic_index.store.no_native_rows"
 has_permission["Cipher Semantic Corpus"] = "cipher_aec.semantic_index.store.deny_native_access"
+
+# Offline envelopes are private; expose only exact current owned API reads.
+for _offline_type in ('Cipher Field Offline Device', 'Cipher Field Offline Capture', 'Cipher Field Offline Event'):
+    permission_query_conditions[_offline_type] = 'cipher_aec.field_offline.install.query_denied'
+    has_permission[_offline_type] = 'cipher_aec.field_offline.install.permission_denied'
+
+# FLD-03 JSON is readable only through current exact scoped services.
+from cipher_aec.quality_safety.contracts import KINDS as _QUALITY_SAFETY_KINDS
+for _quality_safety_type in (*_QUALITY_SAFETY_KINDS.values(), 'Cipher Incident Evidence Registration'):
+    permission_query_conditions[_quality_safety_type] = 'cipher_aec.quality_safety.install.query_denied'
+    has_permission[_quality_safety_type] = 'cipher_aec.quality_safety.install.permission_denied'

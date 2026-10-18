@@ -19,6 +19,14 @@ def list_visible(*, company, project, scope_type, actor, scope, limit, last, cou
     else:
         where += " AND project=%s"
         base.append(project)
+    if scope_type == 'Project':
+        from cipher_aec.quality_safety.privacy import query as incident_source_query
+        docs = incident_source_query('Cipher Document')
+        revisions = incident_source_query('Cipher Document Revision')
+        rights_docs = docs.replace('`tabCipher Document`.`name`', '`tabCipher Source Rights Revision`.`parent_id`')
+        where += " AND (subject_type!='Cipher Document' OR subject_id IN (SELECT name FROM `tabCipher Document` WHERE " + docs + "))"
+        where += " AND (subject_type!='Cipher Document Revision' OR subject_id IN (SELECT name FROM `tabCipher Document Revision` WHERE " + revisions + "))"
+        where += " AND (subject_type!='Cipher Source Rights Revision' OR subject_id IN (SELECT name FROM `tabCipher Source Rights Revision` WHERE " + rights_docs + "))"
     def visible(start=None):
         seek, scanned = start, 0
         while True:

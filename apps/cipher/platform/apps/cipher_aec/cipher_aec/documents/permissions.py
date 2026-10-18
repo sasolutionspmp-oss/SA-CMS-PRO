@@ -76,7 +76,8 @@ def _producer_query(doctype, user=None):
 
 def document_query(user=None):
     from cipher_aec.document_control.rights import query
-    return "(" + _query("Cipher Document", user) + ") AND (" + _producer_query("Cipher Document", user) + ") AND (" + query("Cipher Document",user) + ")"
+    from cipher_aec.quality_safety.privacy import query as incident_query
+    return "(" + _query("Cipher Document", user) + ") AND (" + _producer_query("Cipher Document", user) + ") AND (" + query("Cipher Document",user) + ") AND (" + incident_query("Cipher Document",user) + ")"
 
 
 def _scan_clause():
@@ -88,7 +89,8 @@ def _scan_clause():
 def revision_query(user=None):
     # Native get_list can select Long Text without per-row permission callbacks.
     from cipher_aec.document_control.rights import query
-    return "(" + _query("Cipher Document Revision", user) + ") AND (" + _scan_clause() + ") AND (" + _producer_query("Cipher Document Revision", user) + ") AND (" + query("Cipher Document Revision",user) + ")"
+    from cipher_aec.quality_safety.privacy import query as incident_query
+    return "(" + _query("Cipher Document Revision", user) + ") AND (" + _scan_clause() + ") AND (" + _producer_query("Cipher Document Revision", user) + ") AND (" + query("Cipher Document Revision",user) + ") AND (" + incident_query("Cipher Document Revision",user) + ")"
 
 
 def _permission(doc, user=None, permission_type=None):

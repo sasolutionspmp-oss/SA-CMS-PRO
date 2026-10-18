@@ -1,0 +1,13 @@
+{
+  "actual_native_provider_browser_qualification": "UNRUN for Candidate5",
+  "host_tests": 544,
+  "openapi_check": "PASS",
+  "original_delivery_sha256": "68a689f4a9f152ccbe2176a761ed44c7bb7ba8c18e1aedc3541227eab6454ac6",
+  "original_freeze_pointer_sha256": "66d80f14f475acc0e99563d79dc69406ad0ac8d268e24857031b8eea79d8476d",
+  "protected_nine_c4_repairs_exact": true,
+  "source_archive_included": false,
+  "source_archive_name": "CANDIDATE5_SOURCE.lf.tar.gz",
+  "source_archive_sha256": "e52949ab09ee68e0b8e567bfd94388b2b197b3c468a6c05103c44e86eea3f968",
+  "source_files": 914,
+  "source_manifest_sha256": "74a9b7587531e4688e4d26cb3d05506aa4c1f849f5c78345e7c7cdbbb5d7fc18"
+}

@@ -1,0 +1,49 @@
+{
+  "application_host_tests": 523,
+  "application_source_changed": false,
+  "application_source_files": 914,
+  "created_utc": "2026-10-18T08:10:08.165053+00:00",
+  "exact_external_runtime_inputs": [
+    {
+      "bytes": 41584,
+      "path": "semantic-host/test_worker_transactions_host.py",
+      "sha256": "dac19b97cf38d672b45cf74d58de538d4e6535b93f0c49b14fe0b6f69f1ecc92"
+    },
+    {
+      "bytes": 6594,
+      "path": "semantic-host/test_composed_cas.py",
+      "sha256": "3f40a8af87be1dcb3e66f85e83adcd0cd9edd51a3052b2fdcaefda8efdee98ff"
+    },
+    {
+      "bytes": 47652,
+      "path": "semantic-host/native_reference/database.py",
+      "sha256": "dc9fe0620ab7ceb300bee2b5da5c247d8979727139c785bb591e0a54e3bebf15"
+    },
+    {
+      "bytes": 23418,
+      "path": "semantic-host/native_reference/background_jobs.py",
+      "sha256": "45d721dbb4efb0b609831f2e578c219aba4d1010faa35a9672d41e4e978568bc"
+    },
+    {
+      "bytes": 31035,
+      "path": "semantic-host/native_reference/utils.py",
+      "sha256": "9bd987808258622585f2c06733cc0bb579702adb5316cd9056eedda3100fd12e"
+    },
+    {
+      "bytes": 1118,
+      "path": "semantic-host/native_reference/LICENSE.txt",
+      "sha256": "bc6001a54ffcc4ab520424d7dbb85b293578efcdcb7d8f8055e00dddf942e5d7"
+    }
+  ],
+  "external_transaction_cas_tests": 21,
+  "host_tests": 544,
+  "native_image_docker_provider_model_operations": false,
+  "native_reference_qualification": "Captured Frappe source for AST host projections; not an installed-image match or native execution.",
+  "original_delivery_sha256": "68a689f4a9f152ccbe2176a761ed44c7bb7ba8c18e1aedc3541227eab6454ac6",
+  "published_destination": "apps/cipher/docs/framework/evidence/r3/candidate5-local-20261018",
+  "recorded_host_gate_sha256": "bd062c5945900b721b1a4654d771523c7dc9c34bedcc7140d84030176984563e",
+  "runner_adaptation": "Current Python executable plus repo/artifact paths only; recorded argv suffixes and both core test sources unchanged.",
+  "schema": "cipher.candidate5.publication-host-evidence.v1",
+  "source_manifest_sha256": "74a9b7587531e4688e4d26cb3d05506aa4c1f849f5c78345e7c7cdbbb5d7fc18",
+  "status": "EXACT_EXTERNAL_HOST_REGRESSIONS_PACKAGED"
+}

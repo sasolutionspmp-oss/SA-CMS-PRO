@@ -1,0 +1,3250 @@
+{
+  "QsUuid": {
+    "type": "string",
+    "pattern": "^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$",
+    "format": "uuid"
+  },
+  "QsDigest": {
+    "type": "string",
+    "pattern": "^[a-f0-9]{64}$"
+  },
+  "QsTimestamp": {
+    "type": "string",
+    "format": "date-time",
+    "maxLength": 40
+  },
+  "QsDate": {
+    "type": "string",
+    "format": "date",
+    "minLength": 10,
+    "maxLength": 10
+  },
+  "QsSourceInput": {
+    "type": "object",
+    "properties": {
+      "revision_id": {
+        "type": "string",
+        "maxLength": 140,
+        "pattern": "^[^\u0000]*$",
+        "minLength": 1,
+        "allOf": [
+          {
+            "pattern": "\\S"
+          }
+        ]
+      },
+      "source_sha256": {
+        "$ref": "#/$defs/QsDigest"
+      },
+      "page": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 200
+      },
+      "locator": {
+        "type": "string",
+        "maxLength": 1000,
+        "pattern": "^[^\u0000]*$",
+        "minLength": 1,
+        "allOf": [
+          {
+            "pattern": "\\S"
+          }
+        ]
+      }
+    },
+    "required": [
+      "revision_id",
+      "source_sha256",
+      "page",
+      "locator"
+    ],
+    "additionalProperties": false
+  },
+  "QsCapturedSource": {
+    "type": "object",
+    "properties": {
+      "revision_id": {
+        "type": "string",
+        "maxLength": 140,
+        "pattern": "^[^\u0000]*$",
+        "minLength": 1,
+        "allOf": [
+          {
+            "pattern": "\\S"
+          }
+        ]
+      },
+      "source_sha256": {
+        "$ref": "#/$defs/QsDigest"
+      },
+      "page": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 200
+      },
+      "locator": {
+        "type": "string",
+        "maxLength": 1000,
+        "pattern": "^[^\u0000]*$",
+        "minLength": 1,
+        "allOf": [
+          {
+            "pattern": "\\S"
+          }
+        ]
+      },
+      "document_id": {
+        "type": "string",
+        "maxLength": 140,
+        "pattern": "^[^\u0000]*$",
+        "minLength": 1,
+        "allOf": [
+          {
+            "pattern": "\\S"
+          }
+        ]
+      },
+      "revision_number": {
+        "type": "integer",
+        "minimum": 1
+      },
+      "byte_length": {
+        "type": "integer",
+        "minimum": 1
+      },
+      "mime_type": {
+        "type": "string",
+        "maxLength": 140,
+        "pattern": "^[^\u0000]*$",
+        "minLength": 1,
+        "allOf": [
+          {
+            "pattern": "\\S"
+          }
+        ]
+      },
+      "page_count": {
+        "type": "integer",
+        "minimum": 1
+      }
+    },
+    "required": [
+      "revision_id",
+      "source_sha256",
+      "page",
+      "locator",
+      "document_id",
+      "revision_number",
+      "byte_length",
+      "mime_type",
+      "page_count"
+    ],
+    "additionalProperties": false
+  },
+  "QsOperation": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "$ref": "#/$defs/QsUuid"
+      },
+      "status": {
+        "const": "succeeded"
+      },
+      "replayed": {
+        "type": "boolean"
+      }
+    },
+    "required": [
+      "id",
+      "status",
+      "replayed"
+    ],
+    "additionalProperties": false
+  },
+  "QsFamily": {
+    "enum": [
+      "record",
+      "incident"
+    ]
+  },
+  "QsKind": {
+    "enum": [
+      "record",
+      "revision",
+      "decision",
+      "incident",
+      "incident_revision",
+      "incident_decision"
+    ]
+  },
+  "QsNoEffects": {
+    "type": "object",
+    "properties": {
+      "contract_change": {
+        "const": false
+      },
+      "budget_change": {
+        "const": false
+      },
+      "procurement_change": {
+        "const": false
+      },
+      "invoice_change": {
+        "const": false
+      },
+      "financial_posting": {
+        "const": false
+      },
+      "payroll_release": {
+        "const": false
+      },
+      "award_execution": {
+        "const": false
+      },
+      "engineering_approval": {
+        "const": false
+      },
+      "regulatory_approval": {
+        "const": false
+      },
+      "hazardous_work_authority": {
+        "const": false
+      },
+      "medical_advice": {
+        "const": false
+      },
+      "compliance_certification": {
+        "const": false
+      },
+      "external_transmission": {
+        "const": false
+      }
+    },
+    "required": [
+      "contract_change",
+      "budget_change",
+      "procurement_change",
+      "invoice_change",
+      "financial_posting",
+      "payroll_release",
+      "award_execution",
+      "engineering_approval",
+      "regulatory_approval",
+      "hazardous_work_authority",
+      "medical_advice",
+      "compliance_certification",
+      "external_transmission"
+    ],
+    "additionalProperties": false
+  },
+  "QsClosureRequirement": {
+    "type": "object",
+    "properties": {
+      "item_id": {
+        "$ref": "#/$defs/QsUuid"
+      },
+      "description": {
+        "type": "string",
+        "maxLength": 1000,
+        "pattern": "^[^\\u0000]*$",
+        "minLength": 1,
+        "allOf": [
+          {
+            "pattern": "\\S"
+          }
+        ]
+      }
+    },
+    "required": [
+      "item_id",
+      "description"
+    ],
+    "additionalProperties": false
+  },
+  "QsOrdinaryDefinition": {
+    "type": "object",
+    "properties": {
+      "title": {
+        "type": "string",
+        "maxLength": 240,
+        "pattern": "^[^\\u0000]*$",
+        "minLength": 1,
+        "allOf": [
+          {
+            "pattern": "\\S"
+          }
+        ]
+      },
+      "local_date": {
+        "$ref": "#/$defs/QsDate"
+      },
+      "location": {
+        "type": "string",
+        "maxLength": 240,
+        "pattern": "^[^\\u0000]*$",
+        "minLength": 1,
+        "allOf": [
+          {
+            "pattern": "\\S"
+          }
+        ]
+      },
+      "description": {
+        "type": "string",
+        "maxLength": 10000,
+        "pattern": "^[^\\u0000]*$",
+        "minLength": 1,
+        "allOf": [
+          {
+            "pattern": "\\S"
+          }
+        ]
+      },
+      "required_closure_items": {
+        "type": "array",
+        "items": {
+          "$ref": "#/$defs/QsClosureRequirement"
+        },
+        "minItems": 1,
+        "maxItems": 12
+      }
+    },
+    "required": [
+      "title",
+      "local_date",
+      "location",
+      "description",
+      "required_closure_items"
+    ],
+    "additionalProperties": false
+  },
+  "QsPermitDefinition": {
+    "type": "object",
+    "properties": {
+      "title": {
+        "type": "string",
+        "maxLength": 240,
+        "pattern": "^[^\\u0000]*$",
+        "minLength": 1,
+        "allOf": [
+          {
+            "pattern": "\\S"
+          }
+        ]
+      },
+      "local_date": {
+        "$ref": "#/$defs/QsDate"
+      },
+      "location": {
+        "type": "string",
+        "maxLength": 240,
+        "pattern": "^[^\\u0000]*$",
+        "minLength": 1,
+        "allOf": [
+          {
+            "pattern": "\\S"
+          }
+        ]
+      },
+      "description": {
+        "type": "string",
+        "maxLength": 10000,
+        "pattern": "^[^\\u0000]*$",
+        "minLength": 1,
+        "allOf": [
+          {
+            "pattern": "\\S"
+          }
+        ]
+      },
+      "required_closure_items": {
+        "type": "array",
+        "items": {
+          "$ref": "#/$defs/QsClosureRequirement"
+        },
+        "minItems": 1,
+        "maxItems": 12
+      },
+      "issuer_as_recorded": {
+        "type": "string",
+        "maxLength": 240,
+        "pattern": "^[^\\u0000]*$",
+        "minLength": 1,
+        "allOf": [
+          {
+            "pattern": "\\S"
+          }
+        ]
+      },
+      "permit_identifier": {
+        "type": "string",
+        "maxLength": 240,
+        "pattern": "^[^\\u0000]*$",
+        "minLength": 1,
+        "allOf": [
+          {
+            "pattern": "\\S"
+          }
+        ]
+      },
+      "valid_from": {
+        "$ref": "#/$defs/QsTimestamp"
+      },
+      "valid_until": {
+        "$ref": "#/$defs/QsTimestamp"
+      },
+      "conditions_as_recorded": {
+        "type": "string",
+        "maxLength": 10000,
+        "pattern": "^[^\\u0000]*$",
+        "minLength": 1,
+        "allOf": [
+          {
+            "pattern": "\\S"
+          }
+        ]
+      }
+    },
+    "required": [
+      "title",
+      "local_date",
+      "location",
+      "description",
+      "required_closure_items",
+      "issuer_as_recorded",
+      "permit_identifier",
+      "valid_from",
+      "valid_until",
+      "conditions_as_recorded"
+    ],
+    "additionalProperties": false
+  },
+  "QsIncidentDefinition": {
+    "type": "object",
+    "properties": {
+      "title": {
+        "type": "string",
+        "maxLength": 240,
+        "pattern": "^[^\\u0000]*$",
+        "minLength": 1,
+        "allOf": [
+          {
+            "pattern": "\\S"
+          }
+        ]
+      },
+      "local_date": {
+        "$ref": "#/$defs/QsDate"
+      },
+      "location": {
+        "type": "string",
+        "maxLength": 240,
+        "pattern": "^[^\\u0000]*$",
+        "minLength": 1,
+        "allOf": [
+          {
+            "pattern": "\\S"
+          }
+        ]
+      },
+      "description": {
+        "type": "string",
+        "maxLength": 10000,
+        "pattern": "^[^\\u0000]*$",
+        "minLength": 1,
+        "allOf": [
+          {
+            "pattern": "\\S"
+          }
+        ]
+      },
+      "required_closure_items": {
+        "type": "array",
+        "items": {
+          "$ref": "#/$defs/QsClosureRequirement"
+        },
+        "minItems": 1,
+        "maxItems": 12
+      },
+      "involved_people": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "maxLength": 240,
+          "pattern": "^[^\\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "minItems": 0,
+        "maxItems": 20
+      },
+      "restricted_account": {
+        "type": "string",
+        "maxLength": 10000,
+        "pattern": "^[^\\u0000]*$",
+        "minLength": 1,
+        "allOf": [
+          {
+            "pattern": "\\S"
+          }
+        ]
+      },
+      "immediate_response": {
+        "type": "string",
+        "maxLength": 4000,
+        "pattern": "^[^\\u0000]*$",
+        "minLength": 1,
+        "allOf": [
+          {
+            "pattern": "\\S"
+          }
+        ]
+      },
+      "shared_evidence_revisions": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "minItems": 0,
+        "maxItems": 32
+      },
+      "shared_evidence_statement": {
+        "type": "string",
+        "maxLength": 2000,
+        "pattern": "^[^\\u0000]*$"
+      }
+    },
+    "required": [
+      "title",
+      "local_date",
+      "location",
+      "description",
+      "required_closure_items",
+      "involved_people",
+      "restricted_account",
+      "immediate_response",
+      "shared_evidence_revisions",
+      "shared_evidence_statement"
+    ],
+    "additionalProperties": false,
+    "allOf": [
+      {
+        "if": {
+          "properties": {
+            "shared_evidence_revisions": {
+              "minItems": 1
+            }
+          }
+        },
+        "then": {
+          "properties": {
+            "shared_evidence_statement": {
+              "type": "string",
+              "maxLength": 2000,
+              "pattern": "^[^\\u0000]*$",
+              "minLength": 1,
+              "allOf": [
+                {
+                  "pattern": "\\S"
+                }
+              ]
+            }
+          }
+        }
+      }
+    ]
+  },
+  "QsDefinition": {
+    "oneOf": [
+      {
+        "$ref": "#/$defs/QsOrdinaryDefinition"
+      },
+      {
+        "$ref": "#/$defs/QsPermitDefinition"
+      },
+      {
+        "$ref": "#/$defs/QsIncidentDefinition"
+      }
+    ]
+  },
+  "QsClosureInput": {
+    "type": "object",
+    "properties": {
+      "item_id": {
+        "$ref": "#/$defs/QsUuid"
+      },
+      "evidence": {
+        "type": "array",
+        "items": {
+          "$ref": "#/$defs/QsSourceInput"
+        },
+        "minItems": 1,
+        "maxItems": 8
+      }
+    },
+    "required": [
+      "item_id",
+      "evidence"
+    ],
+    "additionalProperties": false
+  },
+  "QsClosure": {
+    "type": "object",
+    "properties": {
+      "item_id": {
+        "$ref": "#/$defs/QsUuid"
+      },
+      "evidence": {
+        "type": "array",
+        "items": {
+          "$ref": "#/$defs/QsCapturedSource"
+        },
+        "minItems": 1,
+        "maxItems": 8
+      }
+    },
+    "required": [
+      "item_id",
+      "evidence"
+    ],
+    "additionalProperties": false
+  },
+  "QsOrdinaryHeader": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "$ref": "#/$defs/QsUuid"
+      },
+      "company": {
+        "type": "string",
+        "maxLength": 140,
+        "pattern": "^[^\\u0000]*$",
+        "minLength": 1,
+        "allOf": [
+          {
+            "pattern": "\\S"
+          }
+        ]
+      },
+      "project": {
+        "type": "string",
+        "maxLength": 140,
+        "pattern": "^[^\\u0000]*$",
+        "minLength": 1,
+        "allOf": [
+          {
+            "pattern": "\\S"
+          }
+        ]
+      },
+      "scope_type": {
+        "const": "Project"
+      },
+      "author_person": {
+        "type": "string",
+        "maxLength": 140,
+        "pattern": "^[^\\u0000]*$",
+        "minLength": 1,
+        "allOf": [
+          {
+            "pattern": "\\S"
+          }
+        ]
+      },
+      "author_user": {
+        "type": "string",
+        "maxLength": 140,
+        "pattern": "^[^\\u0000]*$",
+        "minLength": 1,
+        "allOf": [
+          {
+            "pattern": "\\S"
+          }
+        ]
+      },
+      "created_at": {
+        "$ref": "#/$defs/QsTimestamp"
+      },
+      "status": {
+        "enum": [
+          "draft",
+          "submitted",
+          "checked",
+          "returned",
+          "closed"
+        ]
+      },
+      "category": {
+        "enum": [
+          "inspection",
+          "deficiency",
+          "safety_observation",
+          "permit_record"
+        ]
+      },
+      "number": {
+        "type": "string",
+        "maxLength": 140,
+        "pattern": "^[^\\u0000]*$",
+        "minLength": 1,
+        "allOf": [
+          {
+            "pattern": "\\S"
+          }
+        ]
+      },
+      "revision_number": {
+        "type": "integer",
+        "minimum": 1
+      },
+      "current_revision": {
+        "$ref": "#/$defs/QsUuid"
+      },
+      "last_decision": {
+        "anyOf": [
+          {
+            "$ref": "#/$defs/QsUuid"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "closed_revision": {
+        "anyOf": [
+          {
+            "$ref": "#/$defs/QsUuid"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      }
+    },
+    "required": [
+      "id",
+      "company",
+      "project",
+      "scope_type",
+      "author_person",
+      "author_user",
+      "created_at",
+      "status",
+      "category",
+      "number",
+      "revision_number",
+      "current_revision",
+      "last_decision",
+      "closed_revision"
+    ],
+    "additionalProperties": false
+  },
+  "QsOrdinaryRevision": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "$ref": "#/$defs/QsUuid"
+      },
+      "company": {
+        "type": "string",
+        "maxLength": 140,
+        "pattern": "^[^\\u0000]*$",
+        "minLength": 1,
+        "allOf": [
+          {
+            "pattern": "\\S"
+          }
+        ]
+      },
+      "project": {
+        "type": "string",
+        "maxLength": 140,
+        "pattern": "^[^\\u0000]*$",
+        "minLength": 1,
+        "allOf": [
+          {
+            "pattern": "\\S"
+          }
+        ]
+      },
+      "scope_type": {
+        "const": "Project"
+      },
+      "author_person": {
+        "type": "string",
+        "maxLength": 140,
+        "pattern": "^[^\\u0000]*$",
+        "minLength": 1,
+        "allOf": [
+          {
+            "pattern": "\\S"
+          }
+        ]
+      },
+      "author_user": {
+        "type": "string",
+        "maxLength": 140,
+        "pattern": "^[^\\u0000]*$",
+        "minLength": 1,
+        "allOf": [
+          {
+            "pattern": "\\S"
+          }
+        ]
+      },
+      "created_at": {
+        "$ref": "#/$defs/QsTimestamp"
+      },
+      "status": {
+        "const": "recorded"
+      },
+      "category": {
+        "enum": [
+          "inspection",
+          "deficiency",
+          "safety_observation",
+          "permit_record"
+        ]
+      },
+      "parent_id": {
+        "$ref": "#/$defs/QsUuid"
+      },
+      "revision_number": {
+        "type": "integer",
+        "minimum": 1
+      },
+      "predecessor": {
+        "anyOf": [
+          {
+            "$ref": "#/$defs/QsUuid"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "prior_decision": {
+        "anyOf": [
+          {
+            "$ref": "#/$defs/QsUuid"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "amendment_of": {
+        "anyOf": [
+          {
+            "$ref": "#/$defs/QsUuid"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "amendment_reason": {
+        "type": "string",
+        "maxLength": 2000,
+        "pattern": "^[^\\u0000]*$"
+      },
+      "definition": {
+        "oneOf": [
+          {
+            "$ref": "#/$defs/QsOrdinaryDefinition"
+          },
+          {
+            "$ref": "#/$defs/QsPermitDefinition"
+          }
+        ]
+      },
+      "evidence": {
+        "type": "array",
+        "items": {
+          "$ref": "#/$defs/QsCapturedSource"
+        },
+        "minItems": 1,
+        "maxItems": 8
+      },
+      "no_effects": {
+        "$ref": "#/$defs/QsNoEffects"
+      }
+    },
+    "required": [
+      "id",
+      "company",
+      "project",
+      "scope_type",
+      "author_person",
+      "author_user",
+      "created_at",
+      "status",
+      "category",
+      "parent_id",
+      "revision_number",
+      "predecessor",
+      "prior_decision",
+      "amendment_of",
+      "amendment_reason",
+      "definition",
+      "evidence",
+      "no_effects"
+    ],
+    "additionalProperties": false,
+    "allOf": [
+      {
+        "if": {
+          "properties": {
+            "category": {
+              "const": "permit_record"
+            }
+          }
+        },
+        "then": {
+          "properties": {
+            "definition": {
+              "$ref": "#/$defs/QsPermitDefinition"
+            }
+          }
+        },
+        "else": {
+          "properties": {
+            "definition": {
+              "$ref": "#/$defs/QsOrdinaryDefinition"
+            }
+          }
+        }
+      }
+    ]
+  },
+  "QsOrdinaryDecision": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "$ref": "#/$defs/QsUuid"
+      },
+      "company": {
+        "type": "string",
+        "maxLength": 140,
+        "pattern": "^[^\\u0000]*$",
+        "minLength": 1,
+        "allOf": [
+          {
+            "pattern": "\\S"
+          }
+        ]
+      },
+      "project": {
+        "type": "string",
+        "maxLength": 140,
+        "pattern": "^[^\\u0000]*$",
+        "minLength": 1,
+        "allOf": [
+          {
+            "pattern": "\\S"
+          }
+        ]
+      },
+      "scope_type": {
+        "const": "Project"
+      },
+      "author_person": {
+        "type": "string",
+        "maxLength": 140,
+        "pattern": "^[^\\u0000]*$",
+        "minLength": 1,
+        "allOf": [
+          {
+            "pattern": "\\S"
+          }
+        ]
+      },
+      "author_user": {
+        "type": "string",
+        "maxLength": 140,
+        "pattern": "^[^\\u0000]*$",
+        "minLength": 1,
+        "allOf": [
+          {
+            "pattern": "\\S"
+          }
+        ]
+      },
+      "created_at": {
+        "$ref": "#/$defs/QsTimestamp"
+      },
+      "status": {
+        "const": "recorded"
+      },
+      "category": {
+        "enum": [
+          "inspection",
+          "deficiency",
+          "safety_observation",
+          "permit_record"
+        ]
+      },
+      "parent_id": {
+        "$ref": "#/$defs/QsUuid"
+      },
+      "source_revision": {
+        "$ref": "#/$defs/QsUuid"
+      },
+      "source_digest": {
+        "$ref": "#/$defs/QsDigest"
+      },
+      "predecessor": {
+        "anyOf": [
+          {
+            "$ref": "#/$defs/QsUuid"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "action": {
+        "enum": [
+          "submit",
+          "check",
+          "return",
+          "close"
+        ]
+      },
+      "from_status": {
+        "enum": [
+          "draft",
+          "submitted",
+          "checked"
+        ]
+      },
+      "to_status": {
+        "enum": [
+          "submitted",
+          "checked",
+          "returned",
+          "closed"
+        ]
+      },
+      "comment": {
+        "type": "string",
+        "maxLength": 2000,
+        "pattern": "^[^\\u0000]*$",
+        "minLength": 1,
+        "allOf": [
+          {
+            "pattern": "\\S"
+          }
+        ]
+      },
+      "evidence": {
+        "type": "array",
+        "items": {
+          "$ref": "#/$defs/QsCapturedSource"
+        },
+        "minItems": 0,
+        "maxItems": 8
+      },
+      "closure": {
+        "type": "array",
+        "items": {
+          "$ref": "#/$defs/QsClosure"
+        },
+        "minItems": 0,
+        "maxItems": 12
+      },
+      "checked_by_person": {
+        "anyOf": [
+          {
+            "type": "string",
+            "maxLength": 140,
+            "pattern": "^[^\\u0000]*$",
+            "minLength": 1,
+            "allOf": [
+              {
+                "pattern": "\\S"
+              }
+            ]
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "no_effects": {
+        "$ref": "#/$defs/QsNoEffects"
+      }
+    },
+    "required": [
+      "id",
+      "company",
+      "project",
+      "scope_type",
+      "author_person",
+      "author_user",
+      "created_at",
+      "status",
+      "category",
+      "parent_id",
+      "source_revision",
+      "source_digest",
+      "predecessor",
+      "action",
+      "from_status",
+      "to_status",
+      "comment",
+      "evidence",
+      "closure",
+      "checked_by_person",
+      "no_effects"
+    ],
+    "additionalProperties": false,
+    "oneOf": [
+      {
+        "properties": {
+          "action": {
+            "const": "submit"
+          },
+          "from_status": {
+            "enum": [
+              "draft"
+            ]
+          },
+          "to_status": {
+            "const": "submitted"
+          },
+          "evidence": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/QsCapturedSource"
+            },
+            "minItems": 0,
+            "maxItems": 8
+          },
+          "closure": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/QsClosure"
+            },
+            "minItems": 0,
+            "maxItems": 0
+          },
+          "checked_by_person": {
+            "type": "null"
+          }
+        }
+      },
+      {
+        "properties": {
+          "action": {
+            "const": "check"
+          },
+          "from_status": {
+            "enum": [
+              "submitted"
+            ]
+          },
+          "to_status": {
+            "const": "checked"
+          },
+          "evidence": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/QsCapturedSource"
+            },
+            "minItems": 1,
+            "maxItems": 8
+          },
+          "closure": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/QsClosure"
+            },
+            "minItems": 0,
+            "maxItems": 0
+          },
+          "checked_by_person": {
+            "type": "null"
+          }
+        }
+      },
+      {
+        "properties": {
+          "action": {
+            "const": "return"
+          },
+          "from_status": {
+            "enum": [
+              "submitted",
+              "checked"
+            ]
+          },
+          "to_status": {
+            "const": "returned"
+          },
+          "evidence": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/QsCapturedSource"
+            },
+            "minItems": 0,
+            "maxItems": 8
+          },
+          "closure": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/QsClosure"
+            },
+            "minItems": 0,
+            "maxItems": 0
+          },
+          "checked_by_person": {
+            "type": "null"
+          }
+        }
+      },
+      {
+        "properties": {
+          "action": {
+            "const": "close"
+          },
+          "from_status": {
+            "enum": [
+              "checked"
+            ]
+          },
+          "to_status": {
+            "const": "closed"
+          },
+          "evidence": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/QsCapturedSource"
+            },
+            "minItems": 0,
+            "maxItems": 8
+          },
+          "closure": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/QsClosure"
+            },
+            "minItems": 1,
+            "maxItems": 12
+          },
+          "checked_by_person": {
+            "type": "string",
+            "maxLength": 140,
+            "pattern": "^[^\\u0000]*$",
+            "minLength": 1,
+            "allOf": [
+              {
+                "pattern": "\\S"
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "QsIncidentHeader": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "$ref": "#/$defs/QsUuid"
+      },
+      "company": {
+        "type": "string",
+        "maxLength": 140,
+        "pattern": "^[^\\u0000]*$",
+        "minLength": 1,
+        "allOf": [
+          {
+            "pattern": "\\S"
+          }
+        ]
+      },
+      "project": {
+        "type": "string",
+        "maxLength": 140,
+        "pattern": "^[^\\u0000]*$",
+        "minLength": 1,
+        "allOf": [
+          {
+            "pattern": "\\S"
+          }
+        ]
+      },
+      "scope_type": {
+        "const": "Project"
+      },
+      "author_person": {
+        "type": "string",
+        "maxLength": 140,
+        "pattern": "^[^\\u0000]*$",
+        "minLength": 1,
+        "allOf": [
+          {
+            "pattern": "\\S"
+          }
+        ]
+      },
+      "author_user": {
+        "type": "string",
+        "maxLength": 140,
+        "pattern": "^[^\\u0000]*$",
+        "minLength": 1,
+        "allOf": [
+          {
+            "pattern": "\\S"
+          }
+        ]
+      },
+      "created_at": {
+        "$ref": "#/$defs/QsTimestamp"
+      },
+      "status": {
+        "enum": [
+          "draft",
+          "submitted",
+          "checked",
+          "returned",
+          "closed"
+        ]
+      },
+      "category": {
+        "const": "incident"
+      },
+      "number": {
+        "type": "string",
+        "maxLength": 140,
+        "pattern": "^[^\\u0000]*$",
+        "minLength": 1,
+        "allOf": [
+          {
+            "pattern": "\\S"
+          }
+        ]
+      },
+      "revision_number": {
+        "type": "integer",
+        "minimum": 1
+      },
+      "current_revision": {
+        "$ref": "#/$defs/QsUuid"
+      },
+      "last_decision": {
+        "anyOf": [
+          {
+            "$ref": "#/$defs/QsUuid"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "closed_revision": {
+        "anyOf": [
+          {
+            "$ref": "#/$defs/QsUuid"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      }
+    },
+    "required": [
+      "id",
+      "company",
+      "project",
+      "scope_type",
+      "author_person",
+      "author_user",
+      "created_at",
+      "status",
+      "category",
+      "number",
+      "revision_number",
+      "current_revision",
+      "last_decision",
+      "closed_revision"
+    ],
+    "additionalProperties": false
+  },
+  "QsIncidentRevision": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "$ref": "#/$defs/QsUuid"
+      },
+      "company": {
+        "type": "string",
+        "maxLength": 140,
+        "pattern": "^[^\\u0000]*$",
+        "minLength": 1,
+        "allOf": [
+          {
+            "pattern": "\\S"
+          }
+        ]
+      },
+      "project": {
+        "type": "string",
+        "maxLength": 140,
+        "pattern": "^[^\\u0000]*$",
+        "minLength": 1,
+        "allOf": [
+          {
+            "pattern": "\\S"
+          }
+        ]
+      },
+      "scope_type": {
+        "const": "Project"
+      },
+      "author_person": {
+        "type": "string",
+        "maxLength": 140,
+        "pattern": "^[^\\u0000]*$",
+        "minLength": 1,
+        "allOf": [
+          {
+            "pattern": "\\S"
+          }
+        ]
+      },
+      "author_user": {
+        "type": "string",
+        "maxLength": 140,
+        "pattern": "^[^\\u0000]*$",
+        "minLength": 1,
+        "allOf": [
+          {
+            "pattern": "\\S"
+          }
+        ]
+      },
+      "created_at": {
+        "$ref": "#/$defs/QsTimestamp"
+      },
+      "status": {
+        "const": "recorded"
+      },
+      "category": {
+        "const": "incident"
+      },
+      "parent_id": {
+        "$ref": "#/$defs/QsUuid"
+      },
+      "revision_number": {
+        "type": "integer",
+        "minimum": 1
+      },
+      "predecessor": {
+        "anyOf": [
+          {
+            "$ref": "#/$defs/QsUuid"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "prior_decision": {
+        "anyOf": [
+          {
+            "$ref": "#/$defs/QsUuid"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "amendment_of": {
+        "anyOf": [
+          {
+            "$ref": "#/$defs/QsUuid"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "amendment_reason": {
+        "type": "string",
+        "maxLength": 2000,
+        "pattern": "^[^\\u0000]*$"
+      },
+      "definition": {
+        "$ref": "#/$defs/QsIncidentDefinition"
+      },
+      "evidence": {
+        "type": "array",
+        "items": {
+          "$ref": "#/$defs/QsCapturedSource"
+        },
+        "minItems": 1,
+        "maxItems": 8
+      },
+      "no_effects": {
+        "$ref": "#/$defs/QsNoEffects"
+      }
+    },
+    "required": [
+      "id",
+      "company",
+      "project",
+      "scope_type",
+      "author_person",
+      "author_user",
+      "created_at",
+      "status",
+      "category",
+      "parent_id",
+      "revision_number",
+      "predecessor",
+      "prior_decision",
+      "amendment_of",
+      "amendment_reason",
+      "definition",
+      "evidence",
+      "no_effects"
+    ],
+    "additionalProperties": false
+  },
+  "QsIncidentDecision": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "$ref": "#/$defs/QsUuid"
+      },
+      "company": {
+        "type": "string",
+        "maxLength": 140,
+        "pattern": "^[^\\u0000]*$",
+        "minLength": 1,
+        "allOf": [
+          {
+            "pattern": "\\S"
+          }
+        ]
+      },
+      "project": {
+        "type": "string",
+        "maxLength": 140,
+        "pattern": "^[^\\u0000]*$",
+        "minLength": 1,
+        "allOf": [
+          {
+            "pattern": "\\S"
+          }
+        ]
+      },
+      "scope_type": {
+        "const": "Project"
+      },
+      "author_person": {
+        "type": "string",
+        "maxLength": 140,
+        "pattern": "^[^\\u0000]*$",
+        "minLength": 1,
+        "allOf": [
+          {
+            "pattern": "\\S"
+          }
+        ]
+      },
+      "author_user": {
+        "type": "string",
+        "maxLength": 140,
+        "pattern": "^[^\\u0000]*$",
+        "minLength": 1,
+        "allOf": [
+          {
+            "pattern": "\\S"
+          }
+        ]
+      },
+      "created_at": {
+        "$ref": "#/$defs/QsTimestamp"
+      },
+      "status": {
+        "const": "recorded"
+      },
+      "category": {
+        "const": "incident"
+      },
+      "parent_id": {
+        "$ref": "#/$defs/QsUuid"
+      },
+      "source_revision": {
+        "$ref": "#/$defs/QsUuid"
+      },
+      "source_digest": {
+        "$ref": "#/$defs/QsDigest"
+      },
+      "predecessor": {
+        "anyOf": [
+          {
+            "$ref": "#/$defs/QsUuid"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "action": {
+        "enum": [
+          "submit",
+          "check",
+          "return",
+          "close"
+        ]
+      },
+      "from_status": {
+        "enum": [
+          "draft",
+          "submitted",
+          "checked"
+        ]
+      },
+      "to_status": {
+        "enum": [
+          "submitted",
+          "checked",
+          "returned",
+          "closed"
+        ]
+      },
+      "comment": {
+        "type": "string",
+        "maxLength": 2000,
+        "pattern": "^[^\\u0000]*$",
+        "minLength": 1,
+        "allOf": [
+          {
+            "pattern": "\\S"
+          }
+        ]
+      },
+      "evidence": {
+        "type": "array",
+        "items": {
+          "$ref": "#/$defs/QsCapturedSource"
+        },
+        "minItems": 0,
+        "maxItems": 8
+      },
+      "closure": {
+        "type": "array",
+        "items": {
+          "$ref": "#/$defs/QsClosure"
+        },
+        "minItems": 0,
+        "maxItems": 12
+      },
+      "checked_by_person": {
+        "anyOf": [
+          {
+            "type": "string",
+            "maxLength": 140,
+            "pattern": "^[^\\u0000]*$",
+            "minLength": 1,
+            "allOf": [
+              {
+                "pattern": "\\S"
+              }
+            ]
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "no_effects": {
+        "$ref": "#/$defs/QsNoEffects"
+      }
+    },
+    "required": [
+      "id",
+      "company",
+      "project",
+      "scope_type",
+      "author_person",
+      "author_user",
+      "created_at",
+      "status",
+      "category",
+      "parent_id",
+      "source_revision",
+      "source_digest",
+      "predecessor",
+      "action",
+      "from_status",
+      "to_status",
+      "comment",
+      "evidence",
+      "closure",
+      "checked_by_person",
+      "no_effects"
+    ],
+    "additionalProperties": false,
+    "oneOf": [
+      {
+        "properties": {
+          "action": {
+            "const": "submit"
+          },
+          "from_status": {
+            "enum": [
+              "draft"
+            ]
+          },
+          "to_status": {
+            "const": "submitted"
+          },
+          "evidence": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/QsCapturedSource"
+            },
+            "minItems": 0,
+            "maxItems": 8
+          },
+          "closure": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/QsClosure"
+            },
+            "minItems": 0,
+            "maxItems": 0
+          },
+          "checked_by_person": {
+            "type": "null"
+          }
+        }
+      },
+      {
+        "properties": {
+          "action": {
+            "const": "check"
+          },
+          "from_status": {
+            "enum": [
+              "submitted"
+            ]
+          },
+          "to_status": {
+            "const": "checked"
+          },
+          "evidence": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/QsCapturedSource"
+            },
+            "minItems": 1,
+            "maxItems": 8
+          },
+          "closure": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/QsClosure"
+            },
+            "minItems": 0,
+            "maxItems": 0
+          },
+          "checked_by_person": {
+            "type": "null"
+          }
+        }
+      },
+      {
+        "properties": {
+          "action": {
+            "const": "return"
+          },
+          "from_status": {
+            "enum": [
+              "submitted",
+              "checked"
+            ]
+          },
+          "to_status": {
+            "const": "returned"
+          },
+          "evidence": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/QsCapturedSource"
+            },
+            "minItems": 0,
+            "maxItems": 8
+          },
+          "closure": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/QsClosure"
+            },
+            "minItems": 0,
+            "maxItems": 0
+          },
+          "checked_by_person": {
+            "type": "null"
+          }
+        }
+      },
+      {
+        "properties": {
+          "action": {
+            "const": "close"
+          },
+          "from_status": {
+            "enum": [
+              "checked"
+            ]
+          },
+          "to_status": {
+            "const": "closed"
+          },
+          "evidence": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/QsCapturedSource"
+            },
+            "minItems": 0,
+            "maxItems": 8
+          },
+          "closure": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/QsClosure"
+            },
+            "minItems": 1,
+            "maxItems": 12
+          },
+          "checked_by_person": {
+            "type": "string",
+            "maxLength": 140,
+            "pattern": "^[^\\u0000]*$",
+            "minLength": 1,
+            "allOf": [
+              {
+                "pattern": "\\S"
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "QsHeader": {
+    "oneOf": [
+      {
+        "$ref": "#/$defs/QsOrdinaryHeader"
+      },
+      {
+        "$ref": "#/$defs/QsIncidentHeader"
+      }
+    ]
+  },
+  "QsRevision": {
+    "oneOf": [
+      {
+        "$ref": "#/$defs/QsOrdinaryRevision"
+      },
+      {
+        "$ref": "#/$defs/QsIncidentRevision"
+      }
+    ]
+  },
+  "QsDecision": {
+    "oneOf": [
+      {
+        "$ref": "#/$defs/QsOrdinaryDecision"
+      },
+      {
+        "$ref": "#/$defs/QsIncidentDecision"
+      }
+    ]
+  },
+  "QsRecord": {
+    "oneOf": [
+      {
+        "$ref": "#/$defs/QsOrdinaryHeader"
+      },
+      {
+        "$ref": "#/$defs/QsOrdinaryRevision"
+      },
+      {
+        "$ref": "#/$defs/QsOrdinaryDecision"
+      },
+      {
+        "$ref": "#/$defs/QsIncidentHeader"
+      },
+      {
+        "$ref": "#/$defs/QsIncidentRevision"
+      },
+      {
+        "$ref": "#/$defs/QsIncidentDecision"
+      }
+    ]
+  },
+  "QsCreateRecordRequest": {
+    "type": "object",
+    "properties": {
+      "company": {
+        "type": "string",
+        "maxLength": 140,
+        "pattern": "^[^\\u0000]*$",
+        "minLength": 1,
+        "allOf": [
+          {
+            "pattern": "\\S"
+          }
+        ]
+      },
+      "project": {
+        "type": "string",
+        "maxLength": 140,
+        "pattern": "^[^\\u0000]*$",
+        "minLength": 1,
+        "allOf": [
+          {
+            "pattern": "\\S"
+          }
+        ]
+      },
+      "operation_id": {
+        "$ref": "#/$defs/QsUuid"
+      },
+      "family": {
+        "$ref": "#/$defs/QsFamily"
+      },
+      "category": {
+        "enum": [
+          "inspection",
+          "deficiency",
+          "safety_observation",
+          "permit_record",
+          "incident"
+        ]
+      },
+      "definition": {
+        "$ref": "#/$defs/QsDefinition"
+      },
+      "evidence": {
+        "type": "array",
+        "items": {
+          "$ref": "#/$defs/QsSourceInput"
+        },
+        "minItems": 1,
+        "maxItems": 8
+      }
+    },
+    "required": [
+      "company",
+      "project",
+      "operation_id",
+      "family",
+      "category",
+      "definition",
+      "evidence"
+    ],
+    "additionalProperties": false,
+    "oneOf": [
+      {
+        "properties": {
+          "family": {
+            "const": "record"
+          },
+          "category": {
+            "enum": [
+              "inspection",
+              "deficiency",
+              "safety_observation"
+            ]
+          },
+          "definition": {
+            "$ref": "#/$defs/QsOrdinaryDefinition"
+          }
+        }
+      },
+      {
+        "properties": {
+          "family": {
+            "const": "record"
+          },
+          "category": {
+            "const": "permit_record"
+          },
+          "definition": {
+            "$ref": "#/$defs/QsPermitDefinition"
+          }
+        }
+      },
+      {
+        "properties": {
+          "family": {
+            "const": "incident"
+          },
+          "category": {
+            "const": "incident"
+          },
+          "definition": {
+            "$ref": "#/$defs/QsIncidentDefinition"
+          }
+        }
+      }
+    ]
+  },
+  "QsReviseRecordRequest": {
+    "type": "object",
+    "properties": {
+      "company": {
+        "type": "string",
+        "maxLength": 140,
+        "pattern": "^[^\\u0000]*$",
+        "minLength": 1,
+        "allOf": [
+          {
+            "pattern": "\\S"
+          }
+        ]
+      },
+      "project": {
+        "type": "string",
+        "maxLength": 140,
+        "pattern": "^[^\\u0000]*$",
+        "minLength": 1,
+        "allOf": [
+          {
+            "pattern": "\\S"
+          }
+        ]
+      },
+      "operation_id": {
+        "$ref": "#/$defs/QsUuid"
+      },
+      "family": {
+        "$ref": "#/$defs/QsFamily"
+      },
+      "record_id": {
+        "$ref": "#/$defs/QsUuid"
+      },
+      "expected_version": {
+        "$ref": "#/$defs/QsDigest"
+      },
+      "definition": {
+        "$ref": "#/$defs/QsDefinition"
+      },
+      "evidence": {
+        "type": "array",
+        "items": {
+          "$ref": "#/$defs/QsSourceInput"
+        },
+        "minItems": 1,
+        "maxItems": 8
+      },
+      "amendment_reason": {
+        "type": "string",
+        "maxLength": 2000,
+        "pattern": "^[^\\u0000]*$"
+      }
+    },
+    "required": [
+      "company",
+      "project",
+      "operation_id",
+      "family",
+      "record_id",
+      "expected_version",
+      "definition",
+      "evidence"
+    ],
+    "additionalProperties": false,
+    "oneOf": [
+      {
+        "properties": {
+          "family": {
+            "const": "record"
+          },
+          "definition": {
+            "oneOf": [
+              {
+                "$ref": "#/$defs/QsOrdinaryDefinition"
+              },
+              {
+                "$ref": "#/$defs/QsPermitDefinition"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "properties": {
+          "family": {
+            "const": "incident"
+          },
+          "definition": {
+            "$ref": "#/$defs/QsIncidentDefinition"
+          }
+        }
+      }
+    ]
+  },
+  "QsTransitionRequest": {
+    "type": "object",
+    "properties": {
+      "company": {
+        "type": "string",
+        "maxLength": 140,
+        "pattern": "^[^\\u0000]*$",
+        "minLength": 1,
+        "allOf": [
+          {
+            "pattern": "\\S"
+          }
+        ]
+      },
+      "project": {
+        "type": "string",
+        "maxLength": 140,
+        "pattern": "^[^\\u0000]*$",
+        "minLength": 1,
+        "allOf": [
+          {
+            "pattern": "\\S"
+          }
+        ]
+      },
+      "operation_id": {
+        "$ref": "#/$defs/QsUuid"
+      },
+      "family": {
+        "$ref": "#/$defs/QsFamily"
+      },
+      "record_id": {
+        "$ref": "#/$defs/QsUuid"
+      },
+      "expected_version": {
+        "$ref": "#/$defs/QsDigest"
+      },
+      "action": {
+        "enum": [
+          "submit",
+          "check",
+          "return",
+          "close"
+        ]
+      },
+      "comment": {
+        "type": "string",
+        "maxLength": 2000,
+        "pattern": "^[^\\u0000]*$",
+        "minLength": 1,
+        "allOf": [
+          {
+            "pattern": "\\S"
+          }
+        ]
+      },
+      "evidence": {
+        "type": "array",
+        "items": {
+          "$ref": "#/$defs/QsSourceInput"
+        },
+        "minItems": 0,
+        "maxItems": 8
+      },
+      "closure": {
+        "type": "array",
+        "items": {
+          "$ref": "#/$defs/QsClosureInput"
+        },
+        "minItems": 0,
+        "maxItems": 12
+      }
+    },
+    "required": [
+      "company",
+      "project",
+      "operation_id",
+      "family",
+      "record_id",
+      "expected_version",
+      "action",
+      "comment",
+      "evidence",
+      "closure"
+    ],
+    "additionalProperties": false,
+    "oneOf": [
+      {
+        "properties": {
+          "action": {
+            "const": "submit"
+          },
+          "evidence": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/QsSourceInput"
+            },
+            "minItems": 0,
+            "maxItems": 8
+          },
+          "closure": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/QsClosureInput"
+            },
+            "minItems": 0,
+            "maxItems": 0
+          }
+        }
+      },
+      {
+        "properties": {
+          "action": {
+            "const": "check"
+          },
+          "evidence": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/QsSourceInput"
+            },
+            "minItems": 1,
+            "maxItems": 8
+          },
+          "closure": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/QsClosureInput"
+            },
+            "minItems": 0,
+            "maxItems": 0
+          }
+        }
+      },
+      {
+        "properties": {
+          "action": {
+            "const": "return"
+          },
+          "evidence": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/QsSourceInput"
+            },
+            "minItems": 0,
+            "maxItems": 8
+          },
+          "closure": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/QsClosureInput"
+            },
+            "minItems": 0,
+            "maxItems": 0
+          }
+        }
+      },
+      {
+        "properties": {
+          "action": {
+            "const": "close"
+          },
+          "evidence": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/QsSourceInput"
+            },
+            "minItems": 0,
+            "maxItems": 8
+          },
+          "closure": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/QsClosureInput"
+            },
+            "minItems": 1,
+            "maxItems": 12
+          }
+        }
+      }
+    ]
+  },
+  "QsGetRecordRequest": {
+    "type": "object",
+    "properties": {
+      "company": {
+        "type": "string",
+        "maxLength": 140,
+        "pattern": "^[^\\u0000]*$",
+        "minLength": 1,
+        "allOf": [
+          {
+            "pattern": "\\S"
+          }
+        ]
+      },
+      "project": {
+        "type": "string",
+        "maxLength": 140,
+        "pattern": "^[^\\u0000]*$",
+        "minLength": 1,
+        "allOf": [
+          {
+            "pattern": "\\S"
+          }
+        ]
+      },
+      "kind": {
+        "$ref": "#/$defs/QsKind"
+      },
+      "record_id": {
+        "$ref": "#/$defs/QsUuid"
+      }
+    },
+    "required": [
+      "company",
+      "project",
+      "kind",
+      "record_id"
+    ],
+    "additionalProperties": false
+  },
+  "QsListRecordsRequest": {
+    "type": "object",
+    "properties": {
+      "company": {
+        "type": "string",
+        "maxLength": 140,
+        "pattern": "^[^\\u0000]*$",
+        "minLength": 1,
+        "allOf": [
+          {
+            "pattern": "\\S"
+          }
+        ]
+      },
+      "project": {
+        "type": "string",
+        "maxLength": 140,
+        "pattern": "^[^\\u0000]*$",
+        "minLength": 1,
+        "allOf": [
+          {
+            "pattern": "\\S"
+          }
+        ]
+      },
+      "kind": {
+        "$ref": "#/$defs/QsKind"
+      },
+      "parent_id": {
+        "anyOf": [
+          {
+            "$ref": "#/$defs/QsUuid"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "limit": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 100
+      },
+      "cursor": {
+        "anyOf": [
+          {
+            "type": "string",
+            "maxLength": 4096,
+            "pattern": "^[^\\u0000]*$",
+            "minLength": 1,
+            "allOf": [
+              {
+                "pattern": "\\S"
+              }
+            ]
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "count_mode": {
+        "const": "none"
+      }
+    },
+    "required": [
+      "company",
+      "project",
+      "kind"
+    ],
+    "additionalProperties": false,
+    "allOf": [
+      {
+        "if": {
+          "properties": {
+            "kind": {
+              "enum": [
+                "record",
+                "incident"
+              ]
+            }
+          }
+        },
+        "then": {
+          "properties": {
+            "parent_id": {
+              "type": "null"
+            }
+          }
+        }
+      }
+    ]
+  },
+  "QsCreateRecordResponse": {
+    "type": "object",
+    "properties": {
+      "family": {
+        "$ref": "#/$defs/QsFamily"
+      },
+      "header": {
+        "$ref": "#/$defs/QsHeader"
+      },
+      "revision": {
+        "$ref": "#/$defs/QsRevision"
+      },
+      "history_id": {
+        "anyOf": [
+          {
+            "type": "string",
+            "maxLength": 140,
+            "pattern": "^[^\\u0000]*$",
+            "minLength": 1,
+            "allOf": [
+              {
+                "pattern": "\\S"
+              }
+            ]
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "operation": {
+        "$ref": "#/$defs/QsOperation"
+      }
+    },
+    "required": [
+      "family",
+      "header",
+      "revision",
+      "history_id",
+      "operation"
+    ],
+    "additionalProperties": false,
+    "oneOf": [
+      {
+        "properties": {
+          "family": {
+            "const": "record"
+          },
+          "header": {
+            "$ref": "#/$defs/QsOrdinaryHeader"
+          },
+          "revision": {
+            "$ref": "#/$defs/QsOrdinaryRevision"
+          }
+        }
+      },
+      {
+        "properties": {
+          "family": {
+            "const": "incident"
+          },
+          "header": {
+            "$ref": "#/$defs/QsIncidentHeader"
+          },
+          "revision": {
+            "$ref": "#/$defs/QsIncidentRevision"
+          },
+          "history_id": {
+            "type": "null"
+          }
+        }
+      }
+    ]
+  },
+  "QsReviseRecordResponse": {
+    "type": "object",
+    "properties": {
+      "family": {
+        "$ref": "#/$defs/QsFamily"
+      },
+      "header": {
+        "$ref": "#/$defs/QsHeader"
+      },
+      "revision": {
+        "$ref": "#/$defs/QsRevision"
+      },
+      "history_id": {
+        "anyOf": [
+          {
+            "type": "string",
+            "maxLength": 140,
+            "pattern": "^[^\\u0000]*$",
+            "minLength": 1,
+            "allOf": [
+              {
+                "pattern": "\\S"
+              }
+            ]
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "operation": {
+        "$ref": "#/$defs/QsOperation"
+      }
+    },
+    "required": [
+      "family",
+      "header",
+      "revision",
+      "history_id",
+      "operation"
+    ],
+    "additionalProperties": false,
+    "oneOf": [
+      {
+        "properties": {
+          "family": {
+            "const": "record"
+          },
+          "header": {
+            "$ref": "#/$defs/QsOrdinaryHeader"
+          },
+          "revision": {
+            "$ref": "#/$defs/QsOrdinaryRevision"
+          }
+        }
+      },
+      {
+        "properties": {
+          "family": {
+            "const": "incident"
+          },
+          "header": {
+            "$ref": "#/$defs/QsIncidentHeader"
+          },
+          "revision": {
+            "$ref": "#/$defs/QsIncidentRevision"
+          },
+          "history_id": {
+            "type": "null"
+          }
+        }
+      }
+    ]
+  },
+  "QsTransitionResponse": {
+    "type": "object",
+    "properties": {
+      "family": {
+        "$ref": "#/$defs/QsFamily"
+      },
+      "header": {
+        "$ref": "#/$defs/QsHeader"
+      },
+      "revision": {
+        "$ref": "#/$defs/QsRevision"
+      },
+      "history_id": {
+        "anyOf": [
+          {
+            "type": "string",
+            "maxLength": 140,
+            "pattern": "^[^\\u0000]*$",
+            "minLength": 1,
+            "allOf": [
+              {
+                "pattern": "\\S"
+              }
+            ]
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "operation": {
+        "$ref": "#/$defs/QsOperation"
+      },
+      "decision": {
+        "$ref": "#/$defs/QsDecision"
+      }
+    },
+    "required": [
+      "family",
+      "header",
+      "revision",
+      "history_id",
+      "operation",
+      "decision"
+    ],
+    "additionalProperties": false,
+    "oneOf": [
+      {
+        "properties": {
+          "family": {
+            "const": "record"
+          },
+          "header": {
+            "$ref": "#/$defs/QsOrdinaryHeader"
+          },
+          "revision": {
+            "$ref": "#/$defs/QsOrdinaryRevision"
+          },
+          "decision": {
+            "$ref": "#/$defs/QsOrdinaryDecision"
+          }
+        }
+      },
+      {
+        "properties": {
+          "family": {
+            "const": "incident"
+          },
+          "header": {
+            "$ref": "#/$defs/QsIncidentHeader"
+          },
+          "revision": {
+            "$ref": "#/$defs/QsIncidentRevision"
+          },
+          "decision": {
+            "$ref": "#/$defs/QsIncidentDecision"
+          },
+          "history_id": {
+            "type": "null"
+          }
+        }
+      }
+    ]
+  },
+  "QsGetResponse": {
+    "type": "object",
+    "properties": {
+      "record": {
+        "$ref": "#/$defs/QsRecord"
+      },
+      "record_digest": {
+        "$ref": "#/$defs/QsDigest"
+      }
+    },
+    "required": [
+      "record",
+      "record_digest"
+    ],
+    "additionalProperties": false
+  },
+  "QsListResponse": {
+    "type": "object",
+    "properties": {
+      "items": {
+        "type": "array",
+        "items": {
+          "$ref": "#/$defs/QsGetResponse"
+        },
+        "minItems": 0,
+        "maxItems": 100
+      },
+      "next_cursor": {
+        "anyOf": [
+          {
+            "type": "string",
+            "maxLength": 4096,
+            "pattern": "^[^\\u0000]*$",
+            "minLength": 1,
+            "allOf": [
+              {
+                "pattern": "\\S"
+              }
+            ]
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "limit": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 100
+      },
+      "count_mode": {
+        "const": "none"
+      },
+      "total": {
+        "type": "null"
+      }
+    },
+    "required": [
+      "items",
+      "next_cursor",
+      "limit",
+      "count_mode",
+      "total"
+    ],
+    "additionalProperties": false
+  },
+  "QsEvidenceRegistration": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "$ref": "#/$defs/QsUuid"
+      },
+      "company": {
+        "type": "string",
+        "maxLength": 140,
+        "pattern": "^[^\\u0000]*$",
+        "minLength": 1,
+        "allOf": [
+          {
+            "pattern": "\\S"
+          }
+        ]
+      },
+      "project": {
+        "type": "string",
+        "maxLength": 140,
+        "pattern": "^[^\\u0000]*$",
+        "minLength": 1,
+        "allOf": [
+          {
+            "pattern": "\\S"
+          }
+        ]
+      },
+      "scope_type": {
+        "const": "Project"
+      },
+      "author_person": {
+        "type": "string",
+        "maxLength": 140,
+        "pattern": "^[^\\u0000]*$",
+        "minLength": 1,
+        "allOf": [
+          {
+            "pattern": "\\S"
+          }
+        ]
+      },
+      "author_user": {
+        "type": "string",
+        "maxLength": 140,
+        "pattern": "^[^\\u0000]*$",
+        "minLength": 1,
+        "allOf": [
+          {
+            "pattern": "\\S"
+          }
+        ]
+      },
+      "created_at": {
+        "$ref": "#/$defs/QsTimestamp"
+      },
+      "document_id": {
+        "type": "string",
+        "maxLength": 140,
+        "pattern": "^[^\\u0000]*$",
+        "minLength": 1,
+        "allOf": [
+          {
+            "pattern": "\\S"
+          }
+        ]
+      },
+      "rights_basis": {
+        "type": "string",
+        "maxLength": 4000,
+        "pattern": "^[^\\u0000]*$",
+        "minLength": 1,
+        "allOf": [
+          {
+            "pattern": "\\S"
+          }
+        ]
+      },
+      "permission_evidence": {
+        "type": "array",
+        "items": {
+          "$ref": "#/$defs/QsCapturedSource"
+        },
+        "minItems": 1,
+        "maxItems": 8
+      },
+      "classification": {
+        "const": "restricted_from_creation"
+      }
+    },
+    "required": [
+      "id",
+      "company",
+      "project",
+      "scope_type",
+      "author_person",
+      "author_user",
+      "created_at",
+      "document_id",
+      "rights_basis",
+      "permission_evidence",
+      "classification"
+    ],
+    "additionalProperties": false
+  },
+  "QsUploadEvidenceRequest": {
+    "type": "object",
+    "properties": {
+      "company": {
+        "type": "string",
+        "maxLength": 140,
+        "pattern": "^[^\\u0000]*$",
+        "minLength": 1,
+        "allOf": [
+          {
+            "pattern": "\\S"
+          }
+        ]
+      },
+      "project": {
+        "type": "string",
+        "maxLength": 140,
+        "pattern": "^[^\\u0000]*$",
+        "minLength": 1,
+        "allOf": [
+          {
+            "pattern": "\\S"
+          }
+        ]
+      },
+      "operation_id": {
+        "$ref": "#/$defs/QsUuid"
+      },
+      "title": {
+        "type": "string",
+        "maxLength": 200,
+        "pattern": "^[^\\u0000]*$",
+        "minLength": 1,
+        "allOf": [
+          {
+            "pattern": "\\S"
+          }
+        ]
+      },
+      "filename": {
+        "type": "string",
+        "maxLength": 180,
+        "pattern": "^[^\\u0000]*$",
+        "minLength": 1,
+        "allOf": [
+          {
+            "pattern": "\\S"
+          }
+        ]
+      },
+      "content_base64": {
+        "type": "string",
+        "minLength": 4,
+        "maxLength": 13981016,
+        "contentEncoding": "base64"
+      },
+      "byte_length": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 10485760
+      },
+      "sha256": {
+        "$ref": "#/$defs/QsDigest"
+      },
+      "rights_basis": {
+        "type": "string",
+        "maxLength": 4000,
+        "pattern": "^[^\\u0000]*$",
+        "minLength": 1,
+        "allOf": [
+          {
+            "pattern": "\\S"
+          }
+        ]
+      },
+      "permission_evidence": {
+        "type": "array",
+        "items": {
+          "$ref": "#/$defs/QsSourceInput"
+        },
+        "minItems": 1,
+        "maxItems": 8
+      }
+    },
+    "required": [
+      "company",
+      "project",
+      "operation_id",
+      "title",
+      "filename",
+      "content_base64",
+      "byte_length",
+      "sha256",
+      "rights_basis",
+      "permission_evidence"
+    ],
+    "additionalProperties": false
+  },
+  "QsUploadedRevision": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "string",
+        "maxLength": 140,
+        "pattern": "^[^\\u0000]*$",
+        "minLength": 1,
+        "allOf": [
+          {
+            "pattern": "\\S"
+          }
+        ]
+      },
+      "revision_number": {
+        "type": "integer",
+        "minimum": 1
+      },
+      "filename": {
+        "type": "string",
+        "maxLength": 180,
+        "pattern": "^[^\\u0000]*$",
+        "minLength": 1,
+        "allOf": [
+          {
+            "pattern": "\\S"
+          }
+        ]
+      },
+      "mime_type": {
+        "enum": [
+          "text/plain",
+          "application/pdf",
+          "image/jpeg",
+          "image/png"
+        ]
+      },
+      "byte_length": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 10485760
+      },
+      "sha256": {
+        "$ref": "#/$defs/QsDigest"
+      },
+      "scan_status": {
+        "enum": [
+          "clean",
+          "infected",
+          "not_scanned",
+          "unavailable"
+        ]
+      },
+      "retrieval_status": {
+        "enum": [
+          "available",
+          "quarantined"
+        ]
+      },
+      "extraction_status": {
+        "type": "string",
+        "maxLength": 140,
+        "pattern": "^[^\\u0000]*$",
+        "minLength": 1,
+        "allOf": [
+          {
+            "pattern": "\\S"
+          }
+        ]
+      },
+      "extractor_version": {
+        "type": "string",
+        "maxLength": 140,
+        "pattern": "^[^\\u0000]*$",
+        "minLength": 1,
+        "allOf": [
+          {
+            "pattern": "\\S"
+          }
+        ]
+      },
+      "page_count": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 200
+      },
+      "extraction_warning": {
+        "anyOf": [
+          {
+            "type": "string",
+            "maxLength": 4000,
+            "pattern": "^[^\\u0000]*$",
+            "minLength": 1,
+            "allOf": [
+              {
+                "pattern": "\\S"
+              }
+            ]
+          },
+          {
+            "type": "null"
+          }
+        ]
+      }
+    },
+    "required": [
+      "id",
+      "revision_number",
+      "filename",
+      "mime_type",
+      "byte_length",
+      "sha256",
+      "scan_status",
+      "retrieval_status",
+      "extraction_status",
+      "extractor_version",
+      "page_count",
+      "extraction_warning"
+    ],
+    "additionalProperties": false
+  },
+  "QsUploadedDocument": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "string",
+        "maxLength": 140,
+        "pattern": "^[^\\u0000]*$",
+        "minLength": 1,
+        "allOf": [
+          {
+            "pattern": "\\S"
+          }
+        ]
+      },
+      "revision_number": {
+        "type": "integer",
+        "minimum": 1
+      },
+      "filename": {
+        "type": "string",
+        "maxLength": 180,
+        "pattern": "^[^\\u0000]*$",
+        "minLength": 1,
+        "allOf": [
+          {
+            "pattern": "\\S"
+          }
+        ]
+      },
+      "mime_type": {
+        "enum": [
+          "text/plain",
+          "application/pdf",
+          "image/jpeg",
+          "image/png"
+        ]
+      },
+      "byte_length": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 10485760
+      },
+      "sha256": {
+        "$ref": "#/$defs/QsDigest"
+      },
+      "scan_status": {
+        "enum": [
+          "clean",
+          "infected",
+          "not_scanned",
+          "unavailable"
+        ]
+      },
+      "retrieval_status": {
+        "enum": [
+          "available",
+          "quarantined"
+        ]
+      },
+      "extraction_status": {
+        "type": "string",
+        "maxLength": 140,
+        "pattern": "^[^\\u0000]*$",
+        "minLength": 1,
+        "allOf": [
+          {
+            "pattern": "\\S"
+          }
+        ]
+      },
+      "extractor_version": {
+        "type": "string",
+        "maxLength": 140,
+        "pattern": "^[^\\u0000]*$",
+        "minLength": 1,
+        "allOf": [
+          {
+            "pattern": "\\S"
+          }
+        ]
+      },
+      "page_count": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 200
+      },
+      "extraction_warning": {
+        "anyOf": [
+          {
+            "type": "string",
+            "maxLength": 4000,
+            "pattern": "^[^\\u0000]*$",
+            "minLength": 1,
+            "allOf": [
+              {
+                "pattern": "\\S"
+              }
+            ]
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "title": {
+        "type": "string",
+        "maxLength": 200,
+        "pattern": "^[^\\u0000]*$",
+        "minLength": 1,
+        "allOf": [
+          {
+            "pattern": "\\S"
+          }
+        ]
+      },
+      "current_revision": {
+        "type": "string",
+        "maxLength": 140,
+        "pattern": "^[^\\u0000]*$",
+        "minLength": 1,
+        "allOf": [
+          {
+            "pattern": "\\S"
+          }
+        ]
+      },
+      "company": {
+        "type": "string",
+        "maxLength": 140,
+        "pattern": "^[^\\u0000]*$",
+        "minLength": 1,
+        "allOf": [
+          {
+            "pattern": "\\S"
+          }
+        ]
+      },
+      "project": {
+        "type": "string",
+        "maxLength": 140,
+        "pattern": "^[^\\u0000]*$",
+        "minLength": 1,
+        "allOf": [
+          {
+            "pattern": "\\S"
+          }
+        ]
+      }
+    },
+    "required": [
+      "id",
+      "revision_number",
+      "filename",
+      "mime_type",
+      "byte_length",
+      "sha256",
+      "scan_status",
+      "retrieval_status",
+      "extraction_status",
+      "extractor_version",
+      "page_count",
+      "extraction_warning",
+      "title",
+      "current_revision",
+      "company",
+      "project"
+    ],
+    "additionalProperties": false
+  },
+  "QsUploadEvidenceResponse": {
+    "type": "object",
+    "properties": {
+      "family": {
+        "const": "incident"
+      },
+      "evidence_upload": {
+        "const": true
+      },
+      "document": {
+        "$ref": "#/$defs/QsUploadedDocument"
+      },
+      "revision": {
+        "$ref": "#/$defs/QsUploadedRevision"
+      },
+      "registration": {
+        "$ref": "#/$defs/QsEvidenceRegistration"
+      },
+      "history_id": {
+        "type": "null"
+      },
+      "operation": {
+        "$ref": "#/$defs/QsOperation"
+      }
+    },
+    "required": [
+      "family",
+      "evidence_upload",
+      "document",
+      "revision",
+      "registration",
+      "history_id",
+      "operation"
+    ],
+    "additionalProperties": false
+  }
+}

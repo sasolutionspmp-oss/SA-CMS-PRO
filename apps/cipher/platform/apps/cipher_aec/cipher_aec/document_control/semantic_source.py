@@ -165,6 +165,8 @@ class SourceAdapter:
                 or locator.get("document") != selector["document_id"]):
             _unavailable()
         scopes.require(origin["company"], origin["scope_type"], origin["project"], actor, "document.read")
+        from cipher_aec.quality_safety.privacy import authorize_source as authorize_incident_source
+        authorize_incident_source(locator, actor)
         parent = repo.document(selector["document_id"])
         if _row_scope(parent) != origin or parent.get("name") != selector["document_id"]:
             _unavailable()

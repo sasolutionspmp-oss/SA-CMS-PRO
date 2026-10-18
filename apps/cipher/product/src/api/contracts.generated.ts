@@ -1,5 +1,5 @@
 /* Generated from cipher_aec/api/schema.json. Do not edit.
- * Source SHA-256: 3122fc1e7a4fd299cafd34a280b1d56322a1d9e1a58f2c0df47d0558933ca873
+ * Source SHA-256: 9360c2be55b85bc2f019adcd6c1a510dab9ce2258619eb733b9adcea9820f7f4
  * Regenerate: npm run generate:api
  */
 
@@ -347,6 +347,43661 @@ export type SemanticSource =
       selection: "adopted";
       adoption_id: string;
       adoption_digest: string;
+    };
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "FoDailyDefinitionInput".
+ */
+export type FoDailyDefinitionInput = {
+  [k: string]: unknown;
+} & {
+  local_date: FoDate;
+  superintendent_user: {
+    [k: string]: unknown;
+  } & string;
+  weather: string;
+  /**
+   * @minItems 0
+   * @maxItems 8
+   */
+  weather_sources:
+    | []
+    | [FoSourceInput]
+    | [FoSourceInput, FoSourceInput]
+    | [FoSourceInput, FoSourceInput, FoSourceInput]
+    | [FoSourceInput, FoSourceInput, FoSourceInput, FoSourceInput]
+    | [FoSourceInput, FoSourceInput, FoSourceInput, FoSourceInput, FoSourceInput]
+    | [FoSourceInput, FoSourceInput, FoSourceInput, FoSourceInput, FoSourceInput, FoSourceInput]
+    | [FoSourceInput, FoSourceInput, FoSourceInput, FoSourceInput, FoSourceInput, FoSourceInput, FoSourceInput]
+    | [
+        FoSourceInput,
+        FoSourceInput,
+        FoSourceInput,
+        FoSourceInput,
+        FoSourceInput,
+        FoSourceInput,
+        FoSourceInput,
+        FoSourceInput
+      ];
+  /**
+   * @minItems 0
+   * @maxItems 20
+   */
+  crews:
+    | []
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ];
+  /**
+   * @minItems 1
+   * @maxItems 20
+   */
+  activities:
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ];
+  /**
+   * @minItems 0
+   * @maxItems 20
+   */
+  delays:
+    | []
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ];
+  /**
+   * @minItems 0
+   * @maxItems 20
+   */
+  visitors:
+    | []
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ];
+};
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "FoDate".
+ */
+export type FoDate = string;
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "FoDigest".
+ */
+export type FoDigest = string;
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "FoQuantityValue".
+ */
+export type FoQuantityValue = string;
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "FoTimestamp".
+ */
+export type FoTimestamp = string;
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "FoUuid".
+ */
+export type FoUuid = string;
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "FoCreateRecordResponse".
+ */
+export type FoCreateRecordResponse = {
+  family: FoFamily;
+  header: FoHeader;
+  revision: FoDailyRevision | FoTicketRevision;
+  history_id: {
+    [k: string]: unknown;
+  } & string;
+  operation: FoOperation;
+  /**
+   * @minItems 0
+   * @maxItems 40
+   */
+  quantities: FoQuantity[];
+} & FoCreateRecordResponse1;
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "FoFamily".
+ */
+export type FoFamily = "daily" | "ticket";
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "FoDailyRevision".
+ */
+export type FoDailyRevision = {
+  [k: string]: unknown;
+} & {
+  id: FoUuid;
+  company: {
+    [k: string]: unknown;
+  } & string;
+  project: {
+    [k: string]: unknown;
+  } & string;
+  scope_type: "Project";
+  author_person: {
+    [k: string]: unknown;
+  } & string;
+  author_user: {
+    [k: string]: unknown;
+  } & string;
+  created_at: FoTimestamp;
+  status: "recorded";
+  parent_id: FoUuid;
+  revision_number: number;
+  predecessor: FoUuid | null;
+  prior_decision: FoUuid | null;
+  amendment_of: FoUuid | null;
+  amendment_reason: string;
+  /**
+   * @minItems 0
+   * @maxItems 12
+   */
+  photos:
+    | []
+    | [FoPhoto]
+    | [FoPhoto, FoPhoto]
+    | [FoPhoto, FoPhoto, FoPhoto]
+    | [FoPhoto, FoPhoto, FoPhoto, FoPhoto]
+    | [FoPhoto, FoPhoto, FoPhoto, FoPhoto, FoPhoto]
+    | [FoPhoto, FoPhoto, FoPhoto, FoPhoto, FoPhoto, FoPhoto]
+    | [FoPhoto, FoPhoto, FoPhoto, FoPhoto, FoPhoto, FoPhoto, FoPhoto]
+    | [FoPhoto, FoPhoto, FoPhoto, FoPhoto, FoPhoto, FoPhoto, FoPhoto, FoPhoto]
+    | [FoPhoto, FoPhoto, FoPhoto, FoPhoto, FoPhoto, FoPhoto, FoPhoto, FoPhoto, FoPhoto]
+    | [FoPhoto, FoPhoto, FoPhoto, FoPhoto, FoPhoto, FoPhoto, FoPhoto, FoPhoto, FoPhoto, FoPhoto]
+    | [FoPhoto, FoPhoto, FoPhoto, FoPhoto, FoPhoto, FoPhoto, FoPhoto, FoPhoto, FoPhoto, FoPhoto, FoPhoto]
+    | [FoPhoto, FoPhoto, FoPhoto, FoPhoto, FoPhoto, FoPhoto, FoPhoto, FoPhoto, FoPhoto, FoPhoto, FoPhoto, FoPhoto];
+  no_effects: FoNoEffects;
+  definition: FoDailyDefinition;
+  superintendent: FoPerson;
+  /**
+   * @minItems 0
+   * @maxItems 40
+   */
+  quantity_ids: FoUuid[];
+};
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "FoDailyDefinition".
+ */
+export type FoDailyDefinition = {
+  [k: string]: unknown;
+} & {
+  local_date: FoDate;
+  superintendent_user: {
+    [k: string]: unknown;
+  } & string;
+  weather: string;
+  /**
+   * @minItems 0
+   * @maxItems 8
+   */
+  weather_sources:
+    | []
+    | [FoCapturedSource]
+    | [FoCapturedSource, FoCapturedSource]
+    | [FoCapturedSource, FoCapturedSource, FoCapturedSource]
+    | [FoCapturedSource, FoCapturedSource, FoCapturedSource, FoCapturedSource]
+    | [FoCapturedSource, FoCapturedSource, FoCapturedSource, FoCapturedSource, FoCapturedSource]
+    | [FoCapturedSource, FoCapturedSource, FoCapturedSource, FoCapturedSource, FoCapturedSource, FoCapturedSource]
+    | [
+        FoCapturedSource,
+        FoCapturedSource,
+        FoCapturedSource,
+        FoCapturedSource,
+        FoCapturedSource,
+        FoCapturedSource,
+        FoCapturedSource
+      ]
+    | [
+        FoCapturedSource,
+        FoCapturedSource,
+        FoCapturedSource,
+        FoCapturedSource,
+        FoCapturedSource,
+        FoCapturedSource,
+        FoCapturedSource,
+        FoCapturedSource
+      ];
+  /**
+   * @minItems 0
+   * @maxItems 20
+   */
+  crews:
+    | []
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ];
+  /**
+   * @minItems 1
+   * @maxItems 20
+   */
+  activities:
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ];
+  /**
+   * @minItems 0
+   * @maxItems 20
+   */
+  delays:
+    | []
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ];
+  /**
+   * @minItems 0
+   * @maxItems 20
+   */
+  visitors:
+    | []
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ];
+};
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "FoTicketRevision".
+ */
+export type FoTicketRevision = {
+  [k: string]: unknown;
+} & {
+  id: FoUuid;
+  company: {
+    [k: string]: unknown;
+  } & string;
+  project: {
+    [k: string]: unknown;
+  } & string;
+  scope_type: "Project";
+  author_person: {
+    [k: string]: unknown;
+  } & string;
+  author_user: {
+    [k: string]: unknown;
+  } & string;
+  created_at: FoTimestamp;
+  status: "recorded";
+  parent_id: FoUuid;
+  revision_number: number;
+  predecessor: FoUuid | null;
+  prior_decision: FoUuid | null;
+  amendment_of: FoUuid | null;
+  amendment_reason: string;
+  /**
+   * @minItems 0
+   * @maxItems 12
+   */
+  photos:
+    | []
+    | [FoPhoto]
+    | [FoPhoto, FoPhoto]
+    | [FoPhoto, FoPhoto, FoPhoto]
+    | [FoPhoto, FoPhoto, FoPhoto, FoPhoto]
+    | [FoPhoto, FoPhoto, FoPhoto, FoPhoto, FoPhoto]
+    | [FoPhoto, FoPhoto, FoPhoto, FoPhoto, FoPhoto, FoPhoto]
+    | [FoPhoto, FoPhoto, FoPhoto, FoPhoto, FoPhoto, FoPhoto, FoPhoto]
+    | [FoPhoto, FoPhoto, FoPhoto, FoPhoto, FoPhoto, FoPhoto, FoPhoto, FoPhoto]
+    | [FoPhoto, FoPhoto, FoPhoto, FoPhoto, FoPhoto, FoPhoto, FoPhoto, FoPhoto, FoPhoto]
+    | [FoPhoto, FoPhoto, FoPhoto, FoPhoto, FoPhoto, FoPhoto, FoPhoto, FoPhoto, FoPhoto, FoPhoto]
+    | [FoPhoto, FoPhoto, FoPhoto, FoPhoto, FoPhoto, FoPhoto, FoPhoto, FoPhoto, FoPhoto, FoPhoto, FoPhoto]
+    | [FoPhoto, FoPhoto, FoPhoto, FoPhoto, FoPhoto, FoPhoto, FoPhoto, FoPhoto, FoPhoto, FoPhoto, FoPhoto, FoPhoto];
+  no_effects: FoNoEffects;
+  definition: FoTicketDefinition;
+};
+export type FoCreateRecordResponse1 =
+  | {
+      family?: "daily";
+      header?: FoDailyHeader & {
+        status?: "draft";
+        last_decision?: null;
+        [k: string]: unknown;
+      };
+      revision?: FoDailyRevision;
+      [k: string]: unknown;
+    }
+  | {
+      family?: "ticket";
+      header?: FoTicketHeader & {
+        status?: "draft";
+        last_decision?: null;
+        [k: string]: unknown;
+      };
+      revision?: FoTicketRevision;
+      quantities?: {
+        [k: string]: unknown;
+      };
+      [k: string]: unknown;
+    };
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "FoCaptureUuid".
+ */
+export type FoCaptureUuid = string;
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "FoCreateCommand".
+ */
+export type FoCreateCommand = {
+  action: "create";
+  family: "daily" | "ticket";
+  definition: FoDailyDefinitionInput | FoTicketDefinitionInput;
+  /**
+   * @minItems 0
+   * @maxItems 12
+   */
+  photos:
+    | []
+    | [FoPhotoInput]
+    | [FoPhotoInput, FoPhotoInput]
+    | [FoPhotoInput, FoPhotoInput, FoPhotoInput]
+    | [FoPhotoInput, FoPhotoInput, FoPhotoInput, FoPhotoInput]
+    | [FoPhotoInput, FoPhotoInput, FoPhotoInput, FoPhotoInput, FoPhotoInput]
+    | [FoPhotoInput, FoPhotoInput, FoPhotoInput, FoPhotoInput, FoPhotoInput, FoPhotoInput]
+    | [FoPhotoInput, FoPhotoInput, FoPhotoInput, FoPhotoInput, FoPhotoInput, FoPhotoInput, FoPhotoInput]
+    | [FoPhotoInput, FoPhotoInput, FoPhotoInput, FoPhotoInput, FoPhotoInput, FoPhotoInput, FoPhotoInput, FoPhotoInput]
+    | [
+        FoPhotoInput,
+        FoPhotoInput,
+        FoPhotoInput,
+        FoPhotoInput,
+        FoPhotoInput,
+        FoPhotoInput,
+        FoPhotoInput,
+        FoPhotoInput,
+        FoPhotoInput
+      ]
+    | [
+        FoPhotoInput,
+        FoPhotoInput,
+        FoPhotoInput,
+        FoPhotoInput,
+        FoPhotoInput,
+        FoPhotoInput,
+        FoPhotoInput,
+        FoPhotoInput,
+        FoPhotoInput,
+        FoPhotoInput
+      ]
+    | [
+        FoPhotoInput,
+        FoPhotoInput,
+        FoPhotoInput,
+        FoPhotoInput,
+        FoPhotoInput,
+        FoPhotoInput,
+        FoPhotoInput,
+        FoPhotoInput,
+        FoPhotoInput,
+        FoPhotoInput,
+        FoPhotoInput
+      ]
+    | [
+        FoPhotoInput,
+        FoPhotoInput,
+        FoPhotoInput,
+        FoPhotoInput,
+        FoPhotoInput,
+        FoPhotoInput,
+        FoPhotoInput,
+        FoPhotoInput,
+        FoPhotoInput,
+        FoPhotoInput,
+        FoPhotoInput,
+        FoPhotoInput
+      ];
+  /**
+   * @minItems 0
+   * @maxItems 40
+   */
+  quantities: FoQuantityDefinitionInput[];
+} & FoCreateCommand1;
+export type FoCreateCommand1 =
+  | {
+      family?: "daily";
+      definition?: FoDailyDefinitionInput;
+      [k: string]: unknown;
+    }
+  | {
+      family?: "ticket";
+      definition?: FoTicketDefinitionInput;
+      quantities?: {
+        [k: string]: unknown;
+      };
+      [k: string]: unknown;
+    };
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "FoReviseCommand".
+ */
+export type FoReviseCommand = {
+  action: "revise";
+  family: "daily" | "ticket";
+  definition: FoDailyDefinitionInput | FoTicketDefinitionInput;
+  /**
+   * @minItems 0
+   * @maxItems 12
+   */
+  photos:
+    | []
+    | [FoPhotoInput]
+    | [FoPhotoInput, FoPhotoInput]
+    | [FoPhotoInput, FoPhotoInput, FoPhotoInput]
+    | [FoPhotoInput, FoPhotoInput, FoPhotoInput, FoPhotoInput]
+    | [FoPhotoInput, FoPhotoInput, FoPhotoInput, FoPhotoInput, FoPhotoInput]
+    | [FoPhotoInput, FoPhotoInput, FoPhotoInput, FoPhotoInput, FoPhotoInput, FoPhotoInput]
+    | [FoPhotoInput, FoPhotoInput, FoPhotoInput, FoPhotoInput, FoPhotoInput, FoPhotoInput, FoPhotoInput]
+    | [FoPhotoInput, FoPhotoInput, FoPhotoInput, FoPhotoInput, FoPhotoInput, FoPhotoInput, FoPhotoInput, FoPhotoInput]
+    | [
+        FoPhotoInput,
+        FoPhotoInput,
+        FoPhotoInput,
+        FoPhotoInput,
+        FoPhotoInput,
+        FoPhotoInput,
+        FoPhotoInput,
+        FoPhotoInput,
+        FoPhotoInput
+      ]
+    | [
+        FoPhotoInput,
+        FoPhotoInput,
+        FoPhotoInput,
+        FoPhotoInput,
+        FoPhotoInput,
+        FoPhotoInput,
+        FoPhotoInput,
+        FoPhotoInput,
+        FoPhotoInput,
+        FoPhotoInput
+      ]
+    | [
+        FoPhotoInput,
+        FoPhotoInput,
+        FoPhotoInput,
+        FoPhotoInput,
+        FoPhotoInput,
+        FoPhotoInput,
+        FoPhotoInput,
+        FoPhotoInput,
+        FoPhotoInput,
+        FoPhotoInput,
+        FoPhotoInput
+      ]
+    | [
+        FoPhotoInput,
+        FoPhotoInput,
+        FoPhotoInput,
+        FoPhotoInput,
+        FoPhotoInput,
+        FoPhotoInput,
+        FoPhotoInput,
+        FoPhotoInput,
+        FoPhotoInput,
+        FoPhotoInput,
+        FoPhotoInput,
+        FoPhotoInput
+      ];
+  /**
+   * @minItems 0
+   * @maxItems 40
+   */
+  quantities: FoQuantityDefinitionInput[];
+  record_id: FoUuid;
+  expected_version: FoDigest;
+  base_revision_id: FoUuid;
+  base_revision_digest: FoDigest;
+  amendment_reason: string;
+} & FoReviseCommand1;
+export type FoReviseCommand1 =
+  | {
+      family?: "daily";
+      definition?: FoDailyDefinitionInput;
+      [k: string]: unknown;
+    }
+  | {
+      family?: "ticket";
+      definition?: FoTicketDefinitionInput;
+      quantities?: {
+        [k: string]: unknown;
+      };
+      [k: string]: unknown;
+    };
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "FoCommand".
+ */
+export type FoCommand = FoCreateCommand | FoReviseCommand;
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "FoInspectCaptureResponse".
+ */
+export type FoInspectCaptureResponse = {
+  [k: string]: unknown;
+};
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "QsUuid".
+ */
+export type QsUuid = string;
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "QsDigest".
+ */
+export type QsDigest = string;
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "QsTimestamp".
+ */
+export type QsTimestamp = string;
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "QsDate".
+ */
+export type QsDate = string;
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "QsFamily".
+ */
+export type QsFamily = "record" | "incident";
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "QsKind".
+ */
+export type QsKind = "record" | "revision" | "decision" | "incident" | "incident_revision" | "incident_decision";
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "QsIncidentDefinition".
+ */
+export type QsIncidentDefinition = {
+  [k: string]: unknown;
+} & {
+  title: {
+    [k: string]: unknown;
+  } & string;
+  local_date: QsDate;
+  location: {
+    [k: string]: unknown;
+  } & string;
+  description: {
+    [k: string]: unknown;
+  } & string;
+  /**
+   * @minItems 1
+   * @maxItems 12
+   */
+  required_closure_items:
+    | [QsClosureRequirement]
+    | [QsClosureRequirement, QsClosureRequirement]
+    | [QsClosureRequirement, QsClosureRequirement, QsClosureRequirement]
+    | [QsClosureRequirement, QsClosureRequirement, QsClosureRequirement, QsClosureRequirement]
+    | [QsClosureRequirement, QsClosureRequirement, QsClosureRequirement, QsClosureRequirement, QsClosureRequirement]
+    | [
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement
+      ]
+    | [
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement
+      ]
+    | [
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement
+      ]
+    | [
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement
+      ]
+    | [
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement
+      ]
+    | [
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement
+      ]
+    | [
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement
+      ];
+  /**
+   * @minItems 0
+   * @maxItems 20
+   */
+  involved_people:
+    | []
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ]
+    | [
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string,
+        {
+          [k: string]: unknown;
+        } & string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string &
+          string
+      ];
+  restricted_account: {
+    [k: string]: unknown;
+  } & string;
+  immediate_response: {
+    [k: string]: unknown;
+  } & string;
+  /**
+   * @minItems 0
+   * @maxItems 32
+   */
+  shared_evidence_revisions: ({
+    [k: string]: unknown;
+  } & string)[];
+  shared_evidence_statement: string;
+};
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "QsDefinition".
+ */
+export type QsDefinition = QsOrdinaryDefinition | QsPermitDefinition | QsIncidentDefinition;
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "QsOrdinaryRevision".
+ */
+export type QsOrdinaryRevision = {
+  [k: string]: unknown;
+} & {
+  id: QsUuid;
+  company: {
+    [k: string]: unknown;
+  } & string;
+  project: {
+    [k: string]: unknown;
+  } & string;
+  scope_type: "Project";
+  author_person: {
+    [k: string]: unknown;
+  } & string;
+  author_user: {
+    [k: string]: unknown;
+  } & string;
+  created_at: QsTimestamp;
+  status: "recorded";
+  category: "inspection" | "deficiency" | "safety_observation" | "permit_record";
+  parent_id: QsUuid;
+  revision_number: number;
+  predecessor: QsUuid | null;
+  prior_decision: QsUuid | null;
+  amendment_of: QsUuid | null;
+  amendment_reason: string;
+  definition: QsOrdinaryDefinition | QsPermitDefinition;
+  /**
+   * @minItems 1
+   * @maxItems 8
+   */
+  evidence:
+    | [QsCapturedSource]
+    | [QsCapturedSource, QsCapturedSource]
+    | [QsCapturedSource, QsCapturedSource, QsCapturedSource]
+    | [QsCapturedSource, QsCapturedSource, QsCapturedSource, QsCapturedSource]
+    | [QsCapturedSource, QsCapturedSource, QsCapturedSource, QsCapturedSource, QsCapturedSource]
+    | [QsCapturedSource, QsCapturedSource, QsCapturedSource, QsCapturedSource, QsCapturedSource, QsCapturedSource]
+    | [
+        QsCapturedSource,
+        QsCapturedSource,
+        QsCapturedSource,
+        QsCapturedSource,
+        QsCapturedSource,
+        QsCapturedSource,
+        QsCapturedSource
+      ]
+    | [
+        QsCapturedSource,
+        QsCapturedSource,
+        QsCapturedSource,
+        QsCapturedSource,
+        QsCapturedSource,
+        QsCapturedSource,
+        QsCapturedSource,
+        QsCapturedSource
+      ];
+  no_effects: QsNoEffects;
+};
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "QsOrdinaryDecision".
+ */
+export type QsOrdinaryDecision = {
+  id: QsUuid;
+  company: {
+    [k: string]: unknown;
+  } & string;
+  project: {
+    [k: string]: unknown;
+  } & string;
+  scope_type: "Project";
+  author_person: {
+    [k: string]: unknown;
+  } & string;
+  author_user: {
+    [k: string]: unknown;
+  } & string;
+  created_at: QsTimestamp;
+  status: "recorded";
+  category: "inspection" | "deficiency" | "safety_observation" | "permit_record";
+  parent_id: QsUuid;
+  source_revision: QsUuid;
+  source_digest: QsDigest;
+  predecessor: QsUuid | null;
+  action: "submit" | "check" | "return" | "close";
+  from_status: "draft" | "submitted" | "checked";
+  to_status: "submitted" | "checked" | "returned" | "closed";
+  comment: {
+    [k: string]: unknown;
+  } & string;
+  /**
+   * @minItems 0
+   * @maxItems 8
+   */
+  evidence:
+    | []
+    | [QsCapturedSource]
+    | [QsCapturedSource, QsCapturedSource]
+    | [QsCapturedSource, QsCapturedSource, QsCapturedSource]
+    | [QsCapturedSource, QsCapturedSource, QsCapturedSource, QsCapturedSource]
+    | [QsCapturedSource, QsCapturedSource, QsCapturedSource, QsCapturedSource, QsCapturedSource]
+    | [QsCapturedSource, QsCapturedSource, QsCapturedSource, QsCapturedSource, QsCapturedSource, QsCapturedSource]
+    | [
+        QsCapturedSource,
+        QsCapturedSource,
+        QsCapturedSource,
+        QsCapturedSource,
+        QsCapturedSource,
+        QsCapturedSource,
+        QsCapturedSource
+      ]
+    | [
+        QsCapturedSource,
+        QsCapturedSource,
+        QsCapturedSource,
+        QsCapturedSource,
+        QsCapturedSource,
+        QsCapturedSource,
+        QsCapturedSource,
+        QsCapturedSource
+      ];
+  /**
+   * @minItems 0
+   * @maxItems 12
+   */
+  closure:
+    | []
+    | [QsClosure]
+    | [QsClosure, QsClosure]
+    | [QsClosure, QsClosure, QsClosure]
+    | [QsClosure, QsClosure, QsClosure, QsClosure]
+    | [QsClosure, QsClosure, QsClosure, QsClosure, QsClosure]
+    | [QsClosure, QsClosure, QsClosure, QsClosure, QsClosure, QsClosure]
+    | [QsClosure, QsClosure, QsClosure, QsClosure, QsClosure, QsClosure, QsClosure]
+    | [QsClosure, QsClosure, QsClosure, QsClosure, QsClosure, QsClosure, QsClosure, QsClosure]
+    | [QsClosure, QsClosure, QsClosure, QsClosure, QsClosure, QsClosure, QsClosure, QsClosure, QsClosure]
+    | [QsClosure, QsClosure, QsClosure, QsClosure, QsClosure, QsClosure, QsClosure, QsClosure, QsClosure, QsClosure]
+    | [
+        QsClosure,
+        QsClosure,
+        QsClosure,
+        QsClosure,
+        QsClosure,
+        QsClosure,
+        QsClosure,
+        QsClosure,
+        QsClosure,
+        QsClosure,
+        QsClosure
+      ]
+    | [
+        QsClosure,
+        QsClosure,
+        QsClosure,
+        QsClosure,
+        QsClosure,
+        QsClosure,
+        QsClosure,
+        QsClosure,
+        QsClosure,
+        QsClosure,
+        QsClosure,
+        QsClosure
+      ];
+  checked_by_person:
+    | ({
+        [k: string]: unknown;
+      } & string)
+    | null;
+  no_effects: QsNoEffects;
+} & QsOrdinaryDecision1;
+export type QsOrdinaryDecision1 =
+  | {
+      action?: "submit";
+      from_status?: "draft";
+      to_status?: "submitted";
+      /**
+       * @minItems 0
+       * @maxItems 8
+       */
+      evidence?:
+        | []
+        | [QsCapturedSource]
+        | [QsCapturedSource, QsCapturedSource]
+        | [QsCapturedSource, QsCapturedSource, QsCapturedSource]
+        | [QsCapturedSource, QsCapturedSource, QsCapturedSource, QsCapturedSource]
+        | [QsCapturedSource, QsCapturedSource, QsCapturedSource, QsCapturedSource, QsCapturedSource]
+        | [QsCapturedSource, QsCapturedSource, QsCapturedSource, QsCapturedSource, QsCapturedSource, QsCapturedSource]
+        | [
+            QsCapturedSource,
+            QsCapturedSource,
+            QsCapturedSource,
+            QsCapturedSource,
+            QsCapturedSource,
+            QsCapturedSource,
+            QsCapturedSource
+          ]
+        | [
+            QsCapturedSource,
+            QsCapturedSource,
+            QsCapturedSource,
+            QsCapturedSource,
+            QsCapturedSource,
+            QsCapturedSource,
+            QsCapturedSource,
+            QsCapturedSource
+          ];
+      /**
+       * @minItems 0
+       * @maxItems 0
+       */
+      closure?: [];
+      checked_by_person?: null;
+      [k: string]: unknown;
+    }
+  | {
+      action?: "check";
+      from_status?: "submitted";
+      to_status?: "checked";
+      /**
+       * @minItems 1
+       * @maxItems 8
+       */
+      evidence?:
+        | [QsCapturedSource]
+        | [QsCapturedSource, QsCapturedSource]
+        | [QsCapturedSource, QsCapturedSource, QsCapturedSource]
+        | [QsCapturedSource, QsCapturedSource, QsCapturedSource, QsCapturedSource]
+        | [QsCapturedSource, QsCapturedSource, QsCapturedSource, QsCapturedSource, QsCapturedSource]
+        | [QsCapturedSource, QsCapturedSource, QsCapturedSource, QsCapturedSource, QsCapturedSource, QsCapturedSource]
+        | [
+            QsCapturedSource,
+            QsCapturedSource,
+            QsCapturedSource,
+            QsCapturedSource,
+            QsCapturedSource,
+            QsCapturedSource,
+            QsCapturedSource
+          ]
+        | [
+            QsCapturedSource,
+            QsCapturedSource,
+            QsCapturedSource,
+            QsCapturedSource,
+            QsCapturedSource,
+            QsCapturedSource,
+            QsCapturedSource,
+            QsCapturedSource
+          ];
+      /**
+       * @minItems 0
+       * @maxItems 0
+       */
+      closure?: [];
+      checked_by_person?: null;
+      [k: string]: unknown;
+    }
+  | {
+      action?: "return";
+      from_status?: "submitted" | "checked";
+      to_status?: "returned";
+      /**
+       * @minItems 0
+       * @maxItems 8
+       */
+      evidence?:
+        | []
+        | [QsCapturedSource]
+        | [QsCapturedSource, QsCapturedSource]
+        | [QsCapturedSource, QsCapturedSource, QsCapturedSource]
+        | [QsCapturedSource, QsCapturedSource, QsCapturedSource, QsCapturedSource]
+        | [QsCapturedSource, QsCapturedSource, QsCapturedSource, QsCapturedSource, QsCapturedSource]
+        | [QsCapturedSource, QsCapturedSource, QsCapturedSource, QsCapturedSource, QsCapturedSource, QsCapturedSource]
+        | [
+            QsCapturedSource,
+            QsCapturedSource,
+            QsCapturedSource,
+            QsCapturedSource,
+            QsCapturedSource,
+            QsCapturedSource,
+            QsCapturedSource
+          ]
+        | [
+            QsCapturedSource,
+            QsCapturedSource,
+            QsCapturedSource,
+            QsCapturedSource,
+            QsCapturedSource,
+            QsCapturedSource,
+            QsCapturedSource,
+            QsCapturedSource
+          ];
+      /**
+       * @minItems 0
+       * @maxItems 0
+       */
+      closure?: [];
+      checked_by_person?: null;
+      [k: string]: unknown;
+    }
+  | {
+      action?: "close";
+      from_status?: "checked";
+      to_status?: "closed";
+      /**
+       * @minItems 0
+       * @maxItems 8
+       */
+      evidence?:
+        | []
+        | [QsCapturedSource]
+        | [QsCapturedSource, QsCapturedSource]
+        | [QsCapturedSource, QsCapturedSource, QsCapturedSource]
+        | [QsCapturedSource, QsCapturedSource, QsCapturedSource, QsCapturedSource]
+        | [QsCapturedSource, QsCapturedSource, QsCapturedSource, QsCapturedSource, QsCapturedSource]
+        | [QsCapturedSource, QsCapturedSource, QsCapturedSource, QsCapturedSource, QsCapturedSource, QsCapturedSource]
+        | [
+            QsCapturedSource,
+            QsCapturedSource,
+            QsCapturedSource,
+            QsCapturedSource,
+            QsCapturedSource,
+            QsCapturedSource,
+            QsCapturedSource
+          ]
+        | [
+            QsCapturedSource,
+            QsCapturedSource,
+            QsCapturedSource,
+            QsCapturedSource,
+            QsCapturedSource,
+            QsCapturedSource,
+            QsCapturedSource,
+            QsCapturedSource
+          ];
+      /**
+       * @minItems 1
+       * @maxItems 12
+       */
+      closure?:
+        | [QsClosure]
+        | [QsClosure, QsClosure]
+        | [QsClosure, QsClosure, QsClosure]
+        | [QsClosure, QsClosure, QsClosure, QsClosure]
+        | [QsClosure, QsClosure, QsClosure, QsClosure, QsClosure]
+        | [QsClosure, QsClosure, QsClosure, QsClosure, QsClosure, QsClosure]
+        | [QsClosure, QsClosure, QsClosure, QsClosure, QsClosure, QsClosure, QsClosure]
+        | [QsClosure, QsClosure, QsClosure, QsClosure, QsClosure, QsClosure, QsClosure, QsClosure]
+        | [QsClosure, QsClosure, QsClosure, QsClosure, QsClosure, QsClosure, QsClosure, QsClosure, QsClosure]
+        | [QsClosure, QsClosure, QsClosure, QsClosure, QsClosure, QsClosure, QsClosure, QsClosure, QsClosure, QsClosure]
+        | [
+            QsClosure,
+            QsClosure,
+            QsClosure,
+            QsClosure,
+            QsClosure,
+            QsClosure,
+            QsClosure,
+            QsClosure,
+            QsClosure,
+            QsClosure,
+            QsClosure
+          ]
+        | [
+            QsClosure,
+            QsClosure,
+            QsClosure,
+            QsClosure,
+            QsClosure,
+            QsClosure,
+            QsClosure,
+            QsClosure,
+            QsClosure,
+            QsClosure,
+            QsClosure,
+            QsClosure
+          ];
+      checked_by_person?: {
+        [k: string]: unknown;
+      } & string;
+      [k: string]: unknown;
+    };
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "QsIncidentDecision".
+ */
+export type QsIncidentDecision = {
+  id: QsUuid;
+  company: {
+    [k: string]: unknown;
+  } & string;
+  project: {
+    [k: string]: unknown;
+  } & string;
+  scope_type: "Project";
+  author_person: {
+    [k: string]: unknown;
+  } & string;
+  author_user: {
+    [k: string]: unknown;
+  } & string;
+  created_at: QsTimestamp;
+  status: "recorded";
+  category: "incident";
+  parent_id: QsUuid;
+  source_revision: QsUuid;
+  source_digest: QsDigest;
+  predecessor: QsUuid | null;
+  action: "submit" | "check" | "return" | "close";
+  from_status: "draft" | "submitted" | "checked";
+  to_status: "submitted" | "checked" | "returned" | "closed";
+  comment: {
+    [k: string]: unknown;
+  } & string;
+  /**
+   * @minItems 0
+   * @maxItems 8
+   */
+  evidence:
+    | []
+    | [QsCapturedSource]
+    | [QsCapturedSource, QsCapturedSource]
+    | [QsCapturedSource, QsCapturedSource, QsCapturedSource]
+    | [QsCapturedSource, QsCapturedSource, QsCapturedSource, QsCapturedSource]
+    | [QsCapturedSource, QsCapturedSource, QsCapturedSource, QsCapturedSource, QsCapturedSource]
+    | [QsCapturedSource, QsCapturedSource, QsCapturedSource, QsCapturedSource, QsCapturedSource, QsCapturedSource]
+    | [
+        QsCapturedSource,
+        QsCapturedSource,
+        QsCapturedSource,
+        QsCapturedSource,
+        QsCapturedSource,
+        QsCapturedSource,
+        QsCapturedSource
+      ]
+    | [
+        QsCapturedSource,
+        QsCapturedSource,
+        QsCapturedSource,
+        QsCapturedSource,
+        QsCapturedSource,
+        QsCapturedSource,
+        QsCapturedSource,
+        QsCapturedSource
+      ];
+  /**
+   * @minItems 0
+   * @maxItems 12
+   */
+  closure:
+    | []
+    | [QsClosure]
+    | [QsClosure, QsClosure]
+    | [QsClosure, QsClosure, QsClosure]
+    | [QsClosure, QsClosure, QsClosure, QsClosure]
+    | [QsClosure, QsClosure, QsClosure, QsClosure, QsClosure]
+    | [QsClosure, QsClosure, QsClosure, QsClosure, QsClosure, QsClosure]
+    | [QsClosure, QsClosure, QsClosure, QsClosure, QsClosure, QsClosure, QsClosure]
+    | [QsClosure, QsClosure, QsClosure, QsClosure, QsClosure, QsClosure, QsClosure, QsClosure]
+    | [QsClosure, QsClosure, QsClosure, QsClosure, QsClosure, QsClosure, QsClosure, QsClosure, QsClosure]
+    | [QsClosure, QsClosure, QsClosure, QsClosure, QsClosure, QsClosure, QsClosure, QsClosure, QsClosure, QsClosure]
+    | [
+        QsClosure,
+        QsClosure,
+        QsClosure,
+        QsClosure,
+        QsClosure,
+        QsClosure,
+        QsClosure,
+        QsClosure,
+        QsClosure,
+        QsClosure,
+        QsClosure
+      ]
+    | [
+        QsClosure,
+        QsClosure,
+        QsClosure,
+        QsClosure,
+        QsClosure,
+        QsClosure,
+        QsClosure,
+        QsClosure,
+        QsClosure,
+        QsClosure,
+        QsClosure,
+        QsClosure
+      ];
+  checked_by_person:
+    | ({
+        [k: string]: unknown;
+      } & string)
+    | null;
+  no_effects: QsNoEffects;
+} & QsIncidentDecision1;
+export type QsIncidentDecision1 =
+  | {
+      action?: "submit";
+      from_status?: "draft";
+      to_status?: "submitted";
+      /**
+       * @minItems 0
+       * @maxItems 8
+       */
+      evidence?:
+        | []
+        | [QsCapturedSource]
+        | [QsCapturedSource, QsCapturedSource]
+        | [QsCapturedSource, QsCapturedSource, QsCapturedSource]
+        | [QsCapturedSource, QsCapturedSource, QsCapturedSource, QsCapturedSource]
+        | [QsCapturedSource, QsCapturedSource, QsCapturedSource, QsCapturedSource, QsCapturedSource]
+        | [QsCapturedSource, QsCapturedSource, QsCapturedSource, QsCapturedSource, QsCapturedSource, QsCapturedSource]
+        | [
+            QsCapturedSource,
+            QsCapturedSource,
+            QsCapturedSource,
+            QsCapturedSource,
+            QsCapturedSource,
+            QsCapturedSource,
+            QsCapturedSource
+          ]
+        | [
+            QsCapturedSource,
+            QsCapturedSource,
+            QsCapturedSource,
+            QsCapturedSource,
+            QsCapturedSource,
+            QsCapturedSource,
+            QsCapturedSource,
+            QsCapturedSource
+          ];
+      /**
+       * @minItems 0
+       * @maxItems 0
+       */
+      closure?: [];
+      checked_by_person?: null;
+      [k: string]: unknown;
+    }
+  | {
+      action?: "check";
+      from_status?: "submitted";
+      to_status?: "checked";
+      /**
+       * @minItems 1
+       * @maxItems 8
+       */
+      evidence?:
+        | [QsCapturedSource]
+        | [QsCapturedSource, QsCapturedSource]
+        | [QsCapturedSource, QsCapturedSource, QsCapturedSource]
+        | [QsCapturedSource, QsCapturedSource, QsCapturedSource, QsCapturedSource]
+        | [QsCapturedSource, QsCapturedSource, QsCapturedSource, QsCapturedSource, QsCapturedSource]
+        | [QsCapturedSource, QsCapturedSource, QsCapturedSource, QsCapturedSource, QsCapturedSource, QsCapturedSource]
+        | [
+            QsCapturedSource,
+            QsCapturedSource,
+            QsCapturedSource,
+            QsCapturedSource,
+            QsCapturedSource,
+            QsCapturedSource,
+            QsCapturedSource
+          ]
+        | [
+            QsCapturedSource,
+            QsCapturedSource,
+            QsCapturedSource,
+            QsCapturedSource,
+            QsCapturedSource,
+            QsCapturedSource,
+            QsCapturedSource,
+            QsCapturedSource
+          ];
+      /**
+       * @minItems 0
+       * @maxItems 0
+       */
+      closure?: [];
+      checked_by_person?: null;
+      [k: string]: unknown;
+    }
+  | {
+      action?: "return";
+      from_status?: "submitted" | "checked";
+      to_status?: "returned";
+      /**
+       * @minItems 0
+       * @maxItems 8
+       */
+      evidence?:
+        | []
+        | [QsCapturedSource]
+        | [QsCapturedSource, QsCapturedSource]
+        | [QsCapturedSource, QsCapturedSource, QsCapturedSource]
+        | [QsCapturedSource, QsCapturedSource, QsCapturedSource, QsCapturedSource]
+        | [QsCapturedSource, QsCapturedSource, QsCapturedSource, QsCapturedSource, QsCapturedSource]
+        | [QsCapturedSource, QsCapturedSource, QsCapturedSource, QsCapturedSource, QsCapturedSource, QsCapturedSource]
+        | [
+            QsCapturedSource,
+            QsCapturedSource,
+            QsCapturedSource,
+            QsCapturedSource,
+            QsCapturedSource,
+            QsCapturedSource,
+            QsCapturedSource
+          ]
+        | [
+            QsCapturedSource,
+            QsCapturedSource,
+            QsCapturedSource,
+            QsCapturedSource,
+            QsCapturedSource,
+            QsCapturedSource,
+            QsCapturedSource,
+            QsCapturedSource
+          ];
+      /**
+       * @minItems 0
+       * @maxItems 0
+       */
+      closure?: [];
+      checked_by_person?: null;
+      [k: string]: unknown;
+    }
+  | {
+      action?: "close";
+      from_status?: "checked";
+      to_status?: "closed";
+      /**
+       * @minItems 0
+       * @maxItems 8
+       */
+      evidence?:
+        | []
+        | [QsCapturedSource]
+        | [QsCapturedSource, QsCapturedSource]
+        | [QsCapturedSource, QsCapturedSource, QsCapturedSource]
+        | [QsCapturedSource, QsCapturedSource, QsCapturedSource, QsCapturedSource]
+        | [QsCapturedSource, QsCapturedSource, QsCapturedSource, QsCapturedSource, QsCapturedSource]
+        | [QsCapturedSource, QsCapturedSource, QsCapturedSource, QsCapturedSource, QsCapturedSource, QsCapturedSource]
+        | [
+            QsCapturedSource,
+            QsCapturedSource,
+            QsCapturedSource,
+            QsCapturedSource,
+            QsCapturedSource,
+            QsCapturedSource,
+            QsCapturedSource
+          ]
+        | [
+            QsCapturedSource,
+            QsCapturedSource,
+            QsCapturedSource,
+            QsCapturedSource,
+            QsCapturedSource,
+            QsCapturedSource,
+            QsCapturedSource,
+            QsCapturedSource
+          ];
+      /**
+       * @minItems 1
+       * @maxItems 12
+       */
+      closure?:
+        | [QsClosure]
+        | [QsClosure, QsClosure]
+        | [QsClosure, QsClosure, QsClosure]
+        | [QsClosure, QsClosure, QsClosure, QsClosure]
+        | [QsClosure, QsClosure, QsClosure, QsClosure, QsClosure]
+        | [QsClosure, QsClosure, QsClosure, QsClosure, QsClosure, QsClosure]
+        | [QsClosure, QsClosure, QsClosure, QsClosure, QsClosure, QsClosure, QsClosure]
+        | [QsClosure, QsClosure, QsClosure, QsClosure, QsClosure, QsClosure, QsClosure, QsClosure]
+        | [QsClosure, QsClosure, QsClosure, QsClosure, QsClosure, QsClosure, QsClosure, QsClosure, QsClosure]
+        | [QsClosure, QsClosure, QsClosure, QsClosure, QsClosure, QsClosure, QsClosure, QsClosure, QsClosure, QsClosure]
+        | [
+            QsClosure,
+            QsClosure,
+            QsClosure,
+            QsClosure,
+            QsClosure,
+            QsClosure,
+            QsClosure,
+            QsClosure,
+            QsClosure,
+            QsClosure,
+            QsClosure
+          ]
+        | [
+            QsClosure,
+            QsClosure,
+            QsClosure,
+            QsClosure,
+            QsClosure,
+            QsClosure,
+            QsClosure,
+            QsClosure,
+            QsClosure,
+            QsClosure,
+            QsClosure,
+            QsClosure
+          ];
+      checked_by_person?: {
+        [k: string]: unknown;
+      } & string;
+      [k: string]: unknown;
+    };
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "QsHeader".
+ */
+export type QsHeader = QsOrdinaryHeader | QsIncidentHeader;
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "QsRevision".
+ */
+export type QsRevision = QsOrdinaryRevision | QsIncidentRevision;
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "QsDecision".
+ */
+export type QsDecision = QsOrdinaryDecision | QsIncidentDecision;
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "QsRecord".
+ */
+export type QsRecord =
+  | QsOrdinaryHeader
+  | QsOrdinaryRevision
+  | QsOrdinaryDecision
+  | QsIncidentHeader
+  | QsIncidentRevision
+  | QsIncidentDecision;
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "QsCreateRecordRequest".
+ */
+export type QsCreateRecordRequest =
+  | {
+      family?: "record";
+      category?: "inspection" | "deficiency" | "safety_observation";
+      definition?: QsOrdinaryDefinition;
+      [k: string]: unknown;
+    }
+  | {
+      family?: "record";
+      category?: "permit_record";
+      definition?: QsPermitDefinition;
+      [k: string]: unknown;
+    }
+  | {
+      family?: "incident";
+      category?: "incident";
+      definition?: QsIncidentDefinition;
+      [k: string]: unknown;
+    };
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "QsReviseRecordRequest".
+ */
+export type QsReviseRecordRequest =
+  | {
+      family?: "record";
+      definition?: QsOrdinaryDefinition | QsPermitDefinition;
+      [k: string]: unknown;
+    }
+  | {
+      family?: "incident";
+      definition?: QsIncidentDefinition;
+      [k: string]: unknown;
+    };
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "QsTransitionRequest".
+ */
+export type QsTransitionRequest =
+  | {
+      action?: "submit";
+      /**
+       * @minItems 0
+       * @maxItems 8
+       */
+      evidence?:
+        | []
+        | [QsSourceInput]
+        | [QsSourceInput, QsSourceInput]
+        | [QsSourceInput, QsSourceInput, QsSourceInput]
+        | [QsSourceInput, QsSourceInput, QsSourceInput, QsSourceInput]
+        | [QsSourceInput, QsSourceInput, QsSourceInput, QsSourceInput, QsSourceInput]
+        | [QsSourceInput, QsSourceInput, QsSourceInput, QsSourceInput, QsSourceInput, QsSourceInput]
+        | [QsSourceInput, QsSourceInput, QsSourceInput, QsSourceInput, QsSourceInput, QsSourceInput, QsSourceInput]
+        | [
+            QsSourceInput,
+            QsSourceInput,
+            QsSourceInput,
+            QsSourceInput,
+            QsSourceInput,
+            QsSourceInput,
+            QsSourceInput,
+            QsSourceInput
+          ];
+      /**
+       * @minItems 0
+       * @maxItems 0
+       */
+      closure?: [];
+      [k: string]: unknown;
+    }
+  | {
+      action?: "check";
+      /**
+       * @minItems 1
+       * @maxItems 8
+       */
+      evidence?:
+        | [QsSourceInput]
+        | [QsSourceInput, QsSourceInput]
+        | [QsSourceInput, QsSourceInput, QsSourceInput]
+        | [QsSourceInput, QsSourceInput, QsSourceInput, QsSourceInput]
+        | [QsSourceInput, QsSourceInput, QsSourceInput, QsSourceInput, QsSourceInput]
+        | [QsSourceInput, QsSourceInput, QsSourceInput, QsSourceInput, QsSourceInput, QsSourceInput]
+        | [QsSourceInput, QsSourceInput, QsSourceInput, QsSourceInput, QsSourceInput, QsSourceInput, QsSourceInput]
+        | [
+            QsSourceInput,
+            QsSourceInput,
+            QsSourceInput,
+            QsSourceInput,
+            QsSourceInput,
+            QsSourceInput,
+            QsSourceInput,
+            QsSourceInput
+          ];
+      /**
+       * @minItems 0
+       * @maxItems 0
+       */
+      closure?: [];
+      [k: string]: unknown;
+    }
+  | {
+      action?: "return";
+      /**
+       * @minItems 0
+       * @maxItems 8
+       */
+      evidence?:
+        | []
+        | [QsSourceInput]
+        | [QsSourceInput, QsSourceInput]
+        | [QsSourceInput, QsSourceInput, QsSourceInput]
+        | [QsSourceInput, QsSourceInput, QsSourceInput, QsSourceInput]
+        | [QsSourceInput, QsSourceInput, QsSourceInput, QsSourceInput, QsSourceInput]
+        | [QsSourceInput, QsSourceInput, QsSourceInput, QsSourceInput, QsSourceInput, QsSourceInput]
+        | [QsSourceInput, QsSourceInput, QsSourceInput, QsSourceInput, QsSourceInput, QsSourceInput, QsSourceInput]
+        | [
+            QsSourceInput,
+            QsSourceInput,
+            QsSourceInput,
+            QsSourceInput,
+            QsSourceInput,
+            QsSourceInput,
+            QsSourceInput,
+            QsSourceInput
+          ];
+      /**
+       * @minItems 0
+       * @maxItems 0
+       */
+      closure?: [];
+      [k: string]: unknown;
+    }
+  | {
+      action?: "close";
+      /**
+       * @minItems 0
+       * @maxItems 8
+       */
+      evidence?:
+        | []
+        | [QsSourceInput]
+        | [QsSourceInput, QsSourceInput]
+        | [QsSourceInput, QsSourceInput, QsSourceInput]
+        | [QsSourceInput, QsSourceInput, QsSourceInput, QsSourceInput]
+        | [QsSourceInput, QsSourceInput, QsSourceInput, QsSourceInput, QsSourceInput]
+        | [QsSourceInput, QsSourceInput, QsSourceInput, QsSourceInput, QsSourceInput, QsSourceInput]
+        | [QsSourceInput, QsSourceInput, QsSourceInput, QsSourceInput, QsSourceInput, QsSourceInput, QsSourceInput]
+        | [
+            QsSourceInput,
+            QsSourceInput,
+            QsSourceInput,
+            QsSourceInput,
+            QsSourceInput,
+            QsSourceInput,
+            QsSourceInput,
+            QsSourceInput
+          ];
+      /**
+       * @minItems 1
+       * @maxItems 12
+       */
+      closure?:
+        | [QsClosureInput]
+        | [QsClosureInput, QsClosureInput]
+        | [QsClosureInput, QsClosureInput, QsClosureInput]
+        | [QsClosureInput, QsClosureInput, QsClosureInput, QsClosureInput]
+        | [QsClosureInput, QsClosureInput, QsClosureInput, QsClosureInput, QsClosureInput]
+        | [QsClosureInput, QsClosureInput, QsClosureInput, QsClosureInput, QsClosureInput, QsClosureInput]
+        | [
+            QsClosureInput,
+            QsClosureInput,
+            QsClosureInput,
+            QsClosureInput,
+            QsClosureInput,
+            QsClosureInput,
+            QsClosureInput
+          ]
+        | [
+            QsClosureInput,
+            QsClosureInput,
+            QsClosureInput,
+            QsClosureInput,
+            QsClosureInput,
+            QsClosureInput,
+            QsClosureInput,
+            QsClosureInput
+          ]
+        | [
+            QsClosureInput,
+            QsClosureInput,
+            QsClosureInput,
+            QsClosureInput,
+            QsClosureInput,
+            QsClosureInput,
+            QsClosureInput,
+            QsClosureInput,
+            QsClosureInput
+          ]
+        | [
+            QsClosureInput,
+            QsClosureInput,
+            QsClosureInput,
+            QsClosureInput,
+            QsClosureInput,
+            QsClosureInput,
+            QsClosureInput,
+            QsClosureInput,
+            QsClosureInput,
+            QsClosureInput
+          ]
+        | [
+            QsClosureInput,
+            QsClosureInput,
+            QsClosureInput,
+            QsClosureInput,
+            QsClosureInput,
+            QsClosureInput,
+            QsClosureInput,
+            QsClosureInput,
+            QsClosureInput,
+            QsClosureInput,
+            QsClosureInput
+          ]
+        | [
+            QsClosureInput,
+            QsClosureInput,
+            QsClosureInput,
+            QsClosureInput,
+            QsClosureInput,
+            QsClosureInput,
+            QsClosureInput,
+            QsClosureInput,
+            QsClosureInput,
+            QsClosureInput,
+            QsClosureInput,
+            QsClosureInput
+          ];
+      [k: string]: unknown;
+    };
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "QsListRecordsRequest".
+ */
+export type QsListRecordsRequest = {
+  [k: string]: unknown;
+};
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "QsCreateRecordResponse".
+ */
+export type QsCreateRecordResponse =
+  | {
+      family?: "record";
+      header?: QsOrdinaryHeader;
+      revision?: QsOrdinaryRevision;
+      [k: string]: unknown;
+    }
+  | {
+      family?: "incident";
+      header?: QsIncidentHeader;
+      revision?: QsIncidentRevision;
+      history_id?: null;
+      [k: string]: unknown;
+    };
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "QsReviseRecordResponse".
+ */
+export type QsReviseRecordResponse =
+  | {
+      family?: "record";
+      header?: QsOrdinaryHeader;
+      revision?: QsOrdinaryRevision;
+      [k: string]: unknown;
+    }
+  | {
+      family?: "incident";
+      header?: QsIncidentHeader;
+      revision?: QsIncidentRevision;
+      history_id?: null;
+      [k: string]: unknown;
+    };
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "QsTransitionResponse".
+ */
+export type QsTransitionResponse =
+  | {
+      family?: "record";
+      header?: QsOrdinaryHeader;
+      revision?: QsOrdinaryRevision;
+      decision?: QsOrdinaryDecision;
+      [k: string]: unknown;
+    }
+  | {
+      family?: "incident";
+      header?: QsIncidentHeader;
+      revision?: QsIncidentRevision;
+      decision?: QsIncidentDecision;
+      history_id?: null;
+      [k: string]: unknown;
     };
 
 /**
@@ -9399,4 +53054,1407 @@ export interface SemanticStatusRequest {
    * Reference to the existing rebuild operation; this read does not create a command.
    */
   job_operation_id: string;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "FoSourceInput".
+ */
+export interface FoSourceInput {
+  revision_id: {
+    [k: string]: unknown;
+  } & string;
+  source_sha256: FoDigest;
+  page: number;
+  locator: {
+    [k: string]: unknown;
+  } & string;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "FoTicketDefinitionInput".
+ */
+export interface FoTicketDefinitionInput {
+  local_date: FoDate;
+  title: {
+    [k: string]: unknown;
+  } & string;
+  customer_name: {
+    [k: string]: unknown;
+  } & string;
+  location: {
+    [k: string]: unknown;
+  } & string;
+  work_description: {
+    [k: string]: unknown;
+  } & string;
+  potential_change_reference: string;
+  /**
+   * @minItems 1
+   * @maxItems 40
+   */
+  lines: [FoTicketLineInput, ...FoTicketLineInput[]];
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "FoTicketLineInput".
+ */
+export interface FoTicketLineInput {
+  kind: "labor" | "equipment" | "material";
+  description: {
+    [k: string]: unknown;
+  } & string;
+  quantity: FoQuantityValue;
+  unit: {
+    [k: string]: unknown;
+  } & string;
+  /**
+   * @minItems 1
+   * @maxItems 8
+   */
+  sources:
+    | [FoSourceInput]
+    | [FoSourceInput, FoSourceInput]
+    | [FoSourceInput, FoSourceInput, FoSourceInput]
+    | [FoSourceInput, FoSourceInput, FoSourceInput, FoSourceInput]
+    | [FoSourceInput, FoSourceInput, FoSourceInput, FoSourceInput, FoSourceInput]
+    | [FoSourceInput, FoSourceInput, FoSourceInput, FoSourceInput, FoSourceInput, FoSourceInput]
+    | [FoSourceInput, FoSourceInput, FoSourceInput, FoSourceInput, FoSourceInput, FoSourceInput, FoSourceInput]
+    | [
+        FoSourceInput,
+        FoSourceInput,
+        FoSourceInput,
+        FoSourceInput,
+        FoSourceInput,
+        FoSourceInput,
+        FoSourceInput,
+        FoSourceInput
+      ];
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "FoPhotoInput".
+ */
+export interface FoPhotoInput {
+  source: FoSourceInput;
+  caption: {
+    [k: string]: unknown;
+  } & string;
+  captured_at: FoTimestamp;
+  representation: "source_image" | "photo_on_pdf_page";
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "FoQuantityDefinitionInput".
+ */
+export interface FoQuantityDefinitionInput {
+  original_event_id: FoUuid;
+  supersedes_event_id: FoUuid | null;
+  kind: "installed" | "delivered";
+  description: {
+    [k: string]: unknown;
+  } & string;
+  wbs_code: string;
+  cost_code: string;
+  quantity: FoQuantityValue;
+  unit: {
+    [k: string]: unknown;
+  } & string;
+  location: {
+    [k: string]: unknown;
+  } & string;
+  /**
+   * @minItems 1
+   * @maxItems 8
+   */
+  sources:
+    | [FoSourceInput]
+    | [FoSourceInput, FoSourceInput]
+    | [FoSourceInput, FoSourceInput, FoSourceInput]
+    | [FoSourceInput, FoSourceInput, FoSourceInput, FoSourceInput]
+    | [FoSourceInput, FoSourceInput, FoSourceInput, FoSourceInput, FoSourceInput]
+    | [FoSourceInput, FoSourceInput, FoSourceInput, FoSourceInput, FoSourceInput, FoSourceInput]
+    | [FoSourceInput, FoSourceInput, FoSourceInput, FoSourceInput, FoSourceInput, FoSourceInput, FoSourceInput]
+    | [
+        FoSourceInput,
+        FoSourceInput,
+        FoSourceInput,
+        FoSourceInput,
+        FoSourceInput,
+        FoSourceInput,
+        FoSourceInput,
+        FoSourceInput
+      ];
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "FoHeader".
+ */
+export interface FoHeader {
+  id: FoUuid;
+  company: {
+    [k: string]: unknown;
+  } & string;
+  project: {
+    [k: string]: unknown;
+  } & string;
+  scope_type: "Project";
+  author_person: {
+    [k: string]: unknown;
+  } & string;
+  author_user: {
+    [k: string]: unknown;
+  } & string;
+  created_at: FoTimestamp;
+  status: "draft" | "submitted" | "reviewed" | "returned" | "accepted" | "acknowledged";
+  number: {
+    [k: string]: unknown;
+  } & string;
+  revision_number: number;
+  current_revision: FoUuid;
+  last_decision: FoUuid | null;
+  accepted_revision: FoUuid | null;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "FoPhoto".
+ */
+export interface FoPhoto {
+  source: FoCapturedSource;
+  caption: {
+    [k: string]: unknown;
+  } & string;
+  captured_at: FoTimestamp;
+  representation: "source_image" | "photo_on_pdf_page";
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "FoCapturedSource".
+ */
+export interface FoCapturedSource {
+  revision_id: {
+    [k: string]: unknown;
+  } & string;
+  source_sha256: FoDigest;
+  page: number;
+  locator: {
+    [k: string]: unknown;
+  } & string;
+  document_id: {
+    [k: string]: unknown;
+  } & string;
+  revision_number: number;
+  byte_length: number;
+  mime_type: {
+    [k: string]: unknown;
+  } & string;
+  page_count: number;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "FoNoEffects".
+ */
+export interface FoNoEffects {
+  contract_change: false;
+  budget_change: false;
+  procurement_change: false;
+  invoice_change: false;
+  financial_posting: false;
+  payroll_release: false;
+  quality_certification: false;
+  external_transmission: false;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "FoPerson".
+ */
+export interface FoPerson {
+  user: {
+    [k: string]: unknown;
+  } & string;
+  person: {
+    [k: string]: unknown;
+  } & string;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "FoTicketDefinition".
+ */
+export interface FoTicketDefinition {
+  local_date: FoDate;
+  title: {
+    [k: string]: unknown;
+  } & string;
+  customer_name: {
+    [k: string]: unknown;
+  } & string;
+  location: {
+    [k: string]: unknown;
+  } & string;
+  work_description: {
+    [k: string]: unknown;
+  } & string;
+  potential_change_reference: string;
+  /**
+   * @minItems 1
+   * @maxItems 40
+   */
+  lines: [FoTicketLine, ...FoTicketLine[]];
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "FoTicketLine".
+ */
+export interface FoTicketLine {
+  kind: "labor" | "equipment" | "material";
+  description: {
+    [k: string]: unknown;
+  } & string;
+  quantity: FoQuantityValue;
+  unit: {
+    [k: string]: unknown;
+  } & string;
+  /**
+   * @minItems 1
+   * @maxItems 8
+   */
+  sources:
+    | [FoCapturedSource]
+    | [FoCapturedSource, FoCapturedSource]
+    | [FoCapturedSource, FoCapturedSource, FoCapturedSource]
+    | [FoCapturedSource, FoCapturedSource, FoCapturedSource, FoCapturedSource]
+    | [FoCapturedSource, FoCapturedSource, FoCapturedSource, FoCapturedSource, FoCapturedSource]
+    | [FoCapturedSource, FoCapturedSource, FoCapturedSource, FoCapturedSource, FoCapturedSource, FoCapturedSource]
+    | [
+        FoCapturedSource,
+        FoCapturedSource,
+        FoCapturedSource,
+        FoCapturedSource,
+        FoCapturedSource,
+        FoCapturedSource,
+        FoCapturedSource
+      ]
+    | [
+        FoCapturedSource,
+        FoCapturedSource,
+        FoCapturedSource,
+        FoCapturedSource,
+        FoCapturedSource,
+        FoCapturedSource,
+        FoCapturedSource,
+        FoCapturedSource
+      ];
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "FoOperation".
+ */
+export interface FoOperation {
+  id: FoUuid;
+  status: "succeeded";
+  replayed: boolean;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "FoQuantity".
+ */
+export interface FoQuantity {
+  id: FoUuid;
+  company: {
+    [k: string]: unknown;
+  } & string;
+  project: {
+    [k: string]: unknown;
+  } & string;
+  scope_type: "Project";
+  author_person: {
+    [k: string]: unknown;
+  } & string;
+  author_user: {
+    [k: string]: unknown;
+  } & string;
+  created_at: FoTimestamp;
+  status: "recorded";
+  parent_id: FoUuid;
+  source_revision: FoUuid;
+  revision_number: number;
+  original_event_id: FoUuid;
+  supersedes_event_id: FoUuid | null;
+  definition: FoQuantityDefinition;
+  no_effects: FoNoEffects;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "FoQuantityDefinition".
+ */
+export interface FoQuantityDefinition {
+  original_event_id: FoUuid;
+  supersedes_event_id: FoUuid | null;
+  kind: "installed" | "delivered";
+  description: {
+    [k: string]: unknown;
+  } & string;
+  wbs_code: string;
+  cost_code: string;
+  quantity: FoQuantityValue;
+  unit: {
+    [k: string]: unknown;
+  } & string;
+  location: {
+    [k: string]: unknown;
+  } & string;
+  /**
+   * @minItems 1
+   * @maxItems 8
+   */
+  sources:
+    | [FoCapturedSource]
+    | [FoCapturedSource, FoCapturedSource]
+    | [FoCapturedSource, FoCapturedSource, FoCapturedSource]
+    | [FoCapturedSource, FoCapturedSource, FoCapturedSource, FoCapturedSource]
+    | [FoCapturedSource, FoCapturedSource, FoCapturedSource, FoCapturedSource, FoCapturedSource]
+    | [FoCapturedSource, FoCapturedSource, FoCapturedSource, FoCapturedSource, FoCapturedSource, FoCapturedSource]
+    | [
+        FoCapturedSource,
+        FoCapturedSource,
+        FoCapturedSource,
+        FoCapturedSource,
+        FoCapturedSource,
+        FoCapturedSource,
+        FoCapturedSource
+      ]
+    | [
+        FoCapturedSource,
+        FoCapturedSource,
+        FoCapturedSource,
+        FoCapturedSource,
+        FoCapturedSource,
+        FoCapturedSource,
+        FoCapturedSource,
+        FoCapturedSource
+      ];
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "FoDailyHeader".
+ */
+export interface FoDailyHeader {
+  id: FoUuid;
+  company: {
+    [k: string]: unknown;
+  } & string;
+  project: {
+    [k: string]: unknown;
+  } & string;
+  scope_type: "Project";
+  author_person: {
+    [k: string]: unknown;
+  } & string;
+  author_user: {
+    [k: string]: unknown;
+  } & string;
+  created_at: FoTimestamp;
+  status: "draft" | "submitted" | "reviewed" | "returned" | "accepted";
+  number: {
+    [k: string]: unknown;
+  } & string;
+  revision_number: number;
+  current_revision: FoUuid;
+  last_decision: FoUuid | null;
+  accepted_revision: FoUuid | null;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "FoTicketHeader".
+ */
+export interface FoTicketHeader {
+  id: FoUuid;
+  company: {
+    [k: string]: unknown;
+  } & string;
+  project: {
+    [k: string]: unknown;
+  } & string;
+  scope_type: "Project";
+  author_person: {
+    [k: string]: unknown;
+  } & string;
+  author_user: {
+    [k: string]: unknown;
+  } & string;
+  created_at: FoTimestamp;
+  status: "draft" | "submitted" | "reviewed" | "returned" | "accepted" | "acknowledged";
+  number: {
+    [k: string]: unknown;
+  } & string;
+  revision_number: number;
+  current_revision: FoUuid;
+  last_decision: FoUuid | null;
+  accepted_revision: FoUuid | null;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "FoSyncOperation".
+ */
+export interface FoSyncOperation {
+  id: FoCaptureUuid;
+  status: "succeeded";
+  replayed: boolean;
+}
+/**
+ * Immutable Project capture attribution; device ownership/current authority and exact source/base revision facts are verified by the server. Canonical UTF-8 JSON is limited to 256 KiB by the service.
+ *
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "FoEnvelope".
+ */
+export interface FoEnvelope {
+  schema: "cipher.field.offline.v1";
+  device_id: FoCaptureUuid;
+  capture_id: FoCaptureUuid;
+  company: {
+    [k: string]: unknown;
+  } & string;
+  project: {
+    [k: string]: unknown;
+  } & string;
+  actor_person: {
+    [k: string]: unknown;
+  } & string;
+  actor_user: {
+    [k: string]: unknown;
+  } & string;
+  captured_at: FoTimestamp;
+  command: FoCommand;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "FoDeviceSummary".
+ */
+export interface FoDeviceSummary {
+  device_id: FoCaptureUuid;
+  company: {
+    [k: string]: unknown;
+  } & string;
+  project: {
+    [k: string]: unknown;
+  } & string;
+  owner_person: {
+    [k: string]: unknown;
+  } & string;
+  registered_user: {
+    [k: string]: unknown;
+  } & string;
+  status: "active" | "revoked";
+  label: {
+    [k: string]: unknown;
+  } & string;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "FoCaptureSummary".
+ */
+export interface FoCaptureSummary {
+  capture_id: FoCaptureUuid;
+  device_id: FoCaptureUuid;
+  company: {
+    [k: string]: unknown;
+  } & string;
+  project: {
+    [k: string]: unknown;
+  } & string;
+  actor_person: {
+    [k: string]: unknown;
+  } & string;
+  actor_user: {
+    [k: string]: unknown;
+  } & string;
+  envelope_digest: FoDigest;
+  status: "staged" | "committed" | "discarded" | "superseded";
+  payload_retained: boolean;
+  replaces_capture_id: FoCaptureUuid | null;
+  replacement_capture_id: FoCaptureUuid | null;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "FoConflict".
+ */
+export interface FoConflict {
+  code: "base_changed" | "record_state_changed" | "source_changed";
+  current_header_version: FoDigest | null;
+  current_revision_id: FoUuid | null;
+  current_revision_digest: FoDigest | null;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "FoRegisterDeviceRequest".
+ */
+export interface FoRegisterDeviceRequest {
+  company: {
+    [k: string]: unknown;
+  } & string;
+  project: {
+    [k: string]: unknown;
+  } & string;
+  operation_id: FoCaptureUuid;
+  device_id: FoCaptureUuid;
+  label: {
+    [k: string]: unknown;
+  } & string;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "FoRevokeDeviceRequest".
+ */
+export interface FoRevokeDeviceRequest {
+  company: {
+    [k: string]: unknown;
+  } & string;
+  project: {
+    [k: string]: unknown;
+  } & string;
+  operation_id: FoCaptureUuid;
+  device_id: FoCaptureUuid;
+  expected_version: FoDigest;
+  reason: {
+    [k: string]: unknown;
+  } & string;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "FoStageCaptureRequest".
+ */
+export interface FoStageCaptureRequest {
+  company: {
+    [k: string]: unknown;
+  } & string;
+  project: {
+    [k: string]: unknown;
+  } & string;
+  operation_id: FoCaptureUuid;
+  envelope: FoEnvelope;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "FoGetCaptureRequest".
+ */
+export interface FoGetCaptureRequest {
+  company: {
+    [k: string]: unknown;
+  } & string;
+  project: {
+    [k: string]: unknown;
+  } & string;
+  capture_id: FoCaptureUuid;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "FoInspectCaptureRequest".
+ */
+export interface FoInspectCaptureRequest {
+  company: {
+    [k: string]: unknown;
+  } & string;
+  project: {
+    [k: string]: unknown;
+  } & string;
+  capture_id: FoCaptureUuid;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "FoApplyCaptureRequest".
+ */
+export interface FoApplyCaptureRequest {
+  company: {
+    [k: string]: unknown;
+  } & string;
+  project: {
+    [k: string]: unknown;
+  } & string;
+  operation_id: FoCaptureUuid;
+  capture_id: FoCaptureUuid;
+  expected_version: FoDigest;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "FoDiscardCaptureRequest".
+ */
+export interface FoDiscardCaptureRequest {
+  company: {
+    [k: string]: unknown;
+  } & string;
+  project: {
+    [k: string]: unknown;
+  } & string;
+  operation_id: FoCaptureUuid;
+  capture_id: FoCaptureUuid;
+  expected_version: FoDigest;
+  reason: {
+    [k: string]: unknown;
+  } & string;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "FoResolveCaptureRequest".
+ */
+export interface FoResolveCaptureRequest {
+  company: {
+    [k: string]: unknown;
+  } & string;
+  project: {
+    [k: string]: unknown;
+  } & string;
+  operation_id: FoCaptureUuid;
+  capture_id: FoCaptureUuid;
+  expected_version: FoDigest;
+  replacement_envelope: FoEnvelope;
+  reason: {
+    [k: string]: unknown;
+  } & string;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "FoDeviceMutationResponse".
+ */
+export interface FoDeviceMutationResponse {
+  device: FoDeviceSummary;
+  device_version: FoDigest;
+  operation: FoSyncOperation;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "FoCaptureMutationResponse".
+ */
+export interface FoCaptureMutationResponse {
+  capture: FoCaptureSummary;
+  capture_version: FoDigest;
+  operation: FoSyncOperation;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "FoGetCaptureResponse".
+ */
+export interface FoGetCaptureResponse {
+  capture: FoCaptureSummary;
+  capture_version: FoDigest;
+  envelope: FoEnvelope | null;
+  original_receipt: FoCreateRecordResponse | null;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "FoApplyCaptureResponse".
+ */
+export interface FoApplyCaptureResponse {
+  capture: FoCaptureSummary;
+  capture_version: FoDigest;
+  original_receipt: FoCreateRecordResponse;
+  replayed: boolean;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "QsSourceInput".
+ */
+export interface QsSourceInput {
+  revision_id: {
+    [k: string]: unknown;
+  } & string;
+  source_sha256: QsDigest;
+  page: number;
+  locator: {
+    [k: string]: unknown;
+  } & string;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "QsCapturedSource".
+ */
+export interface QsCapturedSource {
+  revision_id: {
+    [k: string]: unknown;
+  } & string;
+  source_sha256: QsDigest;
+  page: number;
+  locator: {
+    [k: string]: unknown;
+  } & string;
+  document_id: {
+    [k: string]: unknown;
+  } & string;
+  revision_number: number;
+  byte_length: number;
+  mime_type: {
+    [k: string]: unknown;
+  } & string;
+  page_count: number;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "QsOperation".
+ */
+export interface QsOperation {
+  id: QsUuid;
+  status: "succeeded";
+  replayed: boolean;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "QsNoEffects".
+ */
+export interface QsNoEffects {
+  contract_change: false;
+  budget_change: false;
+  procurement_change: false;
+  invoice_change: false;
+  financial_posting: false;
+  payroll_release: false;
+  award_execution: false;
+  engineering_approval: false;
+  regulatory_approval: false;
+  hazardous_work_authority: false;
+  medical_advice: false;
+  compliance_certification: false;
+  external_transmission: false;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "QsClosureRequirement".
+ */
+export interface QsClosureRequirement {
+  item_id: QsUuid;
+  description: {
+    [k: string]: unknown;
+  } & string;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "QsOrdinaryDefinition".
+ */
+export interface QsOrdinaryDefinition {
+  title: {
+    [k: string]: unknown;
+  } & string;
+  local_date: QsDate;
+  location: {
+    [k: string]: unknown;
+  } & string;
+  description: {
+    [k: string]: unknown;
+  } & string;
+  /**
+   * @minItems 1
+   * @maxItems 12
+   */
+  required_closure_items:
+    | [QsClosureRequirement]
+    | [QsClosureRequirement, QsClosureRequirement]
+    | [QsClosureRequirement, QsClosureRequirement, QsClosureRequirement]
+    | [QsClosureRequirement, QsClosureRequirement, QsClosureRequirement, QsClosureRequirement]
+    | [QsClosureRequirement, QsClosureRequirement, QsClosureRequirement, QsClosureRequirement, QsClosureRequirement]
+    | [
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement
+      ]
+    | [
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement
+      ]
+    | [
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement
+      ]
+    | [
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement
+      ]
+    | [
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement
+      ]
+    | [
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement
+      ]
+    | [
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement
+      ];
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "QsPermitDefinition".
+ */
+export interface QsPermitDefinition {
+  title: {
+    [k: string]: unknown;
+  } & string;
+  local_date: QsDate;
+  location: {
+    [k: string]: unknown;
+  } & string;
+  description: {
+    [k: string]: unknown;
+  } & string;
+  /**
+   * @minItems 1
+   * @maxItems 12
+   */
+  required_closure_items:
+    | [QsClosureRequirement]
+    | [QsClosureRequirement, QsClosureRequirement]
+    | [QsClosureRequirement, QsClosureRequirement, QsClosureRequirement]
+    | [QsClosureRequirement, QsClosureRequirement, QsClosureRequirement, QsClosureRequirement]
+    | [QsClosureRequirement, QsClosureRequirement, QsClosureRequirement, QsClosureRequirement, QsClosureRequirement]
+    | [
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement
+      ]
+    | [
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement
+      ]
+    | [
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement
+      ]
+    | [
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement
+      ]
+    | [
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement
+      ]
+    | [
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement
+      ]
+    | [
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement,
+        QsClosureRequirement
+      ];
+  issuer_as_recorded: {
+    [k: string]: unknown;
+  } & string;
+  permit_identifier: {
+    [k: string]: unknown;
+  } & string;
+  valid_from: QsTimestamp;
+  valid_until: QsTimestamp;
+  conditions_as_recorded: {
+    [k: string]: unknown;
+  } & string;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "QsClosureInput".
+ */
+export interface QsClosureInput {
+  item_id: QsUuid;
+  /**
+   * @minItems 1
+   * @maxItems 8
+   */
+  evidence:
+    | [QsSourceInput]
+    | [QsSourceInput, QsSourceInput]
+    | [QsSourceInput, QsSourceInput, QsSourceInput]
+    | [QsSourceInput, QsSourceInput, QsSourceInput, QsSourceInput]
+    | [QsSourceInput, QsSourceInput, QsSourceInput, QsSourceInput, QsSourceInput]
+    | [QsSourceInput, QsSourceInput, QsSourceInput, QsSourceInput, QsSourceInput, QsSourceInput]
+    | [QsSourceInput, QsSourceInput, QsSourceInput, QsSourceInput, QsSourceInput, QsSourceInput, QsSourceInput]
+    | [
+        QsSourceInput,
+        QsSourceInput,
+        QsSourceInput,
+        QsSourceInput,
+        QsSourceInput,
+        QsSourceInput,
+        QsSourceInput,
+        QsSourceInput
+      ];
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "QsClosure".
+ */
+export interface QsClosure {
+  item_id: QsUuid;
+  /**
+   * @minItems 1
+   * @maxItems 8
+   */
+  evidence:
+    | [QsCapturedSource]
+    | [QsCapturedSource, QsCapturedSource]
+    | [QsCapturedSource, QsCapturedSource, QsCapturedSource]
+    | [QsCapturedSource, QsCapturedSource, QsCapturedSource, QsCapturedSource]
+    | [QsCapturedSource, QsCapturedSource, QsCapturedSource, QsCapturedSource, QsCapturedSource]
+    | [QsCapturedSource, QsCapturedSource, QsCapturedSource, QsCapturedSource, QsCapturedSource, QsCapturedSource]
+    | [
+        QsCapturedSource,
+        QsCapturedSource,
+        QsCapturedSource,
+        QsCapturedSource,
+        QsCapturedSource,
+        QsCapturedSource,
+        QsCapturedSource
+      ]
+    | [
+        QsCapturedSource,
+        QsCapturedSource,
+        QsCapturedSource,
+        QsCapturedSource,
+        QsCapturedSource,
+        QsCapturedSource,
+        QsCapturedSource,
+        QsCapturedSource
+      ];
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "QsOrdinaryHeader".
+ */
+export interface QsOrdinaryHeader {
+  id: QsUuid;
+  company: {
+    [k: string]: unknown;
+  } & string;
+  project: {
+    [k: string]: unknown;
+  } & string;
+  scope_type: "Project";
+  author_person: {
+    [k: string]: unknown;
+  } & string;
+  author_user: {
+    [k: string]: unknown;
+  } & string;
+  created_at: QsTimestamp;
+  status: "draft" | "submitted" | "checked" | "returned" | "closed";
+  category: "inspection" | "deficiency" | "safety_observation" | "permit_record";
+  number: {
+    [k: string]: unknown;
+  } & string;
+  revision_number: number;
+  current_revision: QsUuid;
+  last_decision: QsUuid | null;
+  closed_revision: QsUuid | null;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "QsIncidentHeader".
+ */
+export interface QsIncidentHeader {
+  id: QsUuid;
+  company: {
+    [k: string]: unknown;
+  } & string;
+  project: {
+    [k: string]: unknown;
+  } & string;
+  scope_type: "Project";
+  author_person: {
+    [k: string]: unknown;
+  } & string;
+  author_user: {
+    [k: string]: unknown;
+  } & string;
+  created_at: QsTimestamp;
+  status: "draft" | "submitted" | "checked" | "returned" | "closed";
+  category: "incident";
+  number: {
+    [k: string]: unknown;
+  } & string;
+  revision_number: number;
+  current_revision: QsUuid;
+  last_decision: QsUuid | null;
+  closed_revision: QsUuid | null;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "QsIncidentRevision".
+ */
+export interface QsIncidentRevision {
+  id: QsUuid;
+  company: {
+    [k: string]: unknown;
+  } & string;
+  project: {
+    [k: string]: unknown;
+  } & string;
+  scope_type: "Project";
+  author_person: {
+    [k: string]: unknown;
+  } & string;
+  author_user: {
+    [k: string]: unknown;
+  } & string;
+  created_at: QsTimestamp;
+  status: "recorded";
+  category: "incident";
+  parent_id: QsUuid;
+  revision_number: number;
+  predecessor: QsUuid | null;
+  prior_decision: QsUuid | null;
+  amendment_of: QsUuid | null;
+  amendment_reason: string;
+  definition: QsIncidentDefinition;
+  /**
+   * @minItems 1
+   * @maxItems 8
+   */
+  evidence:
+    | [QsCapturedSource]
+    | [QsCapturedSource, QsCapturedSource]
+    | [QsCapturedSource, QsCapturedSource, QsCapturedSource]
+    | [QsCapturedSource, QsCapturedSource, QsCapturedSource, QsCapturedSource]
+    | [QsCapturedSource, QsCapturedSource, QsCapturedSource, QsCapturedSource, QsCapturedSource]
+    | [QsCapturedSource, QsCapturedSource, QsCapturedSource, QsCapturedSource, QsCapturedSource, QsCapturedSource]
+    | [
+        QsCapturedSource,
+        QsCapturedSource,
+        QsCapturedSource,
+        QsCapturedSource,
+        QsCapturedSource,
+        QsCapturedSource,
+        QsCapturedSource
+      ]
+    | [
+        QsCapturedSource,
+        QsCapturedSource,
+        QsCapturedSource,
+        QsCapturedSource,
+        QsCapturedSource,
+        QsCapturedSource,
+        QsCapturedSource,
+        QsCapturedSource
+      ];
+  no_effects: QsNoEffects;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "QsGetRecordRequest".
+ */
+export interface QsGetRecordRequest {
+  company: {
+    [k: string]: unknown;
+  } & string;
+  project: {
+    [k: string]: unknown;
+  } & string;
+  kind: QsKind;
+  record_id: QsUuid;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "QsGetResponse".
+ */
+export interface QsGetResponse {
+  record: QsRecord;
+  record_digest: QsDigest;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "QsListResponse".
+ */
+export interface QsListResponse {
+  /**
+   * @minItems 0
+   * @maxItems 100
+   */
+  items: QsGetResponse[];
+  next_cursor:
+    | ({
+        [k: string]: unknown;
+      } & string)
+    | null;
+  limit: number;
+  count_mode: "none";
+  total: null;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "QsEvidenceRegistration".
+ */
+export interface QsEvidenceRegistration {
+  id: QsUuid;
+  company: {
+    [k: string]: unknown;
+  } & string;
+  project: {
+    [k: string]: unknown;
+  } & string;
+  scope_type: "Project";
+  author_person: {
+    [k: string]: unknown;
+  } & string;
+  author_user: {
+    [k: string]: unknown;
+  } & string;
+  created_at: QsTimestamp;
+  document_id: {
+    [k: string]: unknown;
+  } & string;
+  rights_basis: {
+    [k: string]: unknown;
+  } & string;
+  /**
+   * @minItems 1
+   * @maxItems 8
+   */
+  permission_evidence:
+    | [QsCapturedSource]
+    | [QsCapturedSource, QsCapturedSource]
+    | [QsCapturedSource, QsCapturedSource, QsCapturedSource]
+    | [QsCapturedSource, QsCapturedSource, QsCapturedSource, QsCapturedSource]
+    | [QsCapturedSource, QsCapturedSource, QsCapturedSource, QsCapturedSource, QsCapturedSource]
+    | [QsCapturedSource, QsCapturedSource, QsCapturedSource, QsCapturedSource, QsCapturedSource, QsCapturedSource]
+    | [
+        QsCapturedSource,
+        QsCapturedSource,
+        QsCapturedSource,
+        QsCapturedSource,
+        QsCapturedSource,
+        QsCapturedSource,
+        QsCapturedSource
+      ]
+    | [
+        QsCapturedSource,
+        QsCapturedSource,
+        QsCapturedSource,
+        QsCapturedSource,
+        QsCapturedSource,
+        QsCapturedSource,
+        QsCapturedSource,
+        QsCapturedSource
+      ];
+  classification: "restricted_from_creation";
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "QsUploadEvidenceRequest".
+ */
+export interface QsUploadEvidenceRequest {
+  company: {
+    [k: string]: unknown;
+  } & string;
+  project: {
+    [k: string]: unknown;
+  } & string;
+  operation_id: QsUuid;
+  title: {
+    [k: string]: unknown;
+  } & string;
+  filename: {
+    [k: string]: unknown;
+  } & string;
+  content_base64: string;
+  byte_length: number;
+  sha256: QsDigest;
+  rights_basis: {
+    [k: string]: unknown;
+  } & string;
+  /**
+   * @minItems 1
+   * @maxItems 8
+   */
+  permission_evidence:
+    | [QsSourceInput]
+    | [QsSourceInput, QsSourceInput]
+    | [QsSourceInput, QsSourceInput, QsSourceInput]
+    | [QsSourceInput, QsSourceInput, QsSourceInput, QsSourceInput]
+    | [QsSourceInput, QsSourceInput, QsSourceInput, QsSourceInput, QsSourceInput]
+    | [QsSourceInput, QsSourceInput, QsSourceInput, QsSourceInput, QsSourceInput, QsSourceInput]
+    | [QsSourceInput, QsSourceInput, QsSourceInput, QsSourceInput, QsSourceInput, QsSourceInput, QsSourceInput]
+    | [
+        QsSourceInput,
+        QsSourceInput,
+        QsSourceInput,
+        QsSourceInput,
+        QsSourceInput,
+        QsSourceInput,
+        QsSourceInput,
+        QsSourceInput
+      ];
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "QsUploadedRevision".
+ */
+export interface QsUploadedRevision {
+  id: {
+    [k: string]: unknown;
+  } & string;
+  revision_number: number;
+  filename: {
+    [k: string]: unknown;
+  } & string;
+  mime_type: "text/plain" | "application/pdf" | "image/jpeg" | "image/png";
+  byte_length: number;
+  sha256: QsDigest;
+  scan_status: "clean" | "infected" | "not_scanned" | "unavailable";
+  retrieval_status: "available" | "quarantined";
+  extraction_status: {
+    [k: string]: unknown;
+  } & string;
+  extractor_version: {
+    [k: string]: unknown;
+  } & string;
+  page_count: number;
+  extraction_warning:
+    | ({
+        [k: string]: unknown;
+      } & string)
+    | null;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "QsUploadedDocument".
+ */
+export interface QsUploadedDocument {
+  id: {
+    [k: string]: unknown;
+  } & string;
+  revision_number: number;
+  filename: {
+    [k: string]: unknown;
+  } & string;
+  mime_type: "text/plain" | "application/pdf" | "image/jpeg" | "image/png";
+  byte_length: number;
+  sha256: QsDigest;
+  scan_status: "clean" | "infected" | "not_scanned" | "unavailable";
+  retrieval_status: "available" | "quarantined";
+  extraction_status: {
+    [k: string]: unknown;
+  } & string;
+  extractor_version: {
+    [k: string]: unknown;
+  } & string;
+  page_count: number;
+  extraction_warning:
+    | ({
+        [k: string]: unknown;
+      } & string)
+    | null;
+  title: {
+    [k: string]: unknown;
+  } & string;
+  current_revision: {
+    [k: string]: unknown;
+  } & string;
+  company: {
+    [k: string]: unknown;
+  } & string;
+  project: {
+    [k: string]: unknown;
+  } & string;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "QsUploadEvidenceResponse".
+ */
+export interface QsUploadEvidenceResponse {
+  family: "incident";
+  evidence_upload: true;
+  document: QsUploadedDocument;
+  revision: QsUploadedRevision;
+  registration: QsEvidenceRegistration;
+  history_id: null;
+  operation: QsOperation;
 }

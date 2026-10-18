@@ -114,7 +114,10 @@ class SemanticGenerationTests(unittest.TestCase):
         backend,store,source,embedder,index=fixture(); operation=str(uuid4())
         backend.prepare(SCOPE,[SELECTOR],operation,ACTOR); embedder.after=lambda:setattr(source,'revoked',True)
         with self.assertRaises(DomainError): backend.run(SCOPE,operation,ACTOR)
-        self.assertEqual(index.upserts,[]); self.assertEqual(backend.status(SCOPE,operation,ACTOR)['status'],'rejected')
+        self.assertEqual(index.upserts,[])
+        self.assertEqual(next(iter(store.rows.values()))['jobs'][operation]['status'],'rejected')
+        with self.assertRaises(DomainError) as denied: backend.status(SCOPE,operation,ACTOR)
+        self.assertEqual(denied.exception.code,'source_rights_denied')
     def test_revocation_after_upsert_never_activates_and_reconciliation_deletes(self):
         backend,store,source,embedder,index=fixture(); operation=str(uuid4())
         backend.prepare(SCOPE,[SELECTOR],operation,ACTOR); index.after_upsert=lambda:setattr(source,'revoked',True)
@@ -139,7 +142,9 @@ class SemanticGenerationTests(unittest.TestCase):
         self.assertEqual(backend.query(SCOPE,'Question',ACTOR)['results'],[])
         index.delete_error=True
         with self.assertRaises(DomainError): backend.reconcile(SCOPE,ACTOR)
-        self.assertEqual(backend.status(SCOPE,operation,ACTOR)['status'],'retired')
+        self.assertEqual(next(iter(store.rows.values()))['jobs'][operation]['status'],'retired')
+        with self.assertRaises(DomainError) as denied: backend.status(SCOPE,operation,ACTOR)
+        self.assertEqual(denied.exception.code,'semantic_source_changed')
         self.assertTrue(index.points); index.delete_error=False
         backend.reconcile(SCOPE,ACTOR); self.assertFalse(index.points)
         self.assertEqual(index.deletes[0],index.deletes[1])

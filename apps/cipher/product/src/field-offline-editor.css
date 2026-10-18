@@ -1,0 +1,14 @@
+.field-offline-editor { min-width: 0; }
+.field-offline-editor > ui5-message-strip { margin: .85rem 0; }
+.field-offline-editor code { display: block; overflow-wrap: anywhere; word-break: break-all; font-size: .8rem; }
+.field-offline-editor .field-offline-kind { max-width: 24rem; margin: 1rem 0; }
+.field-offline-editor .field-offline-base { padding: .75rem; margin: 1rem 0; border: 1px solid var(--sapGroup_ContentBorderColor); border-radius: .5rem; }
+.field-offline-editor .field-offline-base dl { display: grid; grid-template-columns: minmax(8rem, 1fr) minmax(0, 3fr); gap: .5rem 1rem; }
+.field-offline-editor .field-offline-base dd { margin: 0; min-width: 0; }
+.field-offline-editor .field-offline-source { align-items: start; }
+.field-offline-editor .field-offline-source > div { min-width: 0; }
+.field-offline-editor details { overflow-wrap: anywhere; }
+.field-offline-editor details > summary { cursor: pointer; }
+.field-offline-editor .field-offline-invalid { color: var(--sapNegativeTextColor); }
+.field-offline-editor .field-offline-input { min-width: 0; }
+@media (max-width: 600px) { .field-offline-editor .field-offline-base dl { grid-template-columns: 1fr; } .field-offline-editor .field-offline-base dt { font-weight: 600; } }

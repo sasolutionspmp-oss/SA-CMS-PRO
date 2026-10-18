@@ -1,0 +1,22 @@
+{
+  "requests": {
+    "register_device": "FoRegisterDeviceRequest",
+    "revoke_device": "FoRevokeDeviceRequest",
+    "stage_capture": "FoStageCaptureRequest",
+    "get_capture": "FoGetCaptureRequest",
+    "inspect_capture": "FoInspectCaptureRequest",
+    "apply_capture": "FoApplyCaptureRequest",
+    "discard_capture": "FoDiscardCaptureRequest",
+    "resolve_capture": "FoResolveCaptureRequest"
+  },
+  "responses": {
+    "register_device": "FoDeviceMutationResponse",
+    "revoke_device": "FoDeviceMutationResponse",
+    "stage_capture": "FoCaptureMutationResponse",
+    "get_capture": "FoGetCaptureResponse",
+    "inspect_capture": "FoInspectCaptureResponse",
+    "apply_capture": "FoApplyCaptureResponse",
+    "discard_capture": "FoCaptureMutationResponse",
+    "resolve_capture": "FoCaptureMutationResponse"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "base": "0147603655624c3ad66ef73f6921a06805abff9a",
+  "tracked_app_paths": 754,
+  "python": "3.12.14",
+  "host_command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=apps/cipher/platform/apps/cipher_aec python -m unittest cipher_aec.tests.test_field cipher_aec.tests.test_field_contracts cipher_aec.tests.test_field_offline_contracts cipher_aec.tests.test_field_offline cipher_aec.tests.test_field_offline_persistence -v",
+  "final_log": "08-fld01-fld02-final-host.log",
+  "tests": 74,
+  "field01_tests": 29,
+  "field02_contract_tests": 16,
+  "field02_service_tests": 18,
+  "field02_persistence_tests": 11,
+  "native_qualified": false,
+  "browser_qualified": false,
+  "dependency_installs": false,
+  "runtime_or_database_actions": false,
+  "baseline_inventory_sha256": "8383fbfdb0ca4bb00d1712cff34e9f5a0df660a6bb32d8c79179b6acfe7a12cd"
+}

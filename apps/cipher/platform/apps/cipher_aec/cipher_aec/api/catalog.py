@@ -245,6 +245,26 @@ _module("cipher_aec.api.semantic", {
     'query': ('POST', 'SemanticQueryResponse'),
 })
 
+_module('cipher_aec.field_offline.api', {
+    'register_device': ('POST', 'FoDeviceMutationResponse', True),
+    'revoke_device': ('POST', 'FoDeviceMutationResponse', True),
+    'stage_capture': ('POST', 'FoCaptureMutationResponse', True),
+    'get_capture': ('GET', 'FoGetCaptureResponse'),
+    'inspect_capture': ('GET', 'FoInspectCaptureResponse'),
+    'apply_capture': ('POST', 'FoApplyCaptureResponse', True),
+    'discard_capture': ('POST', 'FoCaptureMutationResponse', True),
+    'resolve_capture': ('POST', 'FoCaptureMutationResponse', True),
+})
+
+_module('cipher_aec.quality_safety.api', {
+    'upload_evidence': ('POST', 'QsUploadEvidenceResponse', True),
+    'create_record': ('POST', 'QsCreateRecordResponse', True),
+    'revise_record': ('POST', 'QsReviseRecordResponse', True),
+    'transition': ('POST', 'QsTransitionResponse', True),
+    'get_record': ('GET', 'QsGetResponse'),
+    'list_records': ('GET', 'QsListResponse'),
+})
+
 AUTH_RPC = frozenset({"login", "logout", "frappe.auth.login", "frappe.auth.logout", "frappe.auth.get_logged_user"})
 RPC = frozenset(ROUTES) | AUTH_RPC
 

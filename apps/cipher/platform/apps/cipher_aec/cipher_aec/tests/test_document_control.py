@@ -26,7 +26,13 @@ def retained_module_attributes():
 @contextmanager
 def fixture():
     with retained_module_attributes(),fixtures() as (state,*_):
-        names=['cipher_aec.document_control.'+n for n in ('contracts','repository','rights','service','governance','clauses','locking','scopes','shared','lifecycle','command_context')];old={n:sys.modules.pop(n) for n in names if n in sys.modules}
+        names=['cipher_aec.document_control.'+n for n in ('contracts','repository','rights','service','governance','clauses','locking','scopes','shared','lifecycle','command_context')]
+        absent=object()
+        attributes={n:getattr(sys.modules.get(n.rsplit('.',1)[0]),n.rsplit('.',1)[1],absent) for n in names}
+        old={n:sys.modules.pop(n) for n in names if n in sys.modules}
+        for n in names:
+            parent=sys.modules.get(n.rsplit('.',1)[0]);attribute=n.rsplit('.',1)[1]
+            if parent is not None and hasattr(parent,attribute):delattr(parent,attribute)
         try:
             rules,repo,rights,service,gov=[importlib.import_module(n) for n in names[:5]];state.duties[state.actor.person_id]=set(rules.ABILITIES)|{'project.read','document.read','document.write'};state.locks=[];state.plans=[]
             def raw(kind,name,lock=False):
@@ -68,6 +74,8 @@ def fixture():
                     state.receipts[key]=(request,deepcopy(result));return {**result,'operation':{'id':key[1],'status':'succeeded','replayed':False}}
                 except Exception:state.rows,state.events,state.receipts=before;raise
             with ExitStack() as stack:
+                from cipher_aec.tests.incident_privacy_fixture import incident_privacy_fixture
+                state.incident_privacy=stack.enter_context(incident_privacy_fixture())
                 # These host command doubles model rollback/identity, not native
                 # source locks. Strict union admission has separate instrumentation.
                 from functools import wraps
@@ -84,7 +92,12 @@ def fixture():
                 removed=sys.modules.pop(n,None);parentname,attribute=n.rsplit('.',1);parent=sys.modules.get(parentname)
                 if removed is not None and parent is not None and getattr(parent,attribute,None) is removed:delattr(parent,attribute)
             sys.modules.update(old)
-            for n,value in old.items():setattr(sys.modules[n.rsplit('.',1)[0]],n.rsplit('.',1)[1],value)
+            for n,value in attributes.items():
+                parent=sys.modules.get(n.rsplit('.',1)[0]);attribute=n.rsplit('.',1)[1]
+                if parent is None:continue
+                if value is absent:
+                    if hasattr(parent,attribute):delattr(parent,attribute)
+                else:setattr(parent,attribute,value)
 
 def person(state,rules,label):
     value=add_person(state,label);state.duties[value.person_id]=set(rules.ABILITIES)|{'project.read','document.read','document.write'};return value

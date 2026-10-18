@@ -14,6 +14,7 @@ from unittest.mock import Mock, patch
 from jsonschema import Draft202012Validator, FormatChecker
 from cipher_aec.api.catalog import ROUTES, RPC
 from cipher_aec.api.openapi import generate
+from cipher_aec.quality_safety.contracts import ABILITIES as QUALITY_SAFETY_ABILITIES
 
 ROOT = Path(__file__).parents[1]
 SCOPE = {"company": "Cipher Synthetic Company", "scope_type": "Project", "project": "PROJ-0001"}
@@ -162,20 +163,25 @@ class SemanticIntegrationTests(unittest.TestCase):
         ability = "document.semantic.manage"
         self.assertIn(ability, constants["PROJECT_ABILITIES"])
         self.assertIn(ability, constants["COMPANY_ABILITIES"])
+        self.assertTrue(QUALITY_SAFETY_ABILITIES)
+        self.assertTrue(QUALITY_SAFETY_ABILITIES.issubset(constants["PROJECT_ABILITIES"]))
         granted = []
         db = types.SimpleNamespace(exists=lambda *a, **k: True,
             get_value=lambda kind, *a, **k: "PERSON-1" if kind == "Cipher Identity Binding" else "PROJ-1")
-        namespace = {**constants, "frappe": types.SimpleNamespace(session=types.SimpleNamespace(user="Administrator"), db=db),
+        namespace = {**constants, "QUALITY_SAFETY_ABILITIES": QUALITY_SAFETY_ABILITIES,
+            "frappe": types.SimpleNamespace(session=types.SimpleNamespace(user="Administrator"), db=db),
             "assert_synthetic_site": lambda: None, "trusted_write": nullcontext, "os": types.SimpleNamespace(environ={}),
             "_person": lambda name, title: name, "_user": lambda *a: None, "_binding": lambda *a: None,
             "_grant": lambda person, company, project, item: granted.append(item),
             "_grant_company": lambda person, company, item: granted.append(item)}
         source_function(ROOT / "install.py", "seed_synthetic", namespace)()
         self.assertNotIn(ability, granted)
+        self.assertTrue(QUALITY_SAFETY_ABILITIES.isdisjoint(granted))
         granted.clear()
         company_grants = source_function(ROOT / "install.py", "grant_synthetic_company_duties", namespace)
         company_grants("reader@cipher.example", "C")
         self.assertNotIn(ability, granted)
+        self.assertTrue(QUALITY_SAFETY_ABILITIES.isdisjoint(granted))
         granted.clear()
         company_grants("reader@cipher.example", "C", [ability])
         self.assertEqual(granted, [ability])

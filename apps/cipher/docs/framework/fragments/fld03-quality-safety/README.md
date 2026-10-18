@@ -1,0 +1,11 @@
+# External integration fragments
+
+Apply only after root review, alongside all manifest-listed additive source files from base `0147603655624c3ad66ef73f6921a06805abff9a`.
+
+`shared-integration.patch` contains capability admission, exclusion from automatic synthetic grants, module registration, native generic denials, additive migrations, exact receipt dispatch, ordinary immutable history authorization, private source/provenance/query guards, central document-control parent authorization, pre-scan source/right-history filters and the fixed API/OpenAPI catalog. It changes 14 shared files when applied by the integration writer; this source lane has not applied it. The API schema is `quality_safety/schemas/api-v1.schema.json`; `api-definitions.json` is an external copy of its 42 closed definitions. The OpenAPI fragment loads those definitions and exact typed requests through the existing generator. Regenerate `cipher_aec.api.openapi` after composition.
+
+`engineering-seed-test-only.patch` is a separate root-requested regression correction. It replaces only the brittle historical default-grant string assertion with evaluation of the actual grant iterable and actual capability sets. It tests FIELD/SEMANTIC exclusion and, when composed, QUALITY_SAFETY exclusion. No production grant change is part of that correction. The external shadow module used for the retained 104-case successor run is at `external-regression/test_engineering_contracts_successor.py` in the lane directory, not a shared source edit.
+
+`host-successor-104.txt` is actual WSL host output. `independent-review.md` records the final read-only source review. The manifest lists exact SHA-256/byte size for every delivered additive file and fragment. Native test modules are prepared qualification inputs, not recorded runtime acceptance.
+
+Privacy requires complete composition: do not register the private upload API without document/provenance, document-control, receipt/history and native File permission composition. Ordinary shared evidence remains ordinary and requires an explicit exact non-sensitive declaration for incident use. Restricted uploads never reclassify existing documents. Native transactions, File deduplication/rollback and simultaneous ordinary/private duplicate admission remain unqualified and gate release of that route.

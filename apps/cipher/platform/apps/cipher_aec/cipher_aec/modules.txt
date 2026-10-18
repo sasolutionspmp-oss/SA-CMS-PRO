@@ -13,3 +13,5 @@ Cipher Engineering Packages
 Cipher Document Control
 Cipher Field
 Cipher Semantic Index
+Cipher Field Offline
+Cipher Quality Safety

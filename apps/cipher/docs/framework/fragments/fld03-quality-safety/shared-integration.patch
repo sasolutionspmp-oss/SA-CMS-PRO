@@ -1,0 +1,212 @@
+--- a/apps/cipher/platform/apps/cipher_aec/cipher_aec/hooks.py
++++ b/apps/cipher/platform/apps/cipher_aec/cipher_aec/hooks.py
+@@ -142,3 +142,9 @@
+ # Semantic checkpoint plaintext is available only through current-source services.
+ permission_query_conditions["Cipher Semantic Corpus"] = "cipher_aec.semantic_index.store.no_native_rows"
+ has_permission["Cipher Semantic Corpus"] = "cipher_aec.semantic_index.store.deny_native_access"
++
++# FLD-03 JSON is readable only through current exact scoped services.
++from cipher_aec.quality_safety.contracts import KINDS as _QUALITY_SAFETY_KINDS
++for _quality_safety_type in (*_QUALITY_SAFETY_KINDS.values(), 'Cipher Incident Evidence Registration'):
++    permission_query_conditions[_quality_safety_type] = 'cipher_aec.quality_safety.install.query_denied'
++    has_permission[_quality_safety_type] = 'cipher_aec.quality_safety.install.permission_denied'
+--- a/apps/cipher/platform/apps/cipher_aec/cipher_aec/modules.txt
++++ b/apps/cipher/platform/apps/cipher_aec/cipher_aec/modules.txt
+@@ -13,3 +13,4 @@
+ Cipher Document Control
+ Cipher Field
+ Cipher Semantic Index
++Cipher Quality Safety
+--- a/apps/cipher/platform/apps/cipher_aec/cipher_aec/governance/context.py
++++ b/apps/cipher/platform/apps/cipher_aec/cipher_aec/governance/context.py
+@@ -17,6 +17,8 @@
+ SEMANTIC_ABILITIES = frozenset({"document.semantic.manage"})
+ PROJECT_ABILITIES = frozenset({"document.semantic.manage", "document.control.read", "document.control.write", "document.rights.manage", "document.issue", "document.adopt", "document.distribute", "document.control.review", "engineering.package.read", "engineering.package.write", "engineering.package.check", "engineering.read", "engineering.write", "engineering.distribute", "project.read", "project.write", "task.create", "task.assign", "task.update", "document.read", "document.write", "ricky.run", "approval.request", "approval.decide", "approval.execute", "estimate.read", "estimate.write", "contract.read", "contract.write", "wbs.read", "budget.read", "field.read", "field.write", "field.review", "field.accept", "field.acknowledge"})
+ COMPANY_ABILITIES = frozenset({"document.semantic.manage", "document.control.read", "document.control.write", "document.rights.manage", "ricky.run", "commercial.award", "project.team.delegate", "project.cost.read", "project.cost.write", "company.read", "commercial.read", "commercial.write", "commercial.distribute", "document.read", "document.write", "estimate.read", "estimate.write", "approval.request", "approval.decide", "approval.execute"})
++from cipher_aec.quality_safety.contracts import ABILITIES as QUALITY_SAFETY_ABILITIES
++PROJECT_ABILITIES = PROJECT_ABILITIES | QUALITY_SAFETY_ABILITIES
+ ABILITIES = PROJECT_ABILITIES | COMPANY_ABILITIES
+ 
+ 
+--- a/apps/cipher/platform/apps/cipher_aec/cipher_aec/install.py
++++ b/apps/cipher/platform/apps/cipher_aec/cipher_aec/install.py
+@@ -6,7 +6,7 @@
+ import frappe
+ 
+ from cipher_aec.api.errors import DomainError
+-from cipher_aec.governance.context import ABILITIES, PROJECT_ABILITIES, COMPANY_ABILITIES, ENGINEERING_ABILITIES, DOCUMENT_CONTROL_ABILITIES, FIELD_ABILITIES, SEMANTIC_ABILITIES, assert_synthetic_site, trusted_write
++from cipher_aec.governance.context import ABILITIES, PROJECT_ABILITIES, COMPANY_ABILITIES, ENGINEERING_ABILITIES, DOCUMENT_CONTROL_ABILITIES, FIELD_ABILITIES, SEMANTIC_ABILITIES, QUALITY_SAFETY_ABILITIES, assert_synthetic_site, trusted_write
+ 
+ 
+ def after_install():
+@@ -57,6 +57,8 @@
+     documentary_migrate()
+     from cipher_aec.field.install import after_migrate as field_migrate
+     field_migrate()
++    from cipher_aec.quality_safety.install import after_migrate as quality_safety_migrate
++    quality_safety_migrate()
+     from cipher_aec.governance.approvals import install_policy
+     for doctype in ("Cipher Approval Policy Revision", "Cipher Approval Packet", "Cipher Approval Decision", "Cipher Approval Consumption"):
+         frappe.db.sql("UPDATE `tab" + doctype + "` SET scope_type='Project' WHERE scope_type IS NULL OR scope_type=''")
+@@ -163,7 +165,7 @@
+             projects[key] = name
+         for ability in ("project.read", "approval.decide"):
+             _grant(people["reviewer"], company_name, projects["project"], ability)
+-        for ability in sorted(PROJECT_ABILITIES - ENGINEERING_ABILITIES - DOCUMENT_CONTROL_ABILITIES - FIELD_ABILITIES - SEMANTIC_ABILITIES):
++        for ability in sorted(PROJECT_ABILITIES - ENGINEERING_ABILITIES - DOCUMENT_CONTROL_ABILITIES - FIELD_ABILITIES - SEMANTIC_ABILITIES - QUALITY_SAFETY_ABILITIES):
+             _grant(people["primary"], company_name, projects["project"], ability)
+             _grant(people["outsider"], company_name, projects["other_project"], ability)
+             for project in projects.values():
+--- a/apps/cipher/platform/apps/cipher_aec/cipher_aec/governance/commands.py
++++ b/apps/cipher/platform/apps/cipher_aec/cipher_aec/governance/commands.py
+@@ -109,6 +109,9 @@
+         require_project(company, project, ability="engineering.package.read" if command.startswith("engineering.package.") else "engineering.read", actor=actor, lock=True)
+     if scope_type == "Project" and command.startswith("field."):
+         require_project(company, project, ability="field.read", actor=actor, lock=True)
++    if scope_type == 'Project' and command.startswith('quality_safety.'):
++        from cipher_aec.quality_safety.contracts import ability as quality_safety_ability
++        require_project(company, project, ability=quality_safety_ability(command.split('.')[1]), actor=actor, lock=True)
+     request_hash = digest({"command": command, "company": company, "project": project, "payload": payload})
+     if scope_type == "Company":
+         request_hash = digest({"scope_type": "Company", "command": command, "company": company, "project": None, "payload": payload})
+@@ -256,7 +259,10 @@
+             from cipher_aec.integrations.distribution import authorize_receipt as authorize_distribution
+             authorize_distribution(actor, company, result, lock=True)
+         return
+-    if command.startswith("field."):
++    if command.startswith('quality_safety.'):
++        from cipher_aec.quality_safety.service import authorize_command_receipt
++        authorize_command_receipt(actor, command, company, project, result, lock=True)
++    elif command.startswith("field."):
+         from cipher_aec.field.service import authorize_receipt as authorize_field
+         authorize_field(actor, company, project, result, lock=True)
+     elif command.startswith("document.control."):
+--- a/apps/cipher/platform/apps/cipher_aec/cipher_aec/governance/history_access.py
++++ b/apps/cipher/platform/apps/cipher_aec/cipher_aec/governance/history_access.py
+@@ -139,6 +139,12 @@
+             kind = next(kind for kind, name in TYPES.items() if name == subject)
+             read(kind, identifier, company, actor)
+             return True
++        from cipher_aec.quality_safety.contracts import KINDS as QUALITY_SAFETY_KINDS
++        if subject in QUALITY_SAFETY_KINDS.values():
++            if project is None:return False
++            from cipher_aec.quality_safety.service import authorize_history
++            authorize_history(next(k for k,v in QUALITY_SAFETY_KINDS.items() if v==subject),identifier,company,project,actor,json.loads(event.details_json))
++            return True
+         from cipher_aec.field.contracts import KINDS as FIELD_KINDS
+         if subject in FIELD_KINDS.values():
+             if project is None:return False
+--- a/apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/service.py
++++ b/apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/service.py
+@@ -47,6 +47,8 @@
+     rules.text(name,'document_id',140);require_project(company,project,ability='document.read',actor=actor,lock=lock)
+     value=frappe.get_doc('Cipher Document',name,for_update=lock)
+     if value.company!=company or value.project!=project or (value.scope_type or 'Project')!='Project':raise DomainError('not_found','This original Project document is unavailable.',404)
++    from cipher_aec.quality_safety.privacy import authorize_source as authorize_incident_source
++    authorize_incident_source(value.as_dict(), actor, lock=lock)
+     return value
+ 
+ def _prelock(artifacts,company,project,actor,*,lock=False,allow_foreign=False):
+--- a/apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/scopes.py
++++ b/apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/scopes.py
+@@ -12,4 +12,6 @@
+     require(company,scope_type,project,actor,'document.read',lock=lock)
+     row=frappe.get_doc('Cipher Document',name,for_update=lock)
+     if row.company!=company or (row.scope_type or 'Project')!=scope_type or (row.project or None)!=(project or None):raise DomainError('not_found','This original source is unavailable.',404)
++    from cipher_aec.quality_safety.privacy import authorize_source as authorize_incident_source
++    authorize_incident_source(row.as_dict(), actor, lock=lock)
+     return row
+--- a/apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/provenance.py
++++ b/apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/provenance.py
+@@ -87,6 +87,8 @@
+ def authorize(row, actor, *, lock=False):
+     """Current producer-source authorization; never follows its output document."""
+     from cipher_aec.document_control.rights import authorize as authorize_rights
++    from cipher_aec.quality_safety.privacy import authorize_source as authorize_incident_source
++    authorize_incident_source(row, actor, lock=lock)
+     authorize_rights(row,actor,lock=lock)
+     if (row.get('scope_type') or 'Project') == 'Project':
+         return
+--- a/apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/permissions.py
++++ b/apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/permissions.py
+@@ -76,7 +76,8 @@
+ 
+ def document_query(user=None):
+     from cipher_aec.document_control.rights import query
+-    return "(" + _query("Cipher Document", user) + ") AND (" + _producer_query("Cipher Document", user) + ") AND (" + query("Cipher Document",user) + ")"
++    from cipher_aec.quality_safety.privacy import query as incident_query
++    return "(" + _query("Cipher Document", user) + ") AND (" + _producer_query("Cipher Document", user) + ") AND (" + query("Cipher Document",user) + ") AND (" + incident_query("Cipher Document",user) + ")"
+ 
+ 
+ def _scan_clause():
+@@ -88,7 +89,8 @@
+ def revision_query(user=None):
+     # Native get_list can select Long Text without per-row permission callbacks.
+     from cipher_aec.document_control.rights import query
+-    return "(" + _query("Cipher Document Revision", user) + ") AND (" + _scan_clause() + ") AND (" + _producer_query("Cipher Document Revision", user) + ") AND (" + query("Cipher Document Revision",user) + ")"
++    from cipher_aec.quality_safety.privacy import query as incident_query
++    return "(" + _query("Cipher Document Revision", user) + ") AND (" + _scan_clause() + ") AND (" + _producer_query("Cipher Document Revision", user) + ") AND (" + query("Cipher Document Revision",user) + ") AND (" + incident_query("Cipher Document Revision",user) + ")"
+ 
+ 
+ def _permission(doc, user=None, permission_type=None):
+--- a/apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/repository.py
++++ b/apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/repository.py
+@@ -47,6 +47,13 @@
+ 
+     def documents(self, company, project):
+         import frappe
++        from cipher_aec.quality_safety.privacy import query as incident_query
++        # Ordinary cap/paging must not depend on the number of private sources.
++        if self.scope_type == 'Project':
++            allowed = frappe.db.sql('SELECT name FROM `tabCipher Document` WHERE company=%s AND project=%s AND scope_type=%s AND (' + incident_query('Cipher Document') + ') ORDER BY modified DESC LIMIT 100', (company, project, self.scope_type), as_dict=True)
++            names = [row.name for row in allowed]
++            if not names:return []
++            return frappe.get_all('Cipher Document', filters={'name':['in',names]}, fields=['name','title','company','project','scope_type','current_revision','revision_number'], order_by='modified desc', limit_page_length=100)
+         return frappe.get_all("Cipher Document", filters={"company": company, "project": project, "scope_type":self.scope_type},
+                               fields=["name", "title", "company", "project", "scope_type", "current_revision", "revision_number"],
+                               order_by="modified desc", limit_page_length=100)
+--- a/apps/cipher/platform/apps/cipher_aec/cipher_aec/governance/history_listing.py
++++ b/apps/cipher/platform/apps/cipher_aec/cipher_aec/governance/history_listing.py
+@@ -19,6 +19,14 @@
+     else:
+         where += " AND project=%s"
+         base.append(project)
++    if scope_type == 'Project':
++        from cipher_aec.quality_safety.privacy import query as incident_source_query
++        docs = incident_source_query('Cipher Document')
++        revisions = incident_source_query('Cipher Document Revision')
++        rights_docs = docs.replace('`tabCipher Document`.`name`', '`tabCipher Source Rights Revision`.`parent_id`')
++        where += " AND (subject_type!='Cipher Document' OR subject_id IN (SELECT name FROM `tabCipher Document` WHERE " + docs + "))"
++        where += " AND (subject_type!='Cipher Document Revision' OR subject_id IN (SELECT name FROM `tabCipher Document Revision` WHERE " + revisions + "))"
++        where += " AND (subject_type!='Cipher Source Rights Revision' OR subject_id IN (SELECT name FROM `tabCipher Source Rights Revision` WHERE " + rights_docs + "))"
+     def visible(start=None):
+         seek, scanned = start, 0
+         while True:
+--- a/apps/cipher/platform/apps/cipher_aec/cipher_aec/api/catalog.py
++++ b/apps/cipher/platform/apps/cipher_aec/cipher_aec/api/catalog.py
+@@ -245,6 +245,15 @@
+     'query': ('POST', 'SemanticQueryResponse'),
+ })
+ 
++_module('cipher_aec.quality_safety.api', {
++    'upload_evidence': ('POST', 'QsUploadEvidenceResponse', True),
++    'create_record': ('POST', 'QsCreateRecordResponse', True),
++    'revise_record': ('POST', 'QsReviseRecordResponse', True),
++    'transition': ('POST', 'QsTransitionResponse', True),
++    'get_record': ('GET', 'QsGetResponse'),
++    'list_records': ('GET', 'QsListResponse'),
++})
++
+ AUTH_RPC = frozenset({"login", "logout", "frappe.auth.login", "frappe.auth.logout", "frappe.auth.get_logged_user"})
+ RPC = frozenset(ROUTES) | AUTH_RPC
+ 
+--- a/apps/cipher/platform/apps/cipher_aec/cipher_aec/api/openapi.py
++++ b/apps/cipher/platform/apps/cipher_aec/cipher_aec/api/openapi.py
+@@ -104,6 +104,7 @@
+     typed_requests = {"cipher_aec.estimating.api": est_requests, "cipher_aec.api.masters":{"parties":"NativePartiesRequest","price_lists":"NativePriceListsRequest","units":"NativeUnitsRequest","currencies":"NativeCurrenciesRequest","items":"NativeItemsRequest","cost_centers":"NativeCostCentersRequest","accounts":"NativeAccountsRequest","award_items":"NativeAwardItemsRequest"}}
+     typed_requests["cipher_aec.api.semantic"] = {"prepare":"SemanticPrepareRequest", "cancel":"SemanticJobRequest", "status":"SemanticStatusRequest", "query":"SemanticQueryRequest"}
+     for module, filename, requests in (
++        ('cipher_aec.quality_safety.api', 'quality_safety/schemas/api-v1.schema.json', {'upload_evidence': 'QsUploadEvidenceRequest', 'create_record': 'QsCreateRecordRequest', 'revise_record': 'QsReviseRecordRequest', 'transition': 'QsTransitionRequest', 'get_record': 'QsGetRecordRequest', 'list_records': 'QsListRecordsRequest'}),
+         ("cipher_aec.field.api", "field/schemas/api-v1.schema.json", {'create_record': 'FdCreateRecordRequest', 'revise_record': 'FdReviseRecordRequest', 'transition': 'FdTransitionRequest', 'get_record': 'FdGetRecordRequest', 'list_records': 'FdListRecordsRequest'}),
+         ("cipher_aec.document_control.company_api", "document_control/schemas/api-v1.schema.json", {'set_rights': 'DcCompanySetRightsRequest', 'create_library': 'DcCompanyCreateLibraryRequest', 'revise_library': 'DcCompanyReviseLibraryRequest', 'get_record': 'DcCompanyGetRecordRequest', 'list_records': 'DcCompanyListRecordsRequest'}),
+         ("cipher_aec.document_control.api", "document_control/schemas/api-v1.schema.json", {'set_rights': 'DcSetRightsRequest', 'create_library': 'DcCreateLibraryRequest', 'revise_library': 'DcReviseLibraryRequest', 'create_adoption': 'DcCreateAdoptionRequest', 'create_issue_set': 'DcCreateIssueSetRequest', 'create_transmittal': 'DcCreateTransmittalRequest', 'record_evidence': 'DcRecordEvidenceRequest', 'get_record': 'DcGetRecordRequest', 'list_records': 'DcListRecordsRequest', 'list_people': 'DcListPeopleRequest', 'create_clause_use': 'DcCreateClauseUseRequest', 'create_redline': 'DcCreateRedlineRequest', 'read_clause_target': 'DcReadClauseTargetRequest', 'create_shared_adoption':'DcCreateSharedAdoptionRequest', 'issued_standing': 'DcIssuedStandingRequest', 'request_lifecycle': 'DcRequestLifecycleRequest'}),

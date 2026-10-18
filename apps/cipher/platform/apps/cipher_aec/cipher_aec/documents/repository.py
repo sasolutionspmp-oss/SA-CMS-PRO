@@ -47,6 +47,13 @@ class FrappeDocumentRepository:
 
     def documents(self, company, project):
         import frappe
+        from cipher_aec.quality_safety.privacy import query as incident_query
+        # Ordinary cap/paging must not depend on the number of private sources.
+        if self.scope_type == 'Project':
+            allowed = frappe.db.sql('SELECT name FROM `tabCipher Document` WHERE company=%s AND project=%s AND scope_type=%s AND (' + incident_query('Cipher Document') + ') ORDER BY modified DESC LIMIT 100', (company, project, self.scope_type), as_dict=True)
+            names = [row.name for row in allowed]
+            if not names:return []
+            return frappe.get_all('Cipher Document', filters={'name':['in',names]}, fields=['name','title','company','project','scope_type','current_revision','revision_number'], order_by='modified desc', limit_page_length=100)
         return frappe.get_all("Cipher Document", filters={"company": company, "project": project, "scope_type":self.scope_type},
                               fields=["name", "title", "company", "project", "scope_type", "current_revision", "revision_number"],
                               order_by="modified desc", limit_page_length=100)

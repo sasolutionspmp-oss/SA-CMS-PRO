@@ -47,6 +47,8 @@ def _document(name,company,project,actor,*,lock=False):
     rules.text(name,'document_id',140);require_project(company,project,ability='document.read',actor=actor,lock=lock)
     value=frappe.get_doc('Cipher Document',name,for_update=lock)
     if value.company!=company or value.project!=project or (value.scope_type or 'Project')!='Project':raise DomainError('not_found','This original Project document is unavailable.',404)
+    from cipher_aec.quality_safety.privacy import authorize_source as authorize_incident_source
+    authorize_incident_source(value.as_dict(), actor, lock=lock)
     return value
 
 def _prelock(artifacts,company,project,actor,*,lock=False,allow_foreign=False):

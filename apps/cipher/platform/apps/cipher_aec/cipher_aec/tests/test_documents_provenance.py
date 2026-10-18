@@ -23,6 +23,8 @@ def document(name):
 
 class ProvenanceAuthority(unittest.TestCase):
     def setUp(self):
+        from cipher_aec.tests.incident_privacy_fixture import incident_privacy_fixture
+        self.incident_privacy = self.enterContext(incident_privacy_fixture())
         # Explicit no-policy fixture: exercise producer ancestry separately from
         # DOC03's real current-policy/evidence admission host cases.
         self.enterContext(patch.dict(sys.modules, {'cipher_aec.document_control.rights':types.SimpleNamespace(authorize=lambda *a,**k:None)}))
