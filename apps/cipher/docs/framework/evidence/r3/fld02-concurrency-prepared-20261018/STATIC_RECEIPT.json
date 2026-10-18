@@ -1,0 +1,86 @@
+{
+  "status": "SOURCE_PREPARED_NATIVE_UNRUN",
+  "created_at_utc": "2026-10-18T08:17:11+00:00",
+  "created_at_America_New_York": "2026-10-18T04:17:11-04:00",
+  "repository": "https://github.com/sasolutionspmp-oss/SA-CMS-PRO",
+  "base_sha": "4b884afa21ca1618bd47e2107d8212d261ecc1e9",
+  "production_source_changes": 0,
+  "host_verification": {
+    "pure_guard_tests": {
+      "passed": 31,
+      "log": "guards-green.log"
+    },
+    "pure_parent_tests": {
+      "passed": 13,
+      "log": "driver-green.log"
+    },
+    "combined_unittest": {
+      "passed": 44,
+      "command": "PYTHONDONTWRITEBYTECODE=1 python -B -m unittest -v test_guards test_driver",
+      "result": "OK; actual host run; the retained two component logs contain the same 44 tests"
+    },
+    "AST_and_compile": {
+      "files": [
+        "native_driver.py",
+        "native_worker.py",
+        "inventory.py",
+        "lease.py",
+        "test_guards.py",
+        "test_driver.py",
+        "guards_red_scaffold.py"
+      ],
+      "passed": 7,
+      "imports": "worker/Frappe/application not imported"
+    },
+    "permissive_red_scaffold": {
+      "tests": 31,
+      "expected_failures": 84,
+      "helper_only_skip": 1,
+      "log": "guards-red.log",
+      "qualification": "deliberately permissive test-only admission scaffold, not an installed native baseline"
+    },
+    "actual_driver_preimage_regression": {
+      "tests": 13,
+      "failures": 1,
+      "log": "driver-preimage-red.log",
+      "details": "PREIMAGE_REGRESSION.json",
+      "qualification": "retrospective reproduction of exact reviewed pre-fix source, not native evidence or chronological red-run claim"
+    },
+    "C5_source_contract_pins": {
+      "verified": 52,
+      "manifest": "SOURCE_CONTRACTS.json",
+      "independent_review": "INDEPENDENT_REVIEW.md"
+    }
+  },
+  "native_verification": {
+    "stage_race": "UNRUN",
+    "apply_race": "UNRUN",
+    "change_before_apply": "UNRUN",
+    "binding_race": "UNRUN",
+    "duty_race": "UNRUN",
+    "unknown_commit_reconciliation": "UNRUN",
+    "actual_Frappe_MariaDB": "UNRUN",
+    "HTTP_browser_provider_model": "UNRUN"
+  },
+  "boundaries": {
+    "production_runtime_database_calls": 0,
+    "provider_calls": 0,
+    "cloud_installs_images_runtime": 0,
+    "award_retry": false,
+    "dependent_procurement_finance": "BLOCKED",
+    "stable_trial": "untouched",
+    "local_integration_writer": "local coordinator"
+  },
+  "native_source_hashes": {
+    "native_driver.py": "d7af2e46f27a705fa3db71e3203856d948549b089963f1d2cf76bec19f012085",
+    "native_worker.py": "3a59e107876bbd85cdadeea8f3ac3904e23e4212d82a372e51e496110be58d01",
+    "inventory.py": "2ba5268cd95ea2b8dc941236a44753c441d07f559cb44faa4f36e1aada3f5db0",
+    "lease.py": "3ce8cac31d29cab52e2f50b5a0352f2603463b3efcf17ec314d388105f7701b0"
+  },
+  "limits": [
+    "Stable persistent private artifact_dir is an explicit local-root trust contract.",
+    "Native readback/current-right denial or absence never clears unknown reservation.",
+    "Semantic/File/callback bounds failclosed; unsupported inventories remain incomplete.",
+    "Full native acceptance and installation-wide finance effect proof remain local."
+  ]
+}

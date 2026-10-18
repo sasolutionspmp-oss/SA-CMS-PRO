@@ -1,0 +1,134 @@
+{
+  "algorithm": "SHA-256 of raw bytes; Git SHA-1 blobs also supplied",
+  "listed_files": 21,
+  "total_files_including_this_inventory": 22,
+  "self_hash": "External exact Git raw-byte readback; do not convert newlines before hashing.",
+  "files": [
+    {
+      "path": "GUARD_SCHEMA_EXAMPLES.json",
+      "bytes": 5368,
+      "sha256": "bccf2c8ecf256920522a00437364b5388e836464f276afbbbde9f0cfce8b5beb",
+      "git_blob": "4d5eaa4e83412047bbb9e24af4129969bef7871a"
+    },
+    {
+      "path": "INDEPENDENT_REVIEW.md",
+      "bytes": 6133,
+      "sha256": "ec4c2a56e3e89f6877fcd18f14771e701ce7ba912f271277ceed1af7e3adf6e1",
+      "git_blob": "5134c277e0454d79f6d4b6073f2f7859ca1a9f19"
+    },
+    {
+      "path": "MANIFEST.json",
+      "bytes": 1408,
+      "sha256": "bba91337d9cd2f737d5455b5641de390c09542b1c5d6d0352912744c3c28fa37",
+      "git_blob": "64fb58882f648611715453e4c14f0680ec8e0abf"
+    },
+    {
+      "path": "PREIMAGE_REGRESSION.json",
+      "bytes": 970,
+      "sha256": "721934df575df3a7b118e213992fb3d81cc26324e1dc7f219fa0c436e84748ab",
+      "git_blob": "07eb198e75dc8f673408462aa22111946def37c4"
+    },
+    {
+      "path": "PRIOR_BUNDLE_HASH_READBACK.json",
+      "bytes": 1201,
+      "sha256": "4c0a1aef20531dd7f27887b3c884e2b3d60288a8c1e25ae665e8d687a91094b1",
+      "git_blob": "00350d7bedecd76a1f937ab37af12b61fde12013"
+    },
+    {
+      "path": "PROOF_PLAN.md",
+      "bytes": 6317,
+      "sha256": "cdb0cb7096136a9959f3654b13de86ca86b3e5a656a346684e37f1d936ef260e",
+      "git_blob": "d84f422dc1eddce26ff6572a4a967a32d14064ca"
+    },
+    {
+      "path": "README.md",
+      "bytes": 7968,
+      "sha256": "a77b41408f7849bdab9463e98b7dbd5d3207984d0bc5c6a0452d1f8bd01f175d",
+      "git_blob": "fcb36d1fcbb11db4e4d88bdea71bdd2bfb1e206a"
+    },
+    {
+      "path": "RUNTIME_REFERENCES.json",
+      "bytes": 1146,
+      "sha256": "79841dd71753ce715a6e7ba3e3465f969a39a29b45622fb87eba983bd81a0100",
+      "git_blob": "cc8f62d63b053597604ebd3bdc6549cba5944f2a"
+    },
+    {
+      "path": "SOURCE_CONTRACTS.json",
+      "bytes": 21135,
+      "sha256": "6b0973191c689e8a9dc2ac21fa5d0569b43ee192aebee1b206f9c7d0fa9f72a3",
+      "git_blob": "922e5ad82993ed2431fc538162376cecb807e5e4"
+    },
+    {
+      "path": "STATIC_RECEIPT.json",
+      "bytes": 3172,
+      "sha256": "5bd7bd1e4bce420e0f4e9bce841fc15019c0aaf68af8576e79279c4df64bdce8",
+      "git_blob": "35b4a367245fb6e5d9b5de9857c697863a341a4b"
+    },
+    {
+      "path": "driver-green.log",
+      "bytes": 2173,
+      "sha256": "24e0429cc03750d25db1e891235bc9cea3428b8e09c9937e90d1d0dedf6f10bc",
+      "git_blob": "a022bdaf9cbfd97cd6725e2e9afea944dfa1f6f1"
+    },
+    {
+      "path": "driver-preimage-red.log",
+      "bytes": 2808,
+      "sha256": "53b2f35d74ad2b895ebabab7eeb4e5dc7b8f6c9165a9db7b0af85cf6a867a687",
+      "git_blob": "86b20732d06a16d76cfe619f44134fc7600116d7"
+    },
+    {
+      "path": "guards-green.log",
+      "bytes": 3668,
+      "sha256": "a6ea17752f366935b9e95ea989e72629a9f2a04f74bcfb6e3b93b93381382935",
+      "git_blob": "ce097029febeb71ee0bb7ab3aae9fe0253c6fb2f"
+    },
+    {
+      "path": "guards-red.log",
+      "bytes": 75315,
+      "sha256": "47c878138c5d2517e26e4606523a5fae2282b9f0f37059ec71330f36314b285f",
+      "git_blob": "3f30d8473eea5aac0984bded2b8ca66467a74f24"
+    },
+    {
+      "path": "guards_red_scaffold.py",
+      "bytes": 675,
+      "sha256": "dda941e8698162fa9ecad19ef84975b6229c41c49f45c8f878ecc400a430eec7",
+      "git_blob": "ebf94b1c78f6c70b21f6e5de46f53a74a51d3f3c"
+    },
+    {
+      "path": "inventory.py",
+      "bytes": 16666,
+      "sha256": "2ba5268cd95ea2b8dc941236a44753c441d07f559cb44faa4f36e1aada3f5db0",
+      "git_blob": "23947abc8665d20362b7beef1d1854ae969ca46f"
+    },
+    {
+      "path": "lease.py",
+      "bytes": 17925,
+      "sha256": "3ce8cac31d29cab52e2f50b5a0352f2603463b3efcf17ec314d388105f7701b0",
+      "git_blob": "73fca0949b4bfd0c3a6f8d674cd77ad7417ede29"
+    },
+    {
+      "path": "native_driver.py",
+      "bytes": 14180,
+      "sha256": "d7af2e46f27a705fa3db71e3203856d948549b089963f1d2cf76bec19f012085",
+      "git_blob": "b2c618a1f335cfc46fd2868abeeb2ab4009b1752"
+    },
+    {
+      "path": "native_worker.py",
+      "bytes": 22837,
+      "sha256": "3a59e107876bbd85cdadeea8f3ac3904e23e4212d82a372e51e496110be58d01",
+      "git_blob": "144bca13b642ae276462a73a418496b4e094edd3"
+    },
+    {
+      "path": "test_driver.py",
+      "bytes": 14303,
+      "sha256": "11b2299427220e5a6c0dfe948a72562dda62e31ab0cf32bcb293e3dbbb26526a",
+      "git_blob": "5a1eba79ffdde8850ff4d3e80cf3dcc98c3a5dc1"
+    },
+    {
+      "path": "test_guards.py",
+      "bytes": 21207,
+      "sha256": "4c04f7ebff962cabf23937b8401b26551d4479f9a653f3e0424f3f1936a5c141",
+      "git_blob": "8cfe5273c67b8cd80e5b508f14f88a38ec1360ab"
+    }
+  ]
+}

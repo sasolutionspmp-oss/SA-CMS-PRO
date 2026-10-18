@@ -1,0 +1,27 @@
+test_barrier_admits_two_observed_rc_connections_only (__main__.DriverContracts.test_barrier_admits_two_observed_rc_connections_only) ... ok
+test_barrier_rejects_ready_or_prepared_identity_drift (__main__.DriverContracts.test_barrier_rejects_ready_or_prepared_identity_drift) ... ok
+test_barrier_rejects_reused_reconnected_or_nonphysical_connection_ids (__main__.DriverContracts.test_barrier_rejects_reused_reconnected_or_nonphysical_connection_ids) ... FAIL
+test_barrier_requires_actual_runtime_and_read_committed (__main__.DriverContracts.test_barrier_requires_actual_runtime_and_read_committed) ... ok
+test_barrier_requires_exact_role_sets_and_both_preparations (__main__.DriverContracts.test_barrier_requires_exact_role_sets_and_both_preparations) ... ok
+test_default_main_disables_before_any_native_import (__main__.DriverContracts.test_default_main_disables_before_any_native_import) ... ok
+test_exclusive_reservation_preserves_partial_and_empty_evidence (__main__.DriverContracts.test_exclusive_reservation_preserves_partial_and_empty_evidence) ... ok
+test_identity_keeps_original_operation_body_scope_and_request_digest (__main__.DriverContracts.test_identity_keeps_original_operation_body_scope_and_request_digest) ... ok
+test_only_explicit_person_and_uuid_separate_native_reservations (__main__.DriverContracts.test_only_explicit_person_and_uuid_separate_native_reservations) ... ok
+test_reservation_private_mode_symlink_and_parent_denial (__main__.DriverContracts.test_reservation_private_mode_symlink_and_parent_denial) ... ok
+test_reservation_survives_company_project_run_epoch_body_and_alias_changes (__main__.DriverContracts.test_reservation_survives_company_project_run_epoch_body_and_alias_changes) ... ok
+test_source_child_preserves_parent_admission_and_reserves_before_native_load (__main__.DriverContracts.test_source_child_preserves_parent_admission_and_reserves_before_native_load) ... ok
+test_source_has_one_unlooped_business_call_and_no_uuid_generation (__main__.DriverContracts.test_source_has_one_unlooped_business_call_and_no_uuid_generation) ... ok
+
+======================================================================
+FAIL: test_barrier_rejects_reused_reconnected_or_nonphysical_connection_ids (__main__.DriverContracts.test_barrier_rejects_reused_reconnected_or_nonphysical_connection_ids)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/fld02-source-preimage-svmipyea/test_driver.py", line 179, in test_barrier_rejects_reused_reconnected_or_nonphysical_connection_ids
+    with self.assertRaises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+----------------------------------------------------------------------
+Ran 13 tests in 0.032s
+
+FAILED (failures=1)

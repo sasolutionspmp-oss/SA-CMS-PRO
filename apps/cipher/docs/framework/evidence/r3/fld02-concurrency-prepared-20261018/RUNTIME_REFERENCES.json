@@ -1,0 +1,28 @@
+{
+  "qualification": "Public exact-tag source reference; no installed runtime or native qualification claim.",
+  "files": [
+    {
+      "file": "frappe16-utils-reference.py",
+      "url": "https://raw.githubusercontent.com/frappe/frappe/v16.52.0/frappe/utils/__init__.py",
+      "bytes": 31007,
+      "sha256": "5eeffea7bccdc94ce5f7c0ad46678c1152fbe641e30789150a2de097fb7f2277"
+    },
+    {
+      "file": "frappe16-mariadb-reference.py",
+      "url": "https://raw.githubusercontent.com/frappe/frappe/v16.52.0/frappe/database/mariadb/database.py",
+      "bytes": 18099,
+      "sha256": "0eaae7d449c560dcd0fa6ef56686bcfe2eb10a474f21c62c282617cf3c3fb3b9"
+    },
+    {
+      "file": "frappe16-database-reference.py",
+      "url": "https://raw.githubusercontent.com/frappe/frappe/v16.52.0/frappe/database/database.py",
+      "bytes": 47652,
+      "sha256": "dc9fe0620ab7ceb300bee2b5da5c247d8979727139c785bb591e0a54e3bebf15"
+    }
+  ],
+  "frappe_init": {
+    "url": "https://raw.githubusercontent.com/frappe/frappe/v16.52.0/frappe/__init__.py",
+    "bytes": 45069,
+    "sha256": "933561c566fe4bac7455554f018dd05395f6125111d733ee0a3f3720918c65a4"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "commit": "a99126883478c5458268bd8a5670a582eaf211e2",
+  "path": "apps/cipher/docs/framework/evidence/r3/fld02-native-tests-20261018/ARTIFACT_SHA256.json",
+  "raw_git_blob": "43adba7053624b94664949d2ef03a505bd123a91",
+  "raw_git_bytes": 3876,
+  "raw_git_sha256": "275b00e95b08b8557038779d61ee34b0fdaa5e13f70ad9227540ea82a59b05d5",
+  "raw_git_final_LF": true,
+  "CRLF_transformed_bytes": 3996,
+  "CRLF_transformed_sha256": "38b59f0dc2d69602ac804c11d314dbb142f906714e7d285a0f3551d3d4dffc04",
+  "finding": "Local importer reported the SHA256 of LF-to-CRLF transformed bytes, not raw Git bytes. Both content representations identified; original commit/evidence unchanged.",
+  "raw_verification": "hashlib.sha256(subprocess.check_output([\"git\",\"show\",\"COMMIT:PATH\"])).hexdigest(); do not use text-mode newline conversion.",
+  "MANIFEST_json": {
+    "raw_bytes": 2589,
+    "raw_git_sha256": "0552a94f02bb77dacc1cd24b73414d8266165a624228ca5fc51ed6e4367a505c",
+    "raw_git_blob": "84e0daefe625666457d87d965c8058837cabbe5e"
+  },
+  "local_admission": "Coordinator independently admitted canonical LF bundle after review and matching all 48 previous source-contract pins; original commit unchanged."
+}

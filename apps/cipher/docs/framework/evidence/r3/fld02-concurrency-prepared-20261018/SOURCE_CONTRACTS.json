@@ -1,0 +1,418 @@
+{
+  "repository": "https://github.com/sasolutionspmp-oss/SA-CMS-PRO",
+  "artifact_base": "4b884afa21ca1618bd47e2107d8212d261ecc1e9",
+  "FLD02_original": "392a19f8c01b4253a5aaeaa99878408d394dc9cb",
+  "previous_qualification_context": "310a946bd34d06c9f7c1a3d96ab7274733142cd9",
+  "status": "source references only; native UNRUN",
+  "scope": "Relevant public direct-service implementation/context/controller dependencies. Operator must additionally pin the entire actual copied application and selected installed runtime, including existing bytecode.",
+  "files": [
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/api/contracts.py",
+      "commit": "4b884afa21ca1618bd47e2107d8212d261ecc1e9",
+      "git_blob": "ed9273ba274510f2ad003919e133d883c1111b46",
+      "sha256": "f91fd0fdf834433817f427c66309bcce209210c9266e3eaa876408989f4a2e90",
+      "bytes": 3158
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/api/errors.py",
+      "commit": "4b884afa21ca1618bd47e2107d8212d261ecc1e9",
+      "git_blob": "f9dfaba8770a594d95f562c0f02b2a9f71c7171b",
+      "sha256": "dc396a94f5fb3fcffafdb579f7c6df21d2352ae2709e31c9b342f18e704edf9e",
+      "bytes": 430
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_field_offline/__init__.py",
+      "commit": "4b884afa21ca1618bd47e2107d8212d261ecc1e9",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "FLD02_original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "unchanged_from_FLD02": true
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_field_offline/doctype/__init__.py",
+      "commit": "4b884afa21ca1618bd47e2107d8212d261ecc1e9",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "FLD02_original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "unchanged_from_FLD02": true
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_field_offline/doctype/cipher_field_offline_capture/__init__.py",
+      "commit": "4b884afa21ca1618bd47e2107d8212d261ecc1e9",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "FLD02_original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "unchanged_from_FLD02": true
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_field_offline/doctype/cipher_field_offline_capture/cipher_field_offline_capture.json",
+      "commit": "4b884afa21ca1618bd47e2107d8212d261ecc1e9",
+      "git_blob": "69bb8332be0e02c8cab0e86a56ff5b30648332a3",
+      "sha256": "07d1d63f3cd80f0bd8e8d1d3ee447ee066a7bf2f3160eefc50f8df675b59f2fb",
+      "bytes": 2147,
+      "FLD02_original_sha256": "07d1d63f3cd80f0bd8e8d1d3ee447ee066a7bf2f3160eefc50f8df675b59f2fb",
+      "unchanged_from_FLD02": true
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_field_offline/doctype/cipher_field_offline_capture/cipher_field_offline_capture.py",
+      "commit": "4b884afa21ca1618bd47e2107d8212d261ecc1e9",
+      "git_blob": "53491c97d8193c36b2999ae62c72f9d0f5d4d787",
+      "sha256": "3414d7994e9faffd909ff9fe6a8847da6f91ccccb4b73d34dfa1fc18442834cd",
+      "bytes": 117,
+      "FLD02_original_sha256": "3414d7994e9faffd909ff9fe6a8847da6f91ccccb4b73d34dfa1fc18442834cd",
+      "unchanged_from_FLD02": true
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_field_offline/doctype/cipher_field_offline_device/__init__.py",
+      "commit": "4b884afa21ca1618bd47e2107d8212d261ecc1e9",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "FLD02_original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "unchanged_from_FLD02": true
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_field_offline/doctype/cipher_field_offline_device/cipher_field_offline_device.json",
+      "commit": "4b884afa21ca1618bd47e2107d8212d261ecc1e9",
+      "git_blob": "7a04956d80cd42896a6c0eec8d685de4d19b7505",
+      "sha256": "b35c418ffaf87a538763d60e13d2433a74f3af23b1ae50fd333222d60d09e286",
+      "bytes": 2146,
+      "FLD02_original_sha256": "b35c418ffaf87a538763d60e13d2433a74f3af23b1ae50fd333222d60d09e286",
+      "unchanged_from_FLD02": true
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_field_offline/doctype/cipher_field_offline_device/cipher_field_offline_device.py",
+      "commit": "4b884afa21ca1618bd47e2107d8212d261ecc1e9",
+      "git_blob": "1969b3545702bb944be49042b08539ba8f4c8859",
+      "sha256": "0d6919ca4252a12406dbe6f7abc9c8e00ab083c47d00941852ced8854db0474e",
+      "bytes": 116,
+      "FLD02_original_sha256": "0d6919ca4252a12406dbe6f7abc9c8e00ab083c47d00941852ced8854db0474e",
+      "unchanged_from_FLD02": true
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_field_offline/doctype/cipher_field_offline_event/__init__.py",
+      "commit": "4b884afa21ca1618bd47e2107d8212d261ecc1e9",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "FLD02_original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "unchanged_from_FLD02": true
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_field_offline/doctype/cipher_field_offline_event/cipher_field_offline_event.json",
+      "commit": "4b884afa21ca1618bd47e2107d8212d261ecc1e9",
+      "git_blob": "7def8bcabb16d7c65ec647e033fd33a289170043",
+      "sha256": "d66196a2059f1362caaf340ad9326619b563a804eeeef00997dbce730a994bc6",
+      "bytes": 2145,
+      "FLD02_original_sha256": "d66196a2059f1362caaf340ad9326619b563a804eeeef00997dbce730a994bc6",
+      "unchanged_from_FLD02": true
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_field_offline/doctype/cipher_field_offline_event/cipher_field_offline_event.py",
+      "commit": "4b884afa21ca1618bd47e2107d8212d261ecc1e9",
+      "git_blob": "cd8a02bf4dd79f04f43762ed17cf9a34d68f6f6a",
+      "sha256": "3787c71c3ff31d761c7c548cada6546d102c0c815d1f1f632fe02ad320e92552",
+      "bytes": 115,
+      "FLD02_original_sha256": "3787c71c3ff31d761c7c548cada6546d102c0c815d1f1f632fe02ad320e92552",
+      "unchanged_from_FLD02": true
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/repository.py",
+      "commit": "4b884afa21ca1618bd47e2107d8212d261ecc1e9",
+      "git_blob": "8138e915f780aa7f096b2b376a636c89790eca26",
+      "sha256": "16bcd22a827327994fa6ab36ca3592c95a5249f2b79172803341b619fc03488c",
+      "bytes": 4993
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/rights.py",
+      "commit": "4b884afa21ca1618bd47e2107d8212d261ecc1e9",
+      "git_blob": "69289e54d95c16e1e6785d8210da6c0089d5a910",
+      "sha256": "7b2652e58de6926ee8aefceb079edb3a3a388c6891e6ec7849c02142c2f8aafd",
+      "bytes": 5762
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/field/README.md",
+      "commit": "4b884afa21ca1618bd47e2107d8212d261ecc1e9",
+      "git_blob": "ef935332b73abd786a839da6772972754b47c6ab",
+      "sha256": "d81ef0f68c5397969072ecee59510e0369c05223e673e1a09b60d9e0be81164b",
+      "bytes": 2813
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/field/__init__.py",
+      "commit": "4b884afa21ca1618bd47e2107d8212d261ecc1e9",
+      "git_blob": "c3d1433b5a4be75be79989dcbfb71cb93ce82761",
+      "sha256": "93eab7bebb52724e3e80072f6701ef05e2b0b3340ed38d66e8c38a531b7bd0c1",
+      "bytes": 77
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/field/api.py",
+      "commit": "4b884afa21ca1618bd47e2107d8212d261ecc1e9",
+      "git_blob": "ad59836d15e00528be68ea9ea35d17e5c177b503",
+      "sha256": "638c200e736f7edf3c7b69161a664016e76dbc09b687966743f8bbae7699b8e1",
+      "bytes": 1263
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/field/contracts.py",
+      "commit": "4b884afa21ca1618bd47e2107d8212d261ecc1e9",
+      "git_blob": "8e0aad845a0020b71ea52ce4c9865b91a4272e62",
+      "sha256": "c17a6768e938a7051da660b5f6e8ff9105296009cecdc77210148a426b81fa8a",
+      "bytes": 12819
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/field/install.py",
+      "commit": "4b884afa21ca1618bd47e2107d8212d261ecc1e9",
+      "git_blob": "e3840a3a9d67b212b9937ac16729f79acfd874de",
+      "sha256": "44c555b8c526a65665fbaf403612decdc24d8da7ec92e6795915446d4b97abac",
+      "bytes": 917
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/field/records.py",
+      "commit": "4b884afa21ca1618bd47e2107d8212d261ecc1e9",
+      "git_blob": "3cf7820c42e14832715a7a1b00dacfb34c868f60",
+      "sha256": "539f7b8079298da31ab1b9da53d898936c2b62433a67f6db67e695412e137925",
+      "bytes": 7531
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/field/repository.py",
+      "commit": "4b884afa21ca1618bd47e2107d8212d261ecc1e9",
+      "git_blob": "2a104811070c2b93301bf72ad8b9d7fb4dd9f4eb",
+      "sha256": "0939ef8f993445f89af9c068c00fb3c05e5e6ea2e02a46f7c69404725e1e8c17",
+      "bytes": 4477
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/field/route-contracts.json",
+      "commit": "4b884afa21ca1618bd47e2107d8212d261ecc1e9",
+      "git_blob": "c1a9222b5bc8786720a38b4b54c9dcf6fa9d34bc",
+      "sha256": "c20bdc029e2e04d3f261e930c0bb2f9e04c28d2184a5cea942f8fb5b2f32cff7",
+      "bytes": 470
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/field/schemas/api-v1.schema.json",
+      "commit": "4b884afa21ca1618bd47e2107d8212d261ecc1e9",
+      "git_blob": "3d5330bdbe22f80a53904db94e6cc3e77f3cac54",
+      "sha256": "23506187c3802fdec51803723572c3ba883c2ceaa484976bda300cf73e097db6",
+      "bytes": 66418
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/field/service.py",
+      "commit": "4b884afa21ca1618bd47e2107d8212d261ecc1e9",
+      "git_blob": "a62597d336d050d12a24624bd913d3b332c4e25a",
+      "sha256": "ef862b28a23fa4cb268005b0490fc8d8d7d53262de0890fed0d6b5bf4d5c73a7",
+      "bytes": 25358
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/field/sources.py",
+      "commit": "4b884afa21ca1618bd47e2107d8212d261ecc1e9",
+      "git_blob": "157d66a6c84bc50296743a2790f208578095e715",
+      "sha256": "410d05940e34b09318b8471d1667ab9902abe7a93570bbe1ee7e1cda63465fad",
+      "bytes": 4850
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/field_offline/__init__.py",
+      "commit": "4b884afa21ca1618bd47e2107d8212d261ecc1e9",
+      "git_blob": "51628ef474e99b947a64ac857575c29d25bdb2f8",
+      "sha256": "c61ae47fe1be1d670144fa75a4d0ef87ef7ea815a33ecb989b79ed9011100fd3",
+      "bytes": 77,
+      "FLD02_original_sha256": "c61ae47fe1be1d670144fa75a4d0ef87ef7ea815a33ecb989b79ed9011100fd3",
+      "unchanged_from_FLD02": true
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/field_offline/api.py",
+      "commit": "4b884afa21ca1618bd47e2107d8212d261ecc1e9",
+      "git_blob": "4fb5287112e8a52f30309d19ca5db01bff9b1d1e",
+      "sha256": "2a73aa9c414de0ccd434b46968434ec94c9d215668647fd23677106cce1b18a1",
+      "bytes": 3046,
+      "FLD02_original_sha256": "c9376b03144b68368c8e654f14372804358ce14bb7118c062ba8317c592dffab",
+      "unchanged_from_FLD02": false
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/field_offline/contracts.py",
+      "commit": "4b884afa21ca1618bd47e2107d8212d261ecc1e9",
+      "git_blob": "12ec9e060769dd0f8b4c904168d308c6f7d10954",
+      "sha256": "01629128b4af32a94b2e494ec2a12adf54d6f7f1e69d5c19edb5c36c6c65f72b",
+      "bytes": 6653,
+      "FLD02_original_sha256": "01629128b4af32a94b2e494ec2a12adf54d6f7f1e69d5c19edb5c36c6c65f72b",
+      "unchanged_from_FLD02": true
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/field_offline/device-policy.json",
+      "commit": "4b884afa21ca1618bd47e2107d8212d261ecc1e9",
+      "git_blob": "1d7ab2367ceb6b8276a5afcdead7a2724ee08700",
+      "sha256": "275598cf44a22fe09133a4addb61a82ede4917416e4e031623e4e99dd44042d3",
+      "bytes": 2195,
+      "FLD02_original_sha256": "275598cf44a22fe09133a4addb61a82ede4917416e4e031623e4e99dd44042d3",
+      "unchanged_from_FLD02": true
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/field_offline/install.py",
+      "commit": "4b884afa21ca1618bd47e2107d8212d261ecc1e9",
+      "git_blob": "a85497666362202eb4421a24eade0ed803aa9e29",
+      "sha256": "e3e5a1b4e65a4687437b078e53edd9665549011699d8189f1cabe28ffe1f26db",
+      "bytes": 513,
+      "FLD02_original_sha256": "e3e5a1b4e65a4687437b078e53edd9665549011699d8189f1cabe28ffe1f26db",
+      "unchanged_from_FLD02": true
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/field_offline/records.py",
+      "commit": "4b884afa21ca1618bd47e2107d8212d261ecc1e9",
+      "git_blob": "7ca988b3080908ae41fd35801e6730497043d401",
+      "sha256": "026c78321e9e08bf30598aa6ada5310ebc8aaacaa2898208562c61d71c999f40",
+      "bytes": 8551,
+      "FLD02_original_sha256": "026c78321e9e08bf30598aa6ada5310ebc8aaacaa2898208562c61d71c999f40",
+      "unchanged_from_FLD02": true
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/field_offline/repository.py",
+      "commit": "4b884afa21ca1618bd47e2107d8212d261ecc1e9",
+      "git_blob": "fda8f534888c61e3cd4e9651edd28e02bf93f4aa",
+      "sha256": "2ca1e061d501e2a24f56bb2ed9e7bb54fd780ac16d79f3cd66626f06a797659f",
+      "bytes": 3608,
+      "FLD02_original_sha256": "2ca1e061d501e2a24f56bb2ed9e7bb54fd780ac16d79f3cd66626f06a797659f",
+      "unchanged_from_FLD02": true
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/field_offline/route-contracts.json",
+      "commit": "4b884afa21ca1618bd47e2107d8212d261ecc1e9",
+      "git_blob": "ea31f310302103b45d466e2db3b2ea93bb1b2934",
+      "sha256": "840dc2495ea59de87aafe5e7274fa414705a1c358dd9fdb6eb91d09420c6148a",
+      "bytes": 819,
+      "FLD02_original_sha256": "840dc2495ea59de87aafe5e7274fa414705a1c358dd9fdb6eb91d09420c6148a",
+      "unchanged_from_FLD02": true
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/field_offline/schemas/api-v1.schema.json",
+      "commit": "4b884afa21ca1618bd47e2107d8212d261ecc1e9",
+      "git_blob": "63b66691f51d2ad573ca64be06c33df0167bdfc6",
+      "sha256": "99e32521ba518224b327cdeb0643e5d91342406a41ee8e24ec617953d4602d84",
+      "bytes": 67693,
+      "FLD02_original_sha256": "99e32521ba518224b327cdeb0643e5d91342406a41ee8e24ec617953d4602d84",
+      "unchanged_from_FLD02": true
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/field_offline/service.py",
+      "commit": "4b884afa21ca1618bd47e2107d8212d261ecc1e9",
+      "git_blob": "6fbb5060c13ae49ca9a18032c71d0f35825cc0fd",
+      "sha256": "fc2cd0ba235535e1635a9932750e76a7b574aa22a498654cde552634b4d795d6",
+      "bytes": 23169,
+      "FLD02_original_sha256": "fc2cd0ba235535e1635a9932750e76a7b574aa22a498654cde552634b4d795d6",
+      "unchanged_from_FLD02": true
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/field_offline/spec.py",
+      "commit": "4b884afa21ca1618bd47e2107d8212d261ecc1e9",
+      "git_blob": "0e74fff34d8ecad0329d7ab160e7b393721543dc",
+      "sha256": "b29ad8c93dfc6194c1ae67c3c97684dcbcd382fabc388e3a1b2b515bf17ed4ec",
+      "bytes": 673,
+      "FLD02_original_sha256": "b29ad8c93dfc6194c1ae67c3c97684dcbcd382fabc388e3a1b2b515bf17ed4ec",
+      "unchanged_from_FLD02": true
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/governance/APPROVALS.md",
+      "commit": "4b884afa21ca1618bd47e2107d8212d261ecc1e9",
+      "git_blob": "a0ac78e1579a0601ad036c231ce549ebe657088c",
+      "sha256": "89e03149c89f2d3ba335d983271a99d09da7f3014c0b21724ec81fa1406e9015",
+      "bytes": 6521
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/governance/COMPANY_SCOPE.md",
+      "commit": "4b884afa21ca1618bd47e2107d8212d261ecc1e9",
+      "git_blob": "ecfbd5d77f2cd4e846a91cbdd0b09f79b573b35a",
+      "sha256": "734b8a39c29592786a88d8eb0137ff84567a7ade68aff8a283009de873e452b8",
+      "bytes": 3726
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/governance/README.md",
+      "commit": "4b884afa21ca1618bd47e2107d8212d261ecc1e9",
+      "git_blob": "ed838e70d90665d25fe20c15f1b66040e29f5b14",
+      "sha256": "7df9b70f1fe78a4058454e62c690b4002281f5e185b1f77d3c0e15bc9532cb8b",
+      "bytes": 1225
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/governance/__init__.py",
+      "commit": "4b884afa21ca1618bd47e2107d8212d261ecc1e9",
+      "git_blob": "1e60a7cf63df91421bcdc461677f2d8b99b46444",
+      "sha256": "270aa42c5f80e33397496b916a00268234e1fb420126ce81f1e6f2110cb05c0d",
+      "bytes": 61
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/governance/approval_listing.py",
+      "commit": "4b884afa21ca1618bd47e2107d8212d261ecc1e9",
+      "git_blob": "49f60411f8275b6312161e0e3e8b27e3b8267d11",
+      "sha256": "a0d0005d870a9511b6ca38c15afa166bfbb921f8320c898977720679e7442318",
+      "bytes": 2992
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/governance/approvals.py",
+      "commit": "4b884afa21ca1618bd47e2107d8212d261ecc1e9",
+      "git_blob": "e15a3e22ee67686080a839061505ed4802f854f1",
+      "sha256": "a9e4378b36214640570e71c019e3500d9d8afd8a5763df5143474fb43596e6e0",
+      "bytes": 41812
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/governance/commands.py",
+      "commit": "4b884afa21ca1618bd47e2107d8212d261ecc1e9",
+      "git_blob": "b4d31099d38d6de38e9d8c6fb6a5c9d2718af5f5",
+      "sha256": "9259862f9bbce7548ddb18cc23d71d07fcdff25ad8f0720146269e7f89b99546",
+      "bytes": 23118
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/governance/company.py",
+      "commit": "4b884afa21ca1618bd47e2107d8212d261ecc1e9",
+      "git_blob": "df106d1921179b8cedcb412dfae31940263b6f5d",
+      "sha256": "a416580fec29b9c3b7520c8aacebfcee762bb3533761a867241f82026d9ca385",
+      "bytes": 1477
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/governance/context.py",
+      "commit": "4b884afa21ca1618bd47e2107d8212d261ecc1e9",
+      "git_blob": "9fa21df6a9a9e9789d71a732adf82e91c05832cb",
+      "sha256": "12c0e2e08ffaeec69f54e86946b8485e080a74985ab5a2d4ab1fbca404a94b3a",
+      "bytes": 16700
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/governance/controllers.py",
+      "commit": "4b884afa21ca1618bd47e2107d8212d261ecc1e9",
+      "git_blob": "fd87d85ba5ac14ef7ee768ed037e8b5d1a9475d5",
+      "sha256": "5904474140b712626ccb1c6530aa6311114708a3588c627651b67d1168a83c2a",
+      "bytes": 2411
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/governance/domain_approvals.py",
+      "commit": "4b884afa21ca1618bd47e2107d8212d261ecc1e9",
+      "git_blob": "3cf81fad238401533d23240eb892bc31edb3aa97",
+      "sha256": "1bdc70f74fcca0cc2bbeead275426bc6897592927ee4f0adf86547a2e8aadded",
+      "bytes": 12064
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/governance/history.py",
+      "commit": "4b884afa21ca1618bd47e2107d8212d261ecc1e9",
+      "git_blob": "a1e8093975f480c667d13e5a6f4dfcd7d1254c78",
+      "sha256": "b553040c6ff936a0ecc2feb18c350295d0812506b705bd57a25e048061dbb240",
+      "bytes": 3186
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/governance/history_access.py",
+      "commit": "4b884afa21ca1618bd47e2107d8212d261ecc1e9",
+      "git_blob": "d1461054a0adc98f1cb3b545626bb14438a7b205",
+      "sha256": "bdbbe462e7e9fc306f29ea5323b0741ca6fd04b4bf6b7315c6d50f2d9bddbe92",
+      "bytes": 10049
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/governance/history_listing.py",
+      "commit": "4b884afa21ca1618bd47e2107d8212d261ecc1e9",
+      "git_blob": "244221422a6bf6f0642e06ff66b1f692ad60d38e",
+      "sha256": "45e872074eee92bb1bf0c650746c0a49301d18dd0a0dc82749cc7c9efb960940",
+      "bytes": 3860
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/governance/permissions.py",
+      "commit": "4b884afa21ca1618bd47e2107d8212d261ecc1e9",
+      "git_blob": "4f0e25d5815712e08a9c5e543901a68e80e39e5c",
+      "sha256": "fa20dad7c692fa3bfb33ce65e0bce9a3baca89f30121b6b8a6c268c13978f654",
+      "bytes": 940
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+test_administrator_allowed_only_profile_b_change (__main__.Guards.test_administrator_allowed_only_profile_b_change) ... ok
+test_atomic_json_preserves_private_mode_and_denies_symlink (__main__.Guards.test_atomic_json_preserves_private_mode_and_denies_symlink) ... ok
+test_change_can_only_disable_or_reassign_explicit_extra_person (__main__.Guards.test_change_can_only_disable_or_reassign_explicit_extra_person) ... ok
+test_control_parent_symlink_denied (__main__.Guards.test_control_parent_symlink_denied) ... ok
+test_control_symlink_denied (__main__.Guards.test_control_symlink_denied) ... ok
+test_default_disabled (__main__.Guards.test_default_disabled) ... ok
+test_duplicate_json_keys_denied (__main__.Guards.test_duplicate_json_keys_denied) ... ok
+test_duplicate_source_entries_denied (__main__.Guards.test_duplicate_source_entries_denied) ... ok
+test_existing_bytecode_is_in_full_manifest_and_change_is_denied (__main__.Guards.test_existing_bytecode_is_in_full_manifest_and_change_is_denied) ... ok
+test_existing_driver_bytecode_requires_explicit_runtime_pin (__main__.Guards.test_existing_driver_bytecode_requires_explicit_runtime_pin) ... ok
+test_expiry_and_duration_bounds (__main__.Guards.test_expiry_and_duration_bounds) ... ok
+test_full_app_manifest_detects_unlisted_file (__main__.Guards.test_full_app_manifest_detects_unlisted_file) ... ok
+test_journal_can_start_only_pristine_ready (__main__.Guards.test_journal_can_start_only_pristine_ready) ... ok
+test_json_files_private_regular_and_parent_private (__main__.Guards.test_json_files_private_regular_and_parent_private) ... ok
+test_lease_disabled_or_wrong_authority (__main__.Guards.test_lease_disabled_or_wrong_authority) ... ok
+test_native_apply_version_digest_and_original_capture_operation (__main__.Guards.test_native_apply_version_digest_and_original_capture_operation) ... ok
+test_non_owned_private_file_denied (__main__.Guards.test_non_owned_private_file_denied) ... ok
+test_operation_uuid_is_original_canonical_and_required (__main__.Guards.test_operation_uuid_is_original_canonical_and_required) ... ok
+test_recheck_keeps_original_deadline (__main__.Guards.test_recheck_keeps_original_deadline) ... ok
+test_recheck_reads_fresh_epoch (__main__.Guards.test_recheck_reads_fresh_epoch) ... ok
+test_recheck_rejects_lease_request_receipt_and_source_changes (__main__.Guards.test_recheck_rejects_lease_request_receipt_and_source_changes) ... ok
+test_request_digest_and_envelope_digest_pinned (__main__.Guards.test_request_digest_and_envelope_digest_pinned) ... ok
+test_run_id_native_timeouts_and_inventory_bounds (__main__.Guards.test_run_id_native_timeouts_and_inventory_bounds) ... ok
+test_runtime_and_epoch_identity_pins (__main__.Guards.test_runtime_and_epoch_identity_pins) ... ok
+test_scope_and_operation_envelope_contradictions_denied (__main__.Guards.test_scope_and_operation_envelope_contradictions_denied) ... ok
+test_scope_requires_synthetic_users_and_person_bindings (__main__.Guards.test_scope_requires_synthetic_users_and_person_bindings) ... ok
+test_separate_control_file_identities (__main__.Guards.test_separate_control_file_identities) ... ok
+test_serialized_admission_cannot_extend_deadline_or_mutate_body (__main__.Guards.test_serialized_admission_cannot_extend_deadline_or_mutate_body) ... ok
+test_source_manifest_hash_and_source_bytes_pinned (__main__.Guards.test_source_manifest_hash_and_source_bytes_pinned) ... ok
+test_source_symlink_denied (__main__.Guards.test_source_symlink_denied) ... ok
+test_valid_explicit_admission (__main__.Guards.test_valid_explicit_admission) ... ok
+
+----------------------------------------------------------------------
+Ran 31 tests in 0.228s
+
+OK

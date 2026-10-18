@@ -1,0 +1,136 @@
+{
+  "apply_body": {
+    "capture_id": "ROOT_ORIGINAL_CAPTURE_UUID_V4",
+    "company": "ROOT_SYNTHETIC_COMPANY",
+    "expected_version": "ROOT_EXACT_CAPTURE_VERSION_LOWERCASE_SHA256",
+    "operation_id": "ROOT_ORIGINAL_CAPTURE_UUID_V4",
+    "project": "ROOT_SYNTHETIC_PROJECT"
+  },
+  "attempted_journal": {
+    "attempts": 1,
+    "operation_uuid": "ROOT_ORIGINAL_UUID_V4",
+    "outcome": "unknown",
+    "schema": "cipher.fld02.native.concurrent.journal.v1",
+    "state": "incomplete"
+  },
+  "change": {
+    "doctype": "Cipher Identity Binding",
+    "expected_native_digest": "ROOT_ORIGINAL_NATIVE_ROW_LOWERCASE_SHA256",
+    "name": "ROOT_DECLARED_EXISTING_BINDING",
+    "updates": {
+      "active": 0
+    }
+  },
+  "epoch": {
+    "epoch": "ROOT_CURRENT_EPOCH",
+    "runtime_id": "ROOT_RUNTIME_ID",
+    "schema": "cipher.fld02.native.concurrent.epoch.v1"
+  },
+  "instructions": [
+    "Non-executable schema shapes only; placeholders intentionally fail admission.",
+    "Root supplies the original operation/body and operator receipts; never generate or replace UUIDs.",
+    "Control files: separate regular files, current owner, mode0600, private mode0700 parents, no symlinks or hardlinks.",
+    "The source manifest covers every application file including existing bytecode except .git, plus exactly four actual driver siblings and selected runtime sources; maximum4096 entries.",
+    "Every existing driver-directory *.pyc and __pycache__/*.pyc also requires an explicit runtime_files entry and file hash; preserve caches and pin their bytes.",
+    "Change requests use apply_body and one explicit change; only active=0 or person=scope.extra_person is allowed.",
+    "Profile B may be Administrator only for change scenarios; race A/B share one Person.",
+    "Operator runtime receipt is a pin only; live driver must independently verify runtime/site/database/version/isolation.",
+    "Unknown, incomplete, or attempted journals never authorize retry or cleanup."
+  ],
+  "lease": {
+    "artifact_dir": "/ROOT/PRIVATE/OUTPUT_PARENT",
+    "authority": "local_root",
+    "build_sha256": "ROOT_BUILD_LOWERCASE_SHA256",
+    "database_name": "ROOT_EXACT_DATABASE_NAME",
+    "enabled": false,
+    "epoch": "ROOT_CURRENT_EPOCH",
+    "epoch_path": "/ROOT/PRIVATE/CONTROL/epoch.json",
+    "expires_at": "ROOT_AWARE_ISO_TIMESTAMP_WITHIN_ONE_HOUR",
+    "issued_at": "ROOT_AWARE_ISO_TIMESTAMP",
+    "lock_wait_timeout_seconds": 5,
+    "max_duration_seconds": 60,
+    "max_file_bytes": 16777216,
+    "max_inventory_rows": 1000,
+    "python_executable": "/ROOT/RESOLVED/REGULAR/PYTHON",
+    "request_sha256": "ROOT_CANONICAL_WHOLE_REQUEST_SHA256",
+    "run_id": "ROOT_STABLE_RUN_ID",
+    "runtime_id": "ROOT_RUNTIME_ID",
+    "runtime_receipt_path": "/ROOT/PRIVATE/CONTROL/runtime.json",
+    "schema": "cipher.fld02.native.concurrent.lease.v1",
+    "scope": {
+      "company": "ROOT_SYNTHETIC_COMPANY",
+      "project": "ROOT_SYNTHETIC_PROJECT",
+      "users": [
+        {
+          "person": "ROOT_SHARED_PERSON",
+          "profile": "A",
+          "user": "root-a@synthetic.example"
+        },
+        {
+          "person": "ROOT_SHARED_PERSON",
+          "profile": "B",
+          "user": "root-b@synthetic.example"
+        }
+      ]
+    },
+    "site": "ROOT_SYNTHETIC_SITE",
+    "sites_path": "/ROOT/RESOLVED/SITES",
+    "source_manifest_path": "/ROOT/PRIVATE/CONTROL/sources.json",
+    "source_manifest_sha256": "ROOT_CANONICAL_MANIFEST_SHA256",
+    "statement_timeout_seconds": 5,
+    "status": "UNRUN"
+  },
+  "runtime_receipt": {
+    "authority": "local_root",
+    "build_sha256": "ROOT_BUILD_LOWERCASE_SHA256",
+    "epoch": "ROOT_CURRENT_EPOCH",
+    "runtime_id": "ROOT_RUNTIME_ID",
+    "schema": "cipher.fld02.native.concurrent.runtime.v1",
+    "source_manifest_sha256": "ROOT_CANONICAL_MANIFEST_SHA256"
+  },
+  "sources": {
+    "app_root": "/ROOT/PINNED/APPLICATION",
+    "driver_files": [
+      "/dev/shm/cipher-fld02-concurrency-20261018/native_driver.py",
+      "/dev/shm/cipher-fld02-concurrency-20261018/native_worker.py",
+      "/dev/shm/cipher-fld02-concurrency-20261018/inventory.py",
+      "/dev/shm/cipher-fld02-concurrency-20261018/lease.py"
+    ],
+    "files": [
+      {
+        "path": "/ROOT/EXACT/REGULAR/SOURCE_FILE",
+        "sha256": "ROOT_FILE_BYTES_LOWERCASE_SHA256"
+      }
+    ],
+    "runtime_files": [
+      "/ROOT/PINNED/RUNTIME/NATIVE_FILE.py"
+    ],
+    "schema": "cipher.fld02.native.concurrent.sources.v1"
+  },
+  "stage_request": {
+    "body": {
+      "company": "ROOT_SYNTHETIC_COMPANY",
+      "envelope": {
+        "actor_person": "ROOT_SHARED_PERSON",
+        "actor_user": "root-a@synthetic.example",
+        "capture_id": "ROOT_ORIGINAL_CAPTURE_UUID_V4_DISTINCT_FROM_OPERATION",
+        "captured_at": "ROOT_ORIGINAL_AWARE_ISO_TIMESTAMP",
+        "command": {
+          "ROOT_EXACT_NATIVE_COMMAND": "UNRUN"
+        },
+        "company": "ROOT_SYNTHETIC_COMPANY",
+        "device_id": "ROOT_ORIGINAL_DEVICE_UUID_V4",
+        "project": "ROOT_SYNTHETIC_PROJECT",
+        "schema": "cipher.field.offline.v1"
+      },
+      "operation_id": "ROOT_ORIGINAL_UUID_V4",
+      "project": "ROOT_SYNTHETIC_PROJECT"
+    },
+    "body_sha256": "ROOT_CANONICAL_BODY_SHA256",
+    "change": null,
+    "operation_uuid": "ROOT_ORIGINAL_UUID_V4",
+    "scenario": "stage_race",
+    "schema": "cipher.fld02.native.concurrent.request.v1"
+  },
+  "status": "UNRUN"
+}

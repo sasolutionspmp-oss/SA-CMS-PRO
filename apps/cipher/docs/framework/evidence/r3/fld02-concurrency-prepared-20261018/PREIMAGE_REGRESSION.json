@@ -1,0 +1,14 @@
+{
+  "status": "source-only actual pre-fix barrier regression reproduced retrospectively; not native proof or chronological red execution",
+  "preimage_sha256": "fc63f94997c07948bf2aa8e782fe073f6bbd47f30f95530ea14d351a309e41eb",
+  "reviewed_fixed_sha256": "d7af2e46f27a705fa3db71e3203856d948549b089963f1d2cf76bec19f012085",
+  "reverse_exact_replacement": {
+    "from": "type(actual_id) is int and actual_id > 0\n                 and type(prep.get(\"connection_id\")) is int and prep.get(\"connection_id\") == actual_id",
+    "to": "type(actual_id) is int and actual_id > 0 and prep.get(\"connection_id\") == actual_id"
+  },
+  "command": "python -B test_driver.py in temporary directory with preimage native_driver.py and identical current source helpers/tests",
+  "expected_returncode_nonzero": true,
+  "actual_returncode": 1,
+  "failure": "prepared connection_id=True compared equal to observed int1; fixed by exact int type check",
+  "log": "driver-preimage-red.log"
+}
