@@ -29,7 +29,7 @@ h2 { font-size: 1.125rem; } h3 { font-size: 1rem; } p { line-height: 1.55; }
 .summary-strip { display: grid; grid-template-columns: 1fr .75fr .75fr 1.35fr; gap: 1.5rem; padding: 1.5rem 1.75rem; background: var(--sapGroup_ContentBackground); border: 1px solid var(--sapGroup_ContentBorderColor); border-radius: var(--sapElement_BorderCornerRadius, .75rem); margin-bottom: 1.5rem; }
 .fact { display: flex; flex-direction: column; gap: .375rem; min-width: 0; }
 .fact-label, .caption { font-size: .75rem; color: var(--sapContent_LabelColor); line-height: 1.5; }
-.fact-value { font-size: 1.75rem; font-weight: 600; line-height: 1.25; }
+.fact-value { font-size: 1rem; font-weight: 400; line-height: 1.5; overflow-wrap: anywhere; }
 .context-note { border-left: 1px solid var(--sapList_BorderColor); padding-left: 1.5rem; display: flex; align-items: center; gap: 1rem; }
 .context-note strong { display: block; font-size: .8125rem; margin-bottom: .5rem; }.context-note span { font-size: .75rem; color: var(--sapContent_LabelColor); line-height: 1.5; display: block; }
 .context-symbol { width: 2.5rem; height: 2.5rem; flex: none; background: var(--sapInformationBackground); color: var(--sapInformationColor); border-radius: .75rem; display: grid; place-items: center; font-size: 1.5rem; }
@@ -88,7 +88,7 @@ h2 { font-size: 1.125rem; } h3 { font-size: 1rem; } p { line-height: 1.55; }
 @keyframes pulse { 50% { opacity: .35; } }
 @media (max-width: 1250px) { .summary-strip { grid-template-columns: 1fr 1fr 1fr; }.context-note { display: none; }.workspace-frame.with-assistant { grid-template-columns: minmax(0, 1fr) 21.5rem; }.shell-product-subtitle { display: none; }.document-reader-grid { grid-template-columns: minmax(0, 1fr); }.source-details { display: flex; gap: 1.5rem; flex-wrap: wrap; }.source-details dl { margin: 0; display: flex; gap: 1rem; flex-wrap: wrap; }.source-details dt { margin-top: .25rem; }.source-details details { border: 0; margin: 0; padding: 0; max-width: 20rem; } }
 @media (max-width: 900px) { .page { padding: 1.5rem 1rem; }.workspace-context-bar { padding-inline: 1rem; }.workspace-context-bar > div > strong, .workspace-context-bar .context-separator { display: none; }.workspace-frame.with-assistant { grid-template-columns: minmax(0, 1fr); }.with-assistant .ricky-panel { position: absolute; inset: 0 0 0 auto; width: min(25rem, 100%); box-shadow: var(--sapContent_Shadow2); }.workspace-frame { position: relative; }.company-switch { max-width: 11rem; }.page-heading { align-items: flex-start; }.heading-actions { flex-wrap: wrap; justify-content: flex-end; }.project-facts { gap: 1rem; grid-template-columns: repeat(2, minmax(0, 1fr)); }.page-footnote span:last-child { display: none; } }
-@media (max-width: 550px) { h1 { font-size: 1.5rem; }.summary-strip { padding: 1rem; gap: .75rem; }.summary-strip .fact-label { font-size: .625rem; }.summary-strip .caption { display: none; }.fact-value { font-size: 1.5rem; }.page-heading { flex-direction: column; margin-bottom: 1.25rem; }.heading-actions { justify-content: flex-start; }.workspace-context-bar > div { max-width: 8rem; }.workspace-context-bar > div > span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }.workspace-context-bar ui5-select { max-width: 12rem; }.reader-body { padding: 1.25rem; }.source-text { font-size: .8125rem; }.document-facts { grid-template-columns: repeat(2, 1fr); }.connection-item { flex-wrap: wrap; padding: 1rem; }.page-footnote { font-size: .625rem; } }
+@media (max-width: 550px) { h1 { font-size: 1.5rem; }.summary-strip { padding: 1rem; gap: .75rem; }.summary-strip .fact-label { font-size: .625rem; }.summary-strip .caption { display: none; }.page-heading { flex-direction: column; margin-bottom: 1.25rem; }.heading-actions { justify-content: flex-start; }.workspace-context-bar > div { max-width: 8rem; }.workspace-context-bar > div > span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }.workspace-context-bar ui5-select { max-width: 12rem; }.reader-body { padding: 1.25rem; }.source-text { font-size: .8125rem; }.document-facts { grid-template-columns: repeat(2, 1fr); }.connection-item { flex-wrap: wrap; padding: 1rem; }.page-footnote { font-size: .625rem; } }
 @media (prefers-reduced-motion: reduce) { .pulse-dot { animation: none; } }
 @media (pointer: coarse) { .prompt-button { min-height: 44px; } }
 .sign-in-page { min-height: 100%; display: grid; place-items: center; padding: 2.5rem 1rem; background: var(--sapBackgroundColor); }
@@ -280,3 +280,7 @@ h2 { font-size: 1.125rem; } h3 { font-size: 1rem; } p { line-height: 1.55; }
 .document-control-artifacts li { min-width: 0; }
 .document-control-artifacts .caption { display: block; }
 .document-control-workspace .engineering-source-chip > span { overflow-wrap: anywhere; min-width: 0; }
+
+.record-title { font-size: .9375rem; line-height: 1.5; overflow-wrap: anywhere; margin-block: .5rem; }
+.support-details { max-width: 100%; overflow-wrap: anywhere; font-size: .75rem; }
+.page-heading > div { min-width: 0; }

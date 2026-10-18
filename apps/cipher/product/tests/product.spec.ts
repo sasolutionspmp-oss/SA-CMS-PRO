@@ -59,7 +59,9 @@ test('task creation recovers a lost response using the original operation', asyn
   await page.getByRole('button', { name: 'New task', exact: true }).click();
   await page.getByRole('textbox', { name: 'Task name', exact: true }).fill('Prepare site access review');
   await page.getByRole('button', { name: 'Create task', exact: true }).click();
-  await expect(page.getByText('The workspace could not be reached.', { exact: false })).toBeVisible();
+  const connectionFailure = page.getByRole('alert').filter({ hasText: 'The workspace could not be reached.' });
+  await connectionFailure.locator('.support-details > summary').click();
+  await expect(connectionFailure.getByText('The workspace could not be reached.', { exact: false })).toBeVisible();
   await expect(page.getByRole('textbox', { name: 'Task name', exact: true })).toBeDisabled();
   await expect(page.getByRole('button', { name: 'Cancel', exact: true })).toBeDisabled();
   await page.keyboard.press('Escape');
@@ -93,7 +95,12 @@ test('a transient project refresh keeps the stale task draft mounted', async ({ 
   await dialog.getByRole('button', { name: 'Create task', exact: true }).click();
   unavailable = true;
   await dialog.getByRole('button', { name: 'Refresh project', exact: true }).click();
-  await expect(page.getByRole('note', { name: /The project refresh is temporarily unavailable/ })).toBeVisible();
+  const refreshFailure = page.locator('.failure-state').filter({ hasText: /The project refresh is temporarily unavailable/ });
+  await expect(refreshFailure.locator('ui5-message-strip')).toBeVisible();
+  await expect(refreshFailure.locator('ui5-message-strip')).toContainText('We couldn’t confirm the result.');
+  const refreshDiagnostic = refreshFailure.locator('.support-details > p');
+  await expect(refreshDiagnostic).toBeAttached();
+  await expect(refreshDiagnostic).toHaveText('The project refresh is temporarily unavailable.');
   await expect(dialog.getByRole('textbox', { name: 'Task name', exact: true })).toHaveValue('Preserved access review');
   await expect(dialog.getByRole('textbox', { name: 'Task description', exact: true })).toHaveValue('Keep this authored description.');
   unavailable = false;
@@ -150,7 +157,7 @@ test('phone layout keeps navigation and project controls usable', async ({ page 
   await expect(page.getByRole('heading', { name: 'Projects', exact: true })).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   await page.getByRole('button', { name: 'Toggle navigation', exact: true }).click();
-  await expect(page.getByText('Project work', { exact: true })).toBeVisible();
+  await expect(page.getByText('Tasks', { exact: true })).toBeVisible();
 });
 
 // Compare rendered geometry, not configured widths: this catches the former
@@ -219,7 +226,9 @@ test('project status requires independent review and recovers execution with the
   await expect(execute).toBeDisabled();
   await checkUi5Checkbox(review.getByRole('checkbox', { name: 'I reviewed this exact change and its source', exact: true }));
   await execute.click();
-  await expect(review.getByRole('note', { name: /The workspace could not be reached/ })).toBeVisible();
+  const executionFailure = review.getByRole('alert').filter({ hasText: /The workspace could not be reached/ });
+  await executionFailure.locator('.support-details > summary').click();
+  await expect(executionFailure.getByText(/The workspace could not be reached/)).toBeVisible();
   await execute.click();
   await expect(review.getByRole('note', { name: /The approved status change was executed/ })).toBeVisible();
   await page.screenshot({ path: testInfo.outputPath('synthetic-contract-approval-executed.png'), fullPage: true });
@@ -287,7 +296,7 @@ for (const status of [403, 404, 503] as const) {
       await expect(sources.getByRole('link', { name: 'Site coordination requirements', exact: true })).toBeVisible();
     } else {
       await expect(retry).toHaveCount(0);
-      await expect(sources.getByRole('note', { name: status === 403 ? /Your current permissions/ : /This record is unavailable/ })).toBeVisible();
+      await expect(sources.getByRole('note', { name: status === 403 ? /You don’t have access to this item/ : /This item isn’t available/ })).toBeVisible();
     }
   });
 }

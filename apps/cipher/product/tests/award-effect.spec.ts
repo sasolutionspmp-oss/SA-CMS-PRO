@@ -24,7 +24,7 @@ test('award execution refuses an old independent Grant receipt then recovers the
 });
 test('same-key refreshed adoption props are revalidated against the original immutable Company review', async ({ page }) => {
   const fixture = await mockAwardEffect(page, { adopted: true }); await page.goto(path); await expect(page.getByRole('region', { name: 'Recorded Company award' })).toBeVisible(); fixture.corruptReadback(); await page.getByRole('button', { name: 'Refresh award sources', exact: true }).click();
-  await expect(page.getByRole('note', { name: /recorded award does not match its original reviewed plan/ })).toBeVisible(); await expect(page.getByRole('region', { name: 'Recorded Company award' })).toHaveCount(0);
+  const failure = page.locator('.failure-state').filter({ hasText: /recorded award does not match its original reviewed plan/ }); await expect(failure.getByRole('note', { name: /We couldn’t confirm the result\./ })).toBeVisible(); await failure.locator('.support-details > summary').click(); await expect(failure.locator('.support-details > p', { hasText: /recorded award does not match its original reviewed plan/ })).toBeVisible(); await expect(page.getByRole('region', { name: 'Recorded Company award' })).toHaveCount(0);
 });
 test('adopted author sees Company completion without new draft actions or inferred Project access', async ({ page }) => {
   const projectReads: string[] = []; page.on('request', request => { if (/cipher_aec\.api\.v1\.projects?\b/.test(request.url())) projectReads.push(request.url()); }); const fixture = await mockAwardEffect(page, { adopted: true }); await page.goto(path);
@@ -37,5 +37,5 @@ test('lost award review request keeps the original saved-plan snapshot and same 
 });
 
 test('Company completion refuses an adoption linked to a superseded independent Grant', async ({ page }) => {
-  const fixture = await mockAwardEffect(page, { adopted: true }); await page.goto(path); await expect(page.getByRole('region', { name: 'Recorded Company award' })).toBeVisible(); fixture.corruptDecision(); await page.getByRole('button', { name: 'Refresh award sources', exact: true }).click(); await expect(page.getByRole('note', { name: /recorded award does not match its original reviewed plan/ })).toBeVisible(); await expect(page.getByRole('region', { name: 'Recorded Company award' })).toHaveCount(0);
+  const fixture = await mockAwardEffect(page, { adopted: true }); await page.goto(path); await expect(page.getByRole('region', { name: 'Recorded Company award' })).toBeVisible(); fixture.corruptDecision(); await page.getByRole('button', { name: 'Refresh award sources', exact: true }).click(); const failure = page.locator('.failure-state').filter({ hasText: /recorded award does not match its original reviewed plan/ }); await expect(failure.getByRole('note', { name: /We couldn’t confirm the result\./ })).toBeVisible(); await failure.locator('.support-details > summary').click(); await expect(failure.locator('.support-details > p', { hasText: /recorded award does not match its original reviewed plan/ })).toBeVisible(); await expect(page.getByRole('region', { name: 'Recorded Company award' })).toHaveCount(0);
 });

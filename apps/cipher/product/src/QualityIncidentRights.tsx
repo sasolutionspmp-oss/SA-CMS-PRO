@@ -33,30 +33,30 @@ export function QualityIncidentRights({ scope, caps, locked, upload, locator, su
   const unavailable = locked || busy;
   const refresh = () => { setReviewed(false); setSourceReviewed(false); setNotice(''); setRequiresRefresh(false); policy.refresh(); };
   const field = (label: string, value: string, change: (value: string) => void, max: number, multiline = false) => <div><Label>{label}</Label>{multiline ? <TextArea accessibleName={label} value={value} maxlength={max} disabled={unavailable} onInput={e => change(e.currentTarget!.value)} /> : <Input accessibleName={label} value={value} maxlength={max} disabled={unavailable} onInput={e => change(e.currentTarget!.value)} />}</div>;
-  if (!allowed) return <MessageStrip hideCloseButton>Private original stored. A permitted evidence manager with Document control access must verify current source permission before attachment.</MessageStrip>;
+  if (!allowed) return <MessageStrip hideCloseButton>Private file saved. An evidence manager with Document control access must review its permission before attachment.</MessageStrip>;
   if (policy.error) return <><MessageStrip design="Negative" hideCloseButton>{denied(policy.error) ? 'Source access unavailable. Previously loaded permission is hidden.' : 'Current source permission could not be verified. No source has been attached.'}</MessageStrip><Button disabled={unavailable} onClick={refresh}>Refresh private source permission</Button></>;
   return <section aria-label="Private incident source permission"><Title level="H3">Review private source permission</Title>
-    <p>Original stored privately. Recording a permission is a separate authored declaration; uploading does not authorize ingestion or attach this source.</p>
-    <p>Exact document <code>{upload.document.id}</code> · Revision {upload.revision.revision_number} · <code>{upload.revision.sha256}</code></p>
+    <p>The file is private. Review permission before attaching it.</p>
+    <p>Revision {upload.revision.revision_number}</p>
     <Button disabled={unavailable} onClick={refresh}>Refresh private source permission</Button>
-    {policy.loading ? <Loading label="Reading current private source permission " /> : <MessageStrip hideCloseButton>{!policy.data?.current ? 'This original is no longer the current usable document revision. It cannot be attached for a new incident.' : policy.data.usable ? 'Current authored permission permits reading and ingestion on this UTC date. Review the exact source before selecting it.' : current ? 'Current authored permission does not permit this new use on this UTC date. No source has been attached.' : 'No current authored source permission is recorded. No source has been attached.'}</MessageStrip>}
-    <details><summary>Record authorized source permission</summary><p>Use this form only if you are authorized to document the stated permission. It changes only the content-use policy of this exact private original. It does not make the document shared or authorize distribution.</p>
+    {policy.loading ? <Loading label="Reading current private source permission " /> : <MessageStrip hideCloseButton>{!policy.data?.current ? 'This file version is no longer current. Choose the current version for a new incident.' : policy.data.usable ? 'Current permission allows reading and importing today (UTC). Review the file before selecting it.' : current ? 'Current permission does not allow this use today (UTC). Nothing has been attached.' : 'No current permission is recorded. Nothing has been attached.'}</MessageStrip>}
+    <details><summary>Record authorized source permission</summary><p>Record permission only if you are authorized to do so. This file stays private and cannot be distributed.</p>
       {field('Private source rights holder', holder, setHolder, 500)}{field('Private source permission basis', basis, setBasis, 4000, true)}{field('Private source permitted purpose', purpose, setPurpose, 4000, true)}{field('Private source use restrictions', restriction, setRestriction, 4000, true)}
       {field('Private source effective from (UTC date)', from, setFrom, 10)}{field('Private source effective through (UTC date)', until, setUntil, 10)}
-      <CheckBox accessibleName="Private source ingestion is authorized" text="The stated permission allows ingestion for this purpose" checked={ingest} disabled={unavailable} onChange={e => setIngest(e.currentTarget!.checked)} />
+      <CheckBox accessibleName="Private source ingestion is authorized" text="The stated permission allows importing for this purpose" checked={ingest} disabled={unavailable} onChange={e => setIngest(e.currentTarget!.checked)} />
       <CheckBox accessibleName="Private source reading is authorized" text="The stated permission allows reading for this purpose" checked={read} disabled={unavailable} onChange={e => setRead(e.currentTarget!.checked)} />
       <p>Distribution permission remains off.</p><DocumentArtifacts scope={scope} label="Private source permission evidence" maximum={1} values={evidence} onChange={setEvidence} disabled={unavailable} onDenied={onDenied} excludeDocument={upload.document.id} />
-      <CheckBox accessibleName="I am authorized and reviewed this private source permission" text="I am authorized to document this permission and reviewed the exact original, permitted use and distinct evidence" checked={reviewed} disabled={unavailable || policy.loading} onChange={e => setReviewed(e.currentTarget!.checked)} />
+      <CheckBox accessibleName="I am authorized and reviewed this private source permission" text="I am authorized to record this permission and reviewed the file, permitted use and separate evidence" checked={reviewed} disabled={unavailable || policy.loading} onChange={e => setReviewed(e.currentTarget!.checked)} />
       <Button disabled={unavailable || !valid} onClick={async () => {
         if (!valid || unavailable) return;
         setReviewed(false); setSourceReviewed(false); setRequiresRefresh(true);
         const result = await submit({ kind: 'set_incident_source_rights', payload: { ...scope, document_id: upload.document.id, expected_version: current?.record_digest || null, definition }, basis: { original: current, artifacts: evidence }, upload, locator });
         if (!alive.current) return;
-        if (result && 'rights' in result) { setRequiresRefresh(false); setNotice('Permission recorded. Review its current readback before attaching the source.'); policy.refresh(); }
-        else setNotice('No verified permission result was received. Recover any uncertain request, then refresh and review the current permission before another request.');
+        if (result && 'rights' in result) { setRequiresRefresh(false); setNotice('Permission recorded. Review the current permission before attaching the file.'); policy.refresh(); }
+        else setNotice('The result is uncertain. Recover the request, then refresh and review the permission before trying again.');
       }}>Record private source permission</Button>
     </details>
-    <CheckBox accessibleName="I reviewed current private source permission for attachment" text="I reviewed this exact private original and its current permission for the new incident" checked={sourceReviewed} disabled={unavailable || policy.loading || !policy.data?.usable || attached} onChange={e => setSourceReviewed(e.currentTarget!.checked)} />
+    <CheckBox accessibleName="I reviewed current private source permission for attachment" text="I reviewed this private file and its current permission for the new incident" checked={sourceReviewed} disabled={unavailable || policy.loading || !policy.data?.usable || attached} onChange={e => setSourceReviewed(e.currentTarget!.checked)} />
     <Button disabled={unavailable || policy.loading || !policy.data?.usable || !sourceReviewed || attached} onClick={async () => {
       if (unavailable || attaching.current || attached || !sourceReviewed || !policy.data?.usable) return;
       attaching.current = true; setBusy(true); setNotice(''); controller.current = new AbortController();

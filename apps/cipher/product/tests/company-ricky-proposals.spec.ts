@@ -47,14 +47,14 @@ for(const wrongAdmission of [false,true])test(`${wrongAdmission?'terminal admiss
 
 test('lost source-free Stop retains original UUID while denied full reads cannot be initialized by its narrow receipt',async({page})=>{
   const state=await suggestionFixture(page,{pointer:true,active:true,lostStop:true});await openSuggestions(page);await expect(page.getByText('Saved Company request',{exact:true})).toBeVisible();state.setDenied(true);
-  await page.getByRole('button',{name:'Refresh suggestion access',exact:true}).click();await expect(page.getByRole('note',{name:/Your current permissions do not allow this access or action/})).toBeVisible();
+  await page.getByRole('button',{name:'Refresh suggestion access',exact:true}).click();await expect(page.getByRole('note',{name:/You don’t have access to this item\./})).toBeVisible();
   await page.getByRole('button',{name:'Stop this request',exact:true}).click();await expect(page.getByRole('button',{name:'Recover original Stop',exact:true})).toBeEnabled();await expect(page.getByRole('button',{name:'Company reads',exact:true})).toBeDisabled();await expect(page.getByRole('button',{name:'Close Ricky',exact:true})).toBeDisabled();await expect(page.getByRole('button',{name:'Toggle Ricky assistant',exact:true})).toBeDisabled();
   await page.getByRole('button',{name:'Recover original Stop',exact:true}).click();await expect(page.getByText('Stop confirmed: Cancelled.',{exact:false})).toBeVisible();await expect(review(page)).toHaveCount(0);expect(state.requests).toHaveLength(2);expect(state.requests[1]).toEqual(state.requests[0]);
 });
 
 test('current source denial removes an observed suggestion while terminal Stop never claims cancellation',async({page})=>{
   const state=await suggestionFixture(page,{pointer:true});await openSuggestions(page);await expect(review(page)).toBeVisible();state.setDenied(true);
-  await page.getByRole('button',{name:'Refresh suggestion access',exact:true}).click();await expect(page.getByRole('note',{name:/Your current permissions do not allow this access or action/})).toBeVisible();await expect(review(page)).toHaveCount(0);await expect(page.getByText(citation.excerpt,{exact:true})).toHaveCount(0);
+  await page.getByRole('button',{name:'Refresh suggestion access',exact:true}).click();await expect(page.getByRole('note',{name:/You don’t have access to this item\./})).toBeVisible();await expect(review(page)).toHaveCount(0);await expect(page.getByText(citation.excerpt,{exact:true})).toHaveCount(0);
   await page.getByRole('button',{name:'Stop this request',exact:true}).click();await expect(page.getByText('Stop confirmed: Waiting for review.',{exact:false})).toBeVisible();await expect(review(page)).toHaveCount(0);expect(state.current().run.status).toBe('waiting-for-review');
   state.setDenied(false);await page.getByRole('button',{name:'Refresh suggestion access',exact:true}).click();await expect(review(page)).toBeVisible();
 });
@@ -62,7 +62,7 @@ test('current source denial removes an observed suggestion while terminal Stop n
 for(const target of ['Run','suggestion'] as const)test(`changed terminal ${target} fails closed after a valid original observation`,async({page})=>{
   const state=await suggestionFixture(page,{pointer:true});await openSuggestions(page);await expect(review(page)).toBeVisible();
   if(target==='Run')state.mutateRun({created_at:'2020-10-15T00:00:00Z'});else state.mutateProposal({expires_at:'2020-10-17T00:00:00Z'});
-  await page.getByRole('button',{name:'Refresh suggestion access',exact:true}).click();await expect(page.getByText('This saved suggestion or its original sources could not be verified.',{exact:false})).toBeVisible();
+  await page.getByRole('button',{name:'Refresh suggestion access',exact:true}).click();await expect(page.getByRole('note', { name: /We couldn’t confirm the result\./ })).toBeVisible(); await page.locator('.support-details').filter({ hasText: /This saved suggestion or its original sources could not be verified/ }).locator('summary').click(); await expect(page.locator('.support-details[open] > p').filter({ hasText: /This saved suggestion or its original sources could not be verified/ })).toBeVisible();
   await expect(review(page)).toHaveCount(0);expect(state.requests).toEqual([]);
 });
 
@@ -89,7 +89,7 @@ for(const width of [1440,900,390])test(`official suggestion controls and readabl
 test('changed selected working head is refused before any suggestion command',async({page})=>{
   const state=await suggestionFixture(page);await openSuggestions(page);await selectOption(page,'Suggestion pursuit','Selected waterworks pursuit');
   await expect(page.getByRole('combobox',{name:'Suggestion working record',exact:true})).toBeEnabled();state.advanceHeads();await selectOption(page,'Suggestion working record','Working commercial draft');
-  await expect(page.getByRole('note',{name:/This saved suggestion or its original sources could not be verified/})).toBeVisible();await expect(page.getByRole('button',{name:'Prepare scope suggestion',exact:true})).toBeDisabled();expect(state.requests).toEqual([]);
+  await expect(page.getByRole('note', { name: /We couldn’t confirm the result\./ })).toBeVisible(); await page.locator('.support-details').filter({ hasText: /This saved suggestion or its original sources could not be verified/ }).locator('summary').click(); await expect(page.locator('.support-details[open] > p').filter({ hasText: /This saved suggestion or its original sources could not be verified/ })).toBeVisible();await expect(page.getByRole('button',{name:'Prepare scope suggestion',exact:true})).toBeDisabled();expect(state.requests).toEqual([]);
 });
 
 test('long authored review text and optional integrity details remain contained on phone',async({page})=>{

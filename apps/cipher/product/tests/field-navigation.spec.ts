@@ -45,7 +45,7 @@ for (const allowed of [true, false]) test(`Field navigation uses the current Pro
   const navigation = page.getByRole('treeitem', { name: 'Field', exact: true });
   if (!allowed) {
     await expect(page.getByRole('heading', { name: 'Documents', exact: true })).toBeVisible(); await expect(navigation).toHaveCount(0);
-    await page.goto(`${fieldRoot}/daily`); await expect(page.getByRole('note', { name: /Your current permissions do not allow this access or action/ })).toBeVisible(); expect(fixture.reads).toEqual([]);
+    await page.goto(`${fieldRoot}/daily`); await expect(page.getByRole('note', { name: /You don’t have access to this item\.$/ })).toBeVisible(); expect(fixture.reads).toEqual([]);
   } else {
     await expect(navigation).toBeVisible(); await navigation.click(); await expect(page).toHaveURL(`${fieldRoot}/daily`);
     await expect(page.getByRole('heading', { name: 'Daily reports', exact: true })).toBeVisible(); await expect.poll(() => fixture.reads.length).toBeGreaterThan(0);

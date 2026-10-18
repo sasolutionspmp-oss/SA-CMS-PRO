@@ -22,7 +22,7 @@ for (const mime of ['image/jpeg', 'image/png']) {
     await expect(page.getByRole('heading', { name: 'Source image', exact: true })).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Original image only', exact: true })).toBeVisible();
     await expect(page.getByText('Image text unavailable', { exact: true })).toBeVisible();
-    await expect(page.getByText(/OCR and image interpretation are not configured; no source text or excerpt citation is available/)).toBeVisible();
+    await expect(page.getByText(/Text preview is unavailable/)).toBeVisible();
     await expect(page.locator('.source-text')).toHaveCount(0);
     expect(textRequests).toBe(0);
     await page.screenshot({ path: testInfo.outputPath(`synthetic-contract-${extension}-original-only.png`), fullPage: true });

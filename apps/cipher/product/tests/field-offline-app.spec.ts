@@ -8,7 +8,7 @@ test('normal App mounts offline Field and preserves a default profile while visi
   await page.getByRole('treeitem', { name: 'Connections', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'Connections', exact: true })).toBeVisible();
   expect(await storedProfileCount(page)).toBe(1);
-  await page.getByRole('treeitem', { name: 'Offline field captures', exact: true }).click();
+  await page.getByRole('treeitem', { name: 'Offline field', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'App encrypted Field profile', exact: true })).toBeVisible();
 });
 for (const target of ['project', 'company'] as const) test(`controlled ${target} replacement awaits default encrypted profile removal`, async ({ page }) => {
@@ -23,7 +23,7 @@ for (const target of ['project', 'company', 'logout'] as const) test(`failed cle
   const fixture = await mockOfflineApp(page); await page.goto(offlinePath); await createAppProfile(page); await failProfileDeletion(page);
   if (target === 'logout') await signOutApp(page);
   else { await page.getByRole('combobox', { name: target === 'project' ? 'Project context' : 'Company', exact: true }).click(); await page.getByRole('option', { name: target === 'project' ? 'Second Field project' : 'Second Company', exact: true }).click(); }
-  await expect(page.getByText(/Local Field cleanup could not be verified/).first()).toBeVisible();
+  const failure = (target === 'logout' ? page.locator('ui5-dialog[header-text="Your workspace session"]') : page.locator('.workspace-main')).locator('.failure-state').filter({ hasText: /Local Field cleanup could not be verified/ }); await expect(failure.getByRole('note', { name: /We couldn’t confirm the result\./ })).toBeVisible(); await failure.locator('.support-details > summary').click(); await expect(failure.locator('.support-details > p', { hasText: /Local Field cleanup could not be verified/ })).toBeVisible();
   await expect(page).toHaveURL(new RegExp(offlinePath + '$'));
   expect(fixture.logoutCount()).toBe(0); expect(await storedProfileCount(page)).toBe(1);
   await expect(page.getByRole('heading', { name: 'App encrypted Field profile', exact: true })).toHaveCount(0);
@@ -112,6 +112,6 @@ for (const target of ['project','company','logout'] as const) test(`controlled $
 test('browser history project replacement holds the current route on cleanup failure and retries after storage recovers', async ({ page }) => {
   await mockOfflineApp(page); await page.goto(offlinePath); await createAppProfile(page); await failProfileDeletion(page);
   const move = () => page.evaluate(() => { history.pushState({}, '', '/projects/SECOND-FIELD-PROJECT'); window.dispatchEvent(new PopStateEvent('popstate')); });
-  await move(); await expect(page.getByText(/Local Field cleanup could not be verified/).first()).toBeVisible(); await expect(page).toHaveURL(new RegExp(offlinePath + '$')); expect(await storedProfileCount(page)).toBe(1);
+  await move(); const failure = page.locator('.workspace-main').locator('.failure-state').filter({ hasText: /Local Field cleanup could not be verified/ }); await expect(failure.getByRole('note', { name: /We couldn’t confirm the result\./ })).toBeVisible(); await failure.locator('.support-details > summary').click(); await expect(failure.locator('.support-details > p', { hasText: /Local Field cleanup could not be verified/ })).toBeVisible(); await expect(page).toHaveURL(new RegExp(offlinePath + '$')); expect(await storedProfileCount(page)).toBe(1);
   await page.evaluate(() => (window as any).restoreAppDelete()); await move(); await expect(page).toHaveURL(/\/projects\/SECOND-FIELD-PROJECT$/); expect(await storedProfileCount(page)).toBe(0);
 });

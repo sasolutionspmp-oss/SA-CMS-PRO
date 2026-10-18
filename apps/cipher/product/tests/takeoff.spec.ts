@@ -26,8 +26,8 @@ for (const nativeRotation of [0, 90, 180, 270]) test(`PDF selection inverts nati
 test('a denied new drawing source hides every pixel of the previous source', async ({ page }) => {
   await mockPdfTakeoff(page, { denySecond: true }); await page.goto(takeoffPath);
   const canvas = page.locator('canvas[aria-label="Authorized stored PDF page"]'); await expect(canvas).toBeVisible();
-  await page.locator('ui5-select[accessible-name="Takeoff drawing revision"]').click(); await page.getByRole('option', { name: 'Rev. 2 · Historical', exact: true }).click();
-  await expect(page.getByRole('note', { name: /Your current permissions/ })).toBeVisible();
+  await page.locator('ui5-select[accessible-name="Takeoff drawing revision"]').click(); await page.getByRole('option', { name: 'Rev. 2 · Previous', exact: true }).click();
+  await expect(page.getByRole('note', { name: /You don’t have access to this item/ })).toBeVisible();
   await expect(canvas).toBeHidden(); await expect(page.locator('svg[aria-label="Drawing point selection"]')).toBeHidden();
 });
 

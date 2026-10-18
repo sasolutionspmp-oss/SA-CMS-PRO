@@ -43,7 +43,7 @@ for (const refusal of [{ status: 403, code: 'source_unavailable' }, { status: 40
 
 test('an unauthorized Company query never falls back to another Company activity', async ({ page }) => {
   const fixture = await activityFixture(page); await page.goto('/company/activity?company=UNAUTHORIZED');
-  await expect(page.getByRole('heading', { name: 'Company context unavailable', exact: true })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Company unavailable', exact: true })).toBeVisible();
   expect(fixture.requests).toHaveLength(0);
 });
 

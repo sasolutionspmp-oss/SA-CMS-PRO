@@ -37,7 +37,7 @@ for (const loss of ['loseRightsFirst', 'wrongRightsFirst'] as const) test(`uncer
   fixture.setRightsDenied(0); await recover.click(); await expect(recover).toHaveCount(0);
   expect(fixture.rightsWrites).toHaveLength(2); expect(fixture.rightsWrites[1]).toEqual(fixture.rightsWrites[0]);
   await page.getByRole('button', { name: 'New restricted incident', exact: true }).click(); await incidentFields(page);
-  await expect(page.getByText(/Current authored permission permits reading and ingestion/)).toBeVisible();
+  await expect(page.getByText(/Current permission allows reading and importing today \(UTC\)/)).toBeVisible();
   await expect(page.getByRole('checkbox', { name: 'I reviewed current private source permission for attachment', exact: true })).not.toBeChecked();
   await expect(page.getByRole('button', { name: 'Attach reviewed private source', exact: true })).toBeDisabled();
   await attachPrivate(page); expect(fixture.writes).toHaveLength(1);
@@ -54,7 +54,7 @@ test('known stale rights require fresh policy review and an intentional new requ
   await expect(page.getByRole('button', { name: 'Record private source permission', exact: true })).toBeDisabled();
   expect(fixture.rightsWrites).toHaveLength(1);
   await page.getByRole('button', { name: 'Refresh private source permission', exact: true }).click();
-  await expect(page.getByText(/Current authored permission permits reading and ingestion/)).toBeVisible();
+  await expect(page.getByText(/Current permission allows reading and importing today \(UTC\)/)).toBeVisible();
   await expect(page.getByRole('checkbox', { name: 'I am authorized and reviewed this private source permission', exact: true })).not.toBeChecked();
   await checkUi5Checkbox(page.getByRole('checkbox', { name: 'I am authorized and reviewed this private source permission', exact: true }));
   await recordPermission(page); expect(fixture.rightsWrites).toHaveLength(2);
@@ -77,6 +77,6 @@ for (const change of ['permission', 'source']) test(`attachment checks current $
 test('missing current Document control duty leaves stored private original pending without permission controls', async ({ page }) => {
   const fixture = await mockQuality(page); fixture.projects.forEach(p => { p.capabilities = p.capabilities.filter(c => c !== 'document.control.read'); });
   await page.goto(qualityPath('incident')); await page.getByRole('button', { name: 'New restricted incident', exact: true }).click(); await incidentFields(page); await uploadPrivate(page);
-  await expect(page.getByText(/permitted evidence manager with Document control access/)).toBeVisible();
+  await expect(page.getByText(/An evidence manager with Document control access/)).toBeVisible();
   await expect(page.getByRole('button', { name: 'Record private source permission', exact: true })).toHaveCount(0); expect(fixture.rightsWrites).toHaveLength(0);
 });

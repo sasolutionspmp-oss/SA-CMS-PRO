@@ -7,42 +7,42 @@ test.beforeEach(({ page }) => { page.on('pageerror', error => { throw error; });
 for (const width of [1440, 900, 390]) test(`Company estimate title and actions remain usable at ${width}px`, async ({ page }) => {
   await page.setViewportSize({ width, height: 1000 });
   const fixture = await mockCompany(page); await page.goto(path);
-  const title = page.getByRole('heading', { name: 'Synthetic source-linked estimate', exact: true });
+  const title = page.locator('.record-title').filter({ hasText: /^Synthetic source-linked estimate$/ });
   await expect(title).toBeInViewport();
   await expect.poll(async () => (await title.boundingBox())?.width || 0).toBeGreaterThan(120);
   expect((await title.boundingBox())!.height).toBeLessThan(150);
   const quantity = page.getByRole('textbox', { name: 'Line 1 quantity', exact: true });
   await expect(quantity).toHaveValue('10.125');
   await quantity.fill('11.125');
-  const calculate = page.getByRole('button', { name: 'Calculate Company revision', exact: true });
-  if (!await calculate.isVisible()) await page.getByRole('button', { name: 'Company estimate actions', exact: true }).click();
+  const calculate = page.getByRole('button', { name: 'Save', exact: true });
+  if (!await calculate.isVisible()) await page.getByRole('button', { name: 'Estimate actions', exact: true }).click();
   await expect(calculate).toBeInViewport();
   const box = (await calculate.boundingBox())!;
   expect(box.x).toBeGreaterThanOrEqual(0); expect(box.x + box.width).toBeLessThanOrEqual(width);
   await calculate.click();
-  await expect(page.getByRole('note', { name: /Company revision 2 saved/ })).toBeVisible();
+  await expect(page.getByRole('note', { name: /Version 2 saved/ })).toBeVisible();
   expect(fixture.writes).toHaveLength(1);
 });
 
 test('Company estimate loads and calculates exact lines without Project authority parameters', async ({ page }) => {
   const requests: string[] = []; page.on('request', request => { if (/cipher_aec\.api\.v1\.projects?\b/.test(request.url())) requests.push(request.url()); });
   const fixture = await mockCompany(page); await page.goto(path); const quantity = page.getByRole('textbox', { name: 'Line 1 quantity', exact: true }); await expect(quantity).toHaveValue('10.125'); await quantity.fill('11.125');
-  await page.getByRole('button', { name: 'Calculate Company revision', exact: true }).click(); await expect(page.getByRole('note', { name: /Company revision 2 saved/ })).toBeVisible();
+  await page.getByRole('button', { name: 'Save', exact: true }).click(); await expect(page.getByRole('note', { name: /Version 2 saved/ })).toBeVisible();
   expect(requests).toEqual([]); expect(fixture.writes).toHaveLength(1); expect(fixture.writes[0]).not.toHaveProperty('project'); expect(fixture.writes[0]).not.toHaveProperty('scope_type');
 });
 
 test('Company unknown calculation keeps exact recovery reachable through later412 without exposing rebase', async ({ page }) => {
   const fixture = await mockCompany(page, { loseCalculation: true, denyRetry412: true }); await page.goto(path);
-  const quantity = page.getByRole('textbox', { name: 'Line 1 quantity', exact: true }); await quantity.fill('11.125'); await page.getByRole('button', { name: 'Calculate Company revision', exact: true }).click();
-  const recover = page.getByRole('button', { name: 'Recover Company calculation', exact: true }); await expect(recover).toBeEnabled(); await recover.click();
-  await expect(page.getByRole('note', { name: /Current source changed after the unknown result/ })).toBeVisible(); await expect(recover).toBeEnabled(); await expect(quantity).toBeDisabled(); await expect(page.getByRole('button', { name: 'Rebase preserved Company inputs', exact: true })).toHaveCount(0);
-  await recover.click(); await expect(page.getByRole('note', { name: /Company revision 2 saved.*Original operation recovered/ })).toBeVisible();
+  const quantity = page.getByRole('textbox', { name: 'Line 1 quantity', exact: true }); await quantity.fill('11.125'); await page.getByRole('button', { name: 'Save', exact: true }).click();
+  const recover = page.getByRole('button', { name: 'Recover', exact: true }); await expect(recover).toBeEnabled(); await recover.click();
+  await expect(page.getByRole('note', { name: /Current source changed after the unknown result/ })).toBeVisible(); await expect(recover).toBeEnabled(); await expect(quantity).toBeDisabled(); await expect(page.getByRole('button', { name: 'Use latest version', exact: true })).toHaveCount(0);
+  await recover.click(); await expect(page.getByRole('note', { name: /Version 2 saved.*Original request recovered/ })).toBeVisible();
   expect(fixture.writes).toHaveLength(3); for (const body of fixture.writes) expect(body).toEqual(fixture.writes[0]); expect(fixture.getEffects()).toBe(1);
 });
 
 test('a successful operation UUID with wrong estimate subject remains unknown until matching replay', async ({ page }) => {
-  const fixture = await mockCompany(page, { wrongSubject: true }); await page.goto(path); const quantity = page.getByRole('textbox', { name: 'Line 1 quantity', exact: true }); await quantity.fill('11.125'); await page.getByRole('button', { name: 'Calculate Company revision', exact: true }).click();
-  const recover = page.getByRole('button', { name: 'Recover Company calculation', exact: true }); await expect(recover).toBeEnabled(); await expect(quantity).toBeDisabled(); await recover.click(); await expect(page.getByRole('note', { name: /Original operation recovered/ })).toBeVisible(); expect(fixture.getEffects()).toBe(1); expect(fixture.writes[1]).toEqual(fixture.writes[0]);
+  const fixture = await mockCompany(page, { wrongSubject: true }); await page.goto(path); const quantity = page.getByRole('textbox', { name: 'Line 1 quantity', exact: true }); await quantity.fill('11.125'); await page.getByRole('button', { name: 'Save', exact: true }).click();
+  const recover = page.getByRole('button', { name: 'Recover', exact: true }); await expect(recover).toBeEnabled(); await expect(quantity).toBeDisabled(); await recover.click(); await expect(page.getByRole('note', { name: /Original request recovered/ })).toBeVisible(); expect(fixture.getEffects()).toBe(1); expect(fixture.writes[1]).toEqual(fixture.writes[0]);
 });
 
 test('Company upload recovery uses retained bytes after the local File becomes unreadable', async ({ page }) => {
@@ -64,5 +64,5 @@ test('Company source revision links open the exact owned stored revision', async
 });
 
 test('a foreign Company revision link never reads bytes or preview under the wrong document title', async ({ page }) => {
-  const sourceReads: string[] = []; page.on('request', request => { if (/company_api\.(preview_revision|download_revision)/.test(request.url())) sourceReads.push(request.url()); }); await mockCompany(page); await page.goto('/company/documents/TEST-COMPANY-DOC/revisions/FOREIGN-REVISION?page=1'); await expect(page.getByRole('note', { name: /This record is unavailable/ })).toBeVisible(); expect(sourceReads).toEqual([]); await expect(page.locator('.company-source-text')).toHaveCount(0);
+  const sourceReads: string[] = []; page.on('request', request => { if (/company_api\.(preview_revision|download_revision)/.test(request.url())) sourceReads.push(request.url()); }); await mockCompany(page); await page.goto('/company/documents/TEST-COMPANY-DOC/revisions/FOREIGN-REVISION?page=1'); await expect(page.getByRole('note', { name: /This item isn’t available/ })).toBeVisible(); expect(sourceReads).toEqual([]); await expect(page.locator('.company-source-text')).toHaveCount(0);
 });

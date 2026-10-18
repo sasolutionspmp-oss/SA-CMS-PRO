@@ -32,7 +32,7 @@ export default function ProjectDetail({ projectId, company, navigate, refreshPro
   // A transient refresh cannot discard an authored create draft. Current access
   // denials still remove the cached project instead of exposing it as current.
   const current = project.data || (createOpen && (!project.error || transientProjectError) ? lastProject : undefined);
-  if (project.loading && !current) return <Loading label="Opening project workspace…" />;
+  if (project.loading && !current) return <Loading label="Opening project…" />;
   if (project.error && !current) return <div className="page"><Failure error={project.error} onRetry={project.refresh} /></div>;
   if (!current) return null;
   const refresh = () => { setTaskCursor(undefined); setTaskPages([]); setHistoryCursor(undefined); setHistoryPages([]); project.refresh(); tasks.refresh(); history.refresh(); documents.refresh(); refreshProjects(); };
@@ -64,7 +64,7 @@ export default function ProjectDetail({ projectId, company, navigate, refreshPro
       </ObjectPageSection>
       <ObjectPageSection id="project-history" titleText="Activity">
         <div className="section-body history-section"><Title level="H2">Project activity</Title>
-          {history.loading ? <Loading label="Loading project history…" /> : history.error ? <Failure error={history.error} onRetry={history.refresh} /> : history.data?.items.length ? <ol className="activity-list">{history.data.items.map(item => <li key={item.id}><span className="activity-dot" /><div><strong>{human(item.event)}</strong><p>{item.actor} · {date(item.at)}</p><span className="caption">{item.subject_type}: {item.subject_id}</span></div></li>)}</ol> : <Empty title="No recorded activity" icon="history">Activity from saved project changes will appear here.</Empty>}
+          {history.loading ? <Loading label="Loading project history…" /> : history.error ? <Failure error={history.error} onRetry={history.refresh} /> : history.data?.items.length ? <ol className="activity-list">{history.data.items.map(item => <li key={item.id}><span className="activity-dot" /><div><strong>{human(item.event)}</strong><p>{item.actor} · {date(item.at)}</p></div></li>)}</ol> : <Empty title="No recorded activity" icon="history">Saved project changes will appear here.</Empty>}
           <Pagination next={history.data?.next_cursor} total={history.data?.total} page={historyPages.length + 1} previous={Boolean(historyPages.length)} onNext={() => { if (history.data?.next_cursor) { setHistoryPages([...historyPages, historyCursor]); setHistoryCursor(history.data.next_cursor); } }} onPrevious={() => { setHistoryCursor(historyPages[historyPages.length - 1]); setHistoryPages(historyPages.slice(0, -1)); }} />
         </div>
       </ObjectPageSection>

@@ -10,8 +10,8 @@ async function assignment(page: Page) {
   await page.getByRole('textbox', { name: 'Package title', exact: true }).fill(title);
   await page.getByRole('textbox', { name: 'Engineering discipline', exact: true }).fill('Structural');
   await page.getByRole('textbox', { name: 'Engineering scope', exact: true }).fill('Design the east stair landing and retain the exact engineering basis.');
-  await choose(page, 'Responsible engineer', `${people[0].display_name} · ${people[0].user}`);
-  await choose(page, 'Required independent checker', `${people[1].display_name} · ${people[1].user}`);
+  await choose(page, 'Responsible engineer', people[0].display_name);
+  await choose(page, 'Required independent checker', people[1].display_name);
   await checkUi5Checkbox(page.getByRole('checkbox', { name: 'I reviewed the package assignments', exact: true }));
 }
 async function createPackage(page: Page, fixture: Fixture) {
@@ -27,7 +27,7 @@ async function attach(page: Page, drawing: boolean) {
   else await page.getByRole('button', { name: 'Attach submission document', exact: true }).click();
 }
 async function quantity(page: Page, key: string, label: string, amount: string, retained = false) {
-  await page.getByRole('button', { name: 'Add authored quantity', exact: true }).click();
+  await page.getByRole('button', { name: 'Add quantity', exact: true }).click();
   await page.getByRole('textbox', { name: 'Quantity key 1', exact: true }).fill(key); await page.getByRole('textbox', { name: 'Quantity label 1', exact: true }).fill(label); await page.getByRole('textbox', { name: 'Exact quantity 1', exact: true }).fill(amount);
   await choose(page, 'Quantity unit 1', 'm · length · 6 decimals');
   await choose(page, 'Quantity source 1', `${retained ? 'Drawing' : document.title} · Rev. 1 · Page 1 · Grid B/4, detail 3`);
@@ -35,7 +35,7 @@ async function quantity(page: Page, key: string, label: string, amount: string, 
 async function basis(page: Page, rawPdf = false) {
   await page.getByRole('button', { name: 'Create design basis', exact: true }).click(); await revisionTitle(page, 'Landing design basis');
   await page.getByRole('textbox', { name: 'Design criteria', exact: true }).fill('Use the exact landing span from the retained drawing.');
-  await page.getByRole('button', { name: 'Add design code reference', exact: true }).click();
+  await page.getByRole('button', { name: 'Add design code', exact: true }).click();
   await page.getByRole('textbox', { name: 'Design code 1', exact: true }).fill('ASCE 7'); await page.getByRole('textbox', { name: 'Code edition 1', exact: true }).fill('2022'); await page.getByRole('textbox', { name: 'Code clause 1', exact: true }).fill('4');
   await attach(page, true);
   if (rawPdf) { await page.getByRole('button', { name: 'View stored drawing', exact: true }).click(); await expect(page.locator('canvas[aria-label="Authorized stored PDF page"]')).toBeVisible(); }
@@ -89,7 +89,7 @@ for (const source of ['people', 'units', 'drawing'] as const) test(`${source} ac
   const fixture = await mockEngineeringPackages(page); await page.goto(packagePath);
   if (source === 'people') { await page.route('**/api/method/cipher_aec.engineering_packages.api.list_people*', route => route.fulfill({ status: 403 })); await page.getByRole('button', { name: 'New work package', exact: true }).click(); }
   else { await createPackage(page, fixture); if (source === 'units') await page.route('**/api/method/cipher_aec.engineering_packages.api.list_units*', route => route.fulfill({ status: 403 })); await page.getByRole('button', { name: 'Create design basis', exact: true }).click(); if (source === 'drawing') { await attach(page, true); await page.route('**/api/method/cipher_aec.documents.api.download_revision*', route => route.fulfill({ status: 403 })); await page.getByRole('button', { name: 'View stored drawing', exact: true }).click(); } }
-  await expect(page.getByRole('button', { name: 'Recheck work package access', exact: true })).toBeVisible(); await expect(page.locator('ui5-dialog[header-text="New engineering work package"], ui5-dialog[header-text="Author design basis revision"]')).toHaveCount(0); expect(fixture.records.get('basis')?.size || 0).toBe(0);
+  await expect(page.getByRole('button', { name: 'Recheck work package access', exact: true })).toBeVisible(); await expect(page.locator('ui5-dialog[header-text="New engineering work package"], ui5-dialog[header-text="New design basis version"]')).toHaveCount(0); expect(fixture.records.get('basis')?.size || 0).toBe(0);
 });
 for (const width of [1440, 900, 390]) test(`work-package assignment remains usable at ${width}px`, async ({ page }) => {
   await page.setViewportSize({ width, height: 1000 }); const fixture = await mockEngineeringPackages(page); await page.goto(packagePath); await assignment(page); const save = page.getByRole('button', { name: 'Save work package', exact: true }); await expect(save).toBeInViewport(); const box = await save.boundingBox(); expect(box!.x).toBeGreaterThanOrEqual(0); expect(box!.x + box!.width).toBeLessThanOrEqual(width); await save.click(); await expect(page.getByRole('button', { name: 'Open saved work package', exact: true })).toBeEnabled(); expect(fixture.records.get('package')!.size).toBe(1);

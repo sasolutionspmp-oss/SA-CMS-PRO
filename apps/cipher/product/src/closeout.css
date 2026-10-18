@@ -1,12 +1,265 @@
-.closeout-page { display:grid; gap:1.25rem; max-width:96rem; margin:auto; }
-.closeout-heading,.closeout-actions { display:flex; align-items:center; justify-content:space-between; gap:.75rem; flex-wrap:wrap; }
-.closeout-facts { display:grid; grid-template-columns:repeat(auto-fit,minmax(12rem,1fr)); gap:1rem; margin-block:1.25rem; }
-.closeout-form-section,.closeout-field { display:grid; gap:.5rem; margin-block:1rem; }
-.closeout-requirement { border:1px solid var(--sapGroup_ContentBorderColor); border-radius:var(--sapElement_BorderCornerRadius); padding:1rem; margin-block:1rem; display:grid; gap:.5rem; }
-.closeout-command-state { display:grid; gap:.75rem; padding:1rem 2rem; }
-.closeout-reference { overflow-wrap:anywhere; margin-block:.5rem; }
-.closeout-result { border-inline-start:3px solid var(--sapContent_ForegroundBorderColor); padding-inline-start:1rem; }
-.closeout-table { overflow-x:auto; }
-.closeout-page p { white-space:pre-wrap; overflow-wrap:anywhere; }
-.closeout-page ui5-input,.closeout-page ui5-textarea,.closeout-page ui5-select { width:100%; max-width:52rem; }
-@media(max-width:599px){.closeout-command-state{padding:1rem}.closeout-heading{align-items:flex-start}.closeout-actions{width:100%}.closeout-requirement{padding:.75rem}.closeout-facts{grid-template-columns:1fr}}
+.closeout-page {
+  display: grid;
+  gap: 1.25rem;
+  min-width: 0;
+  max-width: 96rem;
+  margin: auto;
+  font-size: .875rem;
+  line-height: 1.55;
+}
+
+.closeout-page > .surface {
+  min-width: 0;
+  padding: 1.25rem 1.5rem;
+}
+
+.closeout-page > *,
+.closeout-page .surface > *,
+.closeout-heading > *,
+.closeout-form-section > *,
+.closeout-field > *,
+.closeout-requirement > *,
+.closeout-result > * {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.closeout-page ui5-title {
+  --sapFontHeader1Size: 1.5rem;
+  --sapFontHeader2Size: 1.125rem;
+  --sapFontHeader3Size: 1rem;
+  --sapFontHeader4Size: .9375rem;
+  --sapFontHeader5Size: .875rem;
+  --sapFontHeader6Size: .875rem;
+  display: block;
+  max-width: 100%;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.closeout-page > .surface > ui5-title {
+  margin-block-end: .75rem;
+}
+
+.closeout-page .fact-value {
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.closeout-heading,
+.closeout-actions {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+.closeout-heading {
+  justify-content: space-between;
+  margin-block-end: .75rem;
+}
+
+.closeout-heading > div:not(.closeout-actions) {
+  flex: 1 1 16rem;
+}
+
+.closeout-heading p {
+  margin-block: .375rem 0;
+}
+
+.closeout-actions {
+  justify-content: flex-start;
+}
+
+.closeout-heading > .closeout-actions {
+  margin-inline-start: auto;
+}
+
+.closeout-facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+  gap: 1rem 1.5rem;
+  margin-block: 1.25rem;
+}
+
+.closeout-form-section,
+.closeout-field {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: .5rem;
+  min-width: 0;
+  margin-block: 1rem;
+}
+
+.closeout-form-section > ui5-button,
+.closeout-requirement > ui5-button,
+.closeout-command-state > ui5-button {
+  justify-self: start;
+}
+
+.closeout-requirement {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: .75rem;
+  min-width: 0;
+  border: 1px solid var(--sapGroup_ContentBorderColor);
+  border-radius: var(--sapElement_BorderCornerRadius, .75rem);
+  padding: 1.25rem;
+  margin-block: 1rem;
+}
+
+.closeout-requirement .closeout-heading,
+.closeout-requirement .closeout-field {
+  margin-block: 0;
+}
+
+.closeout-command-state {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: .75rem;
+  max-width: 96rem;
+  margin-inline: auto;
+  padding: 1rem 1.75rem;
+  overflow-wrap: anywhere;
+}
+
+.closeout-reference,
+.closeout-notes {
+  min-width: 0;
+  margin-block: .75rem;
+  overflow-wrap: anywhere;
+}
+
+.closeout-reference summary,
+.closeout-notes summary {
+  cursor: pointer;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.closeout-reference {
+  font-size: .8125rem;
+}
+
+.closeout-reference p,
+.closeout-notes p {
+  margin-block: .625rem 0;
+}
+
+.closeout-notes > summary {
+  font-weight: 600;
+}
+
+.closeout-result {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: .75rem;
+  min-width: 0;
+  border-inline-start: 3px solid var(--sapContent_ForegroundBorderColor);
+  padding-inline-start: 1rem;
+}
+
+.closeout-result > p,
+.closeout-result > ul,
+.closeout-result > .closeout-reference,
+.closeout-result > .closeout-notes {
+  margin-block: 0;
+}
+
+.closeout-table {
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+}
+
+.closeout-page p,
+.closeout-page pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.closeout-page p {
+  line-height: 1.6;
+}
+
+.closeout-page code,
+.closeout-page li,
+.closeout-history li > span {
+  overflow-wrap: anywhere;
+  word-break: normal;
+}
+
+.closeout-page pre,
+.closeout-page code {
+  font-size: .8125rem;
+  line-height: 1.6;
+}
+
+.closeout-page ul {
+  min-width: 0;
+  margin-block: .75rem;
+  padding-inline-start: 1.25rem;
+}
+
+.closeout-page li + li {
+  margin-block-start: .75rem;
+}
+
+.closeout-evidence-row {
+  min-width: 0;
+  padding-block: .5rem;
+}
+
+.closeout-evidence-row > ui5-button {
+  margin: .375rem 0 .125rem .5rem;
+  vertical-align: middle;
+}
+
+.closeout-history li {
+  min-width: 0;
+  padding-block: .375rem;
+}
+
+.closeout-history li > span {
+  display: block;
+  margin-block-start: .375rem;
+  font-size: .8125rem;
+  color: var(--sapContent_LabelColor);
+}
+
+.closeout-page ui5-button,
+.closeout-page ui5-checkbox {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.closeout-page ui5-input,
+.closeout-page ui5-textarea,
+.closeout-page ui5-select {
+  min-width: 0;
+  width: 100%;
+  max-width: 52rem;
+}
+
+@media (max-width: 900px) {
+  .closeout-page > .surface { padding: 1.25rem; }
+  .closeout-command-state { padding-inline: 1rem; }
+}
+
+@media (max-width: 599px) {
+  .closeout-page { gap: 1rem; }
+  .closeout-page > .surface { padding: 1rem; }
+  .closeout-command-state { padding: 1rem; }
+  .closeout-heading { align-items: flex-start; }
+  .closeout-heading > div:not(.closeout-actions) { flex-basis: 100%; }
+  .closeout-heading > .closeout-actions { margin-inline-start: 0; }
+  .closeout-actions { width: 100%; gap: .5rem; }
+  .closeout-requirement { padding: .875rem; }
+  .closeout-facts { grid-template-columns: minmax(0, 1fr); gap: .875rem; }
+  .closeout-result { padding-inline-start: .75rem; }
+  .closeout-evidence-row > ui5-button { display: block; margin-inline-start: 0; }
+}

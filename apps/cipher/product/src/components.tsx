@@ -18,14 +18,15 @@ export function Loading({ label = 'Loading workspace…' }: { label?: string }) 
 
 export function Failure({ error, onRetry }: { error: ApiError; onRetry?: () => void }) {
   const accessUnavailable = error.status === 403 || error.status === 404;
-  const message = error.status === 403 ? 'Your current permissions do not allow this access or action.'
-    : error.status === 404 ? 'This record is unavailable or you no longer have access.' : error.message;
+  const technicalError = error.status === 0 || error.status >= 500 || ['INVALID_CONTRACT', 'INVALID_RESPONSE'].includes(error.code);
+  const message = error.status === 403 ? 'You don’t have access to this item.'
+    : error.status === 404 ? 'This item isn’t available.' : technicalError ? 'We couldn’t confirm the result.' : error.message;
   return <div className="failure-state" role="alert">
     <MessageStrip design={accessUnavailable ? "Information" : "Negative"} hideCloseButton>{message}</MessageStrip>
     <div className="failure-actions">
       {onRetry && !accessUnavailable && <Button icon="refresh" onClick={onRetry}>Try again</Button>}
       {error.status === 401 && <Button design="Emphasized" onClick={() => window.dispatchEvent(new Event('cipher:sign-in'))}>Sign in</Button>}
-      {error.requestId && <span className="caption">Reference: {error.requestId}</span>}
+      {(error.requestId || technicalError) && <details className="support-details"><summary>Details</summary>{technicalError && <p>{error.message}</p>}{error.requestId && <span className="caption">Reference: {error.requestId}</span>}</details>}
     </div>
   </div>;
 }

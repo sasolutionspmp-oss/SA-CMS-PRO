@@ -6,7 +6,7 @@ import { Failure, Loading, Status } from './components';
 import { useResource } from './hooks';
 import { useMutation } from './useMutation';
 
-const assignees = (task: Task) => task.assignment_conflict ? 'Assignment needs reconciliation' : task.assignees?.map(person => person.display_name).join(', ') || 'Unassigned';
+const assignees = (task: Task) => task.assignment_conflict ? 'Assignment needs review' : task.assignees?.map(person => person.display_name).join(', ') || 'Unassigned';
 const validTask = (task: Task | undefined, project: string) => Boolean(task && typeof task.id === 'string' && task.id && task.project === project && typeof task.version === 'string' && task.version && typeof task.status === 'string' && typeof task.subject === 'string' && typeof task.description === 'string' && (task.assignees === undefined || Array.isArray(task.assignees) && task.assignees.every(person => person && typeof person.id === 'string' && typeof person.display_name === 'string')) && (task.assignment_conflict === undefined || typeof task.assignment_conflict === 'boolean'));
 const validCurrentTask = (task: Task | undefined, project: string) => validTask(task, project) && Array.isArray(task?.assignees) && typeof task?.assignment_conflict === 'boolean';
 
@@ -15,7 +15,7 @@ export function TaskRegister({ items, onOpen }: { items: Task[]; onOpen: (id: st
     <TableHeaderCell minWidth="16rem">Task</TableHeaderCell><TableHeaderCell width="10rem">Status</TableHeaderCell><TableHeaderCell minWidth="12rem">Assigned to</TableHeaderCell><TableHeaderCell minWidth="15rem">Description</TableHeaderCell>
   </TableHeaderRow>}>
     {items.map(task => <TableRow key={task.id} rowKey={task.id}>
-      <TableCell><div className="record-cell"><Link onClick={() => onOpen(task.id)}>{task.subject}</Link><span>{task.id}</span></div></TableCell>
+      <TableCell><div className="record-cell"><Link onClick={() => onOpen(task.id)}>{task.subject}</Link></div></TableCell>
       <TableCell><Status value={task.status} /></TableCell><TableCell>{assignees(task)}</TableCell><TableCell>{task.description || 'No description'}</TableCell>
     </TableRow>)}
   </Table>;
@@ -105,7 +105,7 @@ export function TaskDetails({ project, taskId, onClose, onSaved, onAccessLost, o
         <Title level="H2">{task.subject}</Title><p>{task.description || 'No description'}</p><Status value={task.status} /><p><strong>Assigned to: </strong>{assignees(task)}</p>
         {stale && !command.unknown && <><MessageStrip design="Critical" hideCloseButton>The task changed. Your selections are preserved. Refresh and review the saved task before continuing.</MessageStrip><Button disabled={command.locked} onClick={refresh}>Refresh task</Button>{task.version !== sourceVersion && <Button disabled={command.locked} onClick={() => { setSourceVersion(task.version); setConflict(false); setDenied(false); }}>Use current task</Button>}</>}
         {denied && !command.unknown && <MessageStrip design="Information" hideCloseButton>Your permissions changed. Close and reopen this task to review current access.</MessageStrip>}
-        {task.assignment_conflict && <MessageStrip design="Information" hideCloseButton>This assignment needs administrator reconciliation before the task can change.</MessageStrip>}
+        {task.assignment_conflict && <MessageStrip design="Information" hideCloseButton>An administrator must resolve this assignment before you can change the task.</MessageStrip>}
         {choices.loading && <Loading label="Loading task options…" />}{choices.error && <Failure error={choices.error} onRetry={choices.refresh} />}
         {canAssign && !closed && <><Label for="task-person">Assigned to</Label><Select id="task-person" accessibleName="Assigned to" disabled={command.locked} onChange={event => setPerson(event.detail.selectedOption.value ?? '')}>
           <Option value="" selected={!selectedPerson}>Choose a person</Option><Option value="__unassigned__" selected={person === '__unassigned__'}>Unassigned</Option>{choices.data!.people.map(value => <Option key={value.id} value={value.id} selected={person === value.id}>{value.display_name}</Option>)}

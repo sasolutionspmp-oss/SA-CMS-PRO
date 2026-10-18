@@ -38,5 +38,5 @@ test('copied second-Company award evidence link preserves exact Company and revi
 });
 test('unavailable Company in a copied document link fails before source detail, preview or byte requests', async ({ page }) => {
   const reads = await contextFixture(page); await page.goto('/company/documents/TEST-SECOND-DOC/revisions/TEST-SECOND-REV?page=1&company=FOREIGN-COMPANY'); await signIn(page);
-  await expect(page.getByRole('heading', { name: 'Company context unavailable', exact: true })).toBeVisible(); expect(reads).toEqual([]); await expect(page.locator('.company-source-text')).toHaveCount(0);
+  await expect(page.getByRole('heading', { name: 'Company unavailable', exact: true })).toBeVisible(); expect(reads).toEqual([]); await expect(page.locator('.company-source-text')).toHaveCount(0);
 });

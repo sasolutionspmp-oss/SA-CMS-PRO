@@ -20,7 +20,7 @@ for (const family of ['record', 'incident']) test(`known 412 permits an intentio
   await save.click();
   await expect(save).toBeDisabled();
   await expect(page.getByRole('textbox', { name: 'Description', exact: true })).toHaveValue('Attempt preserved until explicit cancellation.');
-  await expect(page.getByText(/Your inputs are retained/)).toBeVisible();
+  await expect(page.getByText(/Your entries are saved here/)).toBeVisible();
   expect(fixture.writes).toHaveLength(1);
 
   // Another actor's current immutable revision is visible only after an explicit

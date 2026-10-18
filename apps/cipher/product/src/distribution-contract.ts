@@ -24,7 +24,7 @@ export function acknowledgment(delivery: DistRecipientDelivery, instruction: Dis
   if (!digestPattern.test(delivery.logical_key || '') || !digestPattern.test(delivery.payload_hash || '') || !receipt || receipt.logical_key !== delivery.logical_key || receipt.payload_hash !== delivery.payload_hash || receipt.mode !== 'fixture' || receipt.attachment_sha256 !== instruction.attachment.sha256 || receipt.byte_length !== instruction.attachment.byte_length || !digestPattern.test(receipt.logical_key) || !digestPattern.test(receipt.payload_hash) || !receipt.acknowledgment_id || !receipt.accepted_at) return;
   return receipt;
 }
-export const dispatchLabel = (state: string) => ({ SucceededFixture: 'Fixture acknowledgments recorded', PartiallySucceeded: 'Partially acknowledged fixture', Unknown: 'Awaiting fixture readback', Claimed: 'Fixture attempt in progress', Succeeded: 'Fixture acknowledgment recorded', Queued: 'Queued fixture', Cancelled: 'Cancelled', Failed: 'Failed' }[state] || state);
+export const dispatchLabel = (state: string) => ({ SucceededFixture: 'Test complete', PartiallySucceeded: 'Partly complete', Unknown: 'Checking status', Claimed: 'Test in progress', Succeeded: 'Test complete', Queued: 'Test queued', Cancelled: 'Cancelled', Failed: 'Failed' }[state] || state);
 
 export function matchesDistributionEffect(effect: unknown, packet: { company: string; id: string; subject: { id: string }; source_version: string; manifest_hash: string; review_manifest?: { sources: { [key: string]: unknown }[] } }) {
   if (!effect || typeof effect !== 'object') return false;

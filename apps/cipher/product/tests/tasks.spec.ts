@@ -115,7 +115,7 @@ test('revoked task access removes the cached task body and assignment', async ({
 
 test('unreconciled native assignment is explicit and cannot be edited', async ({ page }) => {
   await mockTasks(page, { conflict: true }); const dialog = await openTask(page);
-  await expect(dialog.getByRole('paragraph').filter({ hasText: 'Assigned to:' })).toContainText('Assignment needs reconciliation');
+  await expect(dialog.getByRole('paragraph').filter({ hasText: 'Assigned to:' })).toContainText('Assignment needs review');
   await expect(dialog.getByRole('combobox')).toHaveCount(0);
 });
 

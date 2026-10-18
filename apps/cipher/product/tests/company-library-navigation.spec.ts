@@ -43,7 +43,7 @@ test('Company library navigation uses only the selected Company capability and a
   await page.getByRole('combobox', { name: 'Company', exact: true }).click(); await page.getByRole('option', { name: company, exact: true }).click();
   await expect(page).toHaveURL(libraryPath(company));
   await expect(page.getByRole('treeitem', { name: 'Company library', exact: true })).toHaveCount(0);
-  await expect(page.getByRole('note', { name: /Your current permissions do not allow this access or action/ })).toBeVisible();
+  await expect(page.getByRole('note', { name: /You don’t have access to this item\./ })).toBeVisible();
 });
 
 test('copied Company library subroute keeps its exact Company and route tail without Project reads', async ({ page }) => {
@@ -58,7 +58,7 @@ test('unavailable Company in a copied library link fails before library or sourc
   const fixture = await navigationFixture(page); const sourceReads: string[] = [];
   page.on('request', request => { if (request.url().includes('cipher_aec.documents.company_api.')) sourceReads.push(request.url()); });
   await page.goto(libraryPath('FOREIGN-COMPANY', 'register/rights'));
-  await expect(page.getByRole('heading', { name: 'Company context unavailable', exact: true })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Company unavailable', exact: true })).toBeVisible();
   expect(fixture.reads).toEqual([]); expect(fixture.projectReads).toEqual([]); expect(sourceReads).toEqual([]);
 });
 

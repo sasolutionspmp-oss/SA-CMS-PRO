@@ -47,13 +47,13 @@ test('copied exact review preserves authorized second Company through sign-in an
 for (const status of [403, 404]) test(`exact review refresh respects current${status} and removes action controls without inbox reads`, async ({ page }) => {
   const mock = await fixture(page); await page.goto(`/company/work/${packetId}?company=${company}`);
   await expect(page.getByRole('button', { name: 'Grant company approval', exact: true })).toBeVisible(); mock.deny(status); await page.reload();
-  await expect(page.getByRole('note', { name: /Your current permissions|This record is unavailable/ })).toBeVisible();
+  await expect(page.getByRole('note', { name: status === 403 ? /You don’t have access to this item\./ : /This item isn’t available\./ })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Grant company approval', exact: true })).toHaveCount(0);
   expect(mock.reads.every(url => url.pathname.endsWith('read_packet'))).toBe(true); expect(mock.writes).toEqual([]);
 });
 test('unavailable Company in copied review link does not fall back to the first Company or read packet', async ({ page }) => {
   const mock = await fixture(page); await page.goto(`/company/work/${packetId}?company=FOREIGN-COMPANY`);
-  await expect(page.getByRole('heading', { name: 'Company context unavailable', exact: true })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Company unavailable', exact: true })).toBeVisible();
   expect(mock.reads).toEqual([]); await expect(page.getByRole('button', { name: 'Grant company approval', exact: true })).toHaveCount(0);
 });
 test('ordinary Company inbox uses ten-row cursor pages without implying an exact total and exposes copyable links', async ({ page }) => {

@@ -3,6 +3,10 @@ import { ObjectPageTitle, type ObjectPageTitlePropTypes } from '@ui5/webcomponen
 
 // Keep the official ObjectPageTitle and its public expanded/snapped content slots.
 // A full-width action row prevents long business titles losing their phone width.
+export function businessTitle(title: string | undefined, fallback: string) {
+  return !title?.trim() || /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(title.trim()) ? fallback : title;
+}
+
 const CommercialObjectTitle = forwardRef<HTMLDivElement, ObjectPageTitlePropTypes>((props, ref) => {
   const [phone, setPhone] = useState(() => window.matchMedia('(max-width: 599px)').matches);
   useEffect(() => {
