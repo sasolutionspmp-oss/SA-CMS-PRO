@@ -153,3 +153,9 @@ from cipher_aec.quality_safety.contracts import KINDS as _QUALITY_SAFETY_KINDS
 for _quality_safety_type in (*_QUALITY_SAFETY_KINDS.values(), 'Cipher Incident Evidence Registration'):
     permission_query_conditions[_quality_safety_type] = 'cipher_aec.quality_safety.install.query_denied'
     has_permission[_quality_safety_type] = 'cipher_aec.quality_safety.install.permission_denied'
+
+# Closeout facts have no raw native list/count projection.
+from cipher_aec.closeout.contracts import KINDS as _CLOSEOUT_KINDS
+for _closeout_type in _CLOSEOUT_KINDS.values():
+    permission_query_conditions[_closeout_type] = 'cipher_aec.closeout.install.query_denied'
+    has_permission[_closeout_type] = 'cipher_aec.closeout.install.permission_denied'

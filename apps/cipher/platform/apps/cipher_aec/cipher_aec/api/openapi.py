@@ -105,6 +105,7 @@ def generate():
     typed_requests["cipher_aec.api.semantic"] = {"prepare":"SemanticPrepareRequest", "cancel":"SemanticJobRequest", "status":"SemanticStatusRequest", "query":"SemanticQueryRequest"}
     for module, filename, requests in (
         ('cipher_aec.field_offline.api', 'field_offline/schemas/api-v1.schema.json', {'register_device': 'FoRegisterDeviceRequest', 'revoke_device': 'FoRevokeDeviceRequest', 'stage_capture': 'FoStageCaptureRequest', 'get_capture': 'FoGetCaptureRequest', 'inspect_capture': 'FoInspectCaptureRequest', 'apply_capture': 'FoApplyCaptureRequest', 'discard_capture': 'FoDiscardCaptureRequest', 'resolve_capture': 'FoResolveCaptureRequest'}),
+        ('cipher_aec.closeout.api', 'closeout/schemas/api-v1.schema.json', {'create_package': 'CreatePackageRequest', 'revise_package': 'RevisePackageRequest', 'record_result': 'RecordResultRequest', 'accept_result': 'AcceptResultRequest', 'assemble_turnover': 'AssembleTurnoverRequest', 'accept_turnover': 'AcceptTurnoverRequest', 'get_record': 'GetRecordRequest', 'list_records': 'ListRecordsRequest'}),
         ('cipher_aec.quality_safety.api', 'quality_safety/schemas/api-v1.schema.json', {'upload_evidence': 'QsUploadEvidenceRequest', 'create_record': 'QsCreateRecordRequest', 'revise_record': 'QsReviseRecordRequest', 'transition': 'QsTransitionRequest', 'get_record': 'QsGetRecordRequest', 'list_records': 'QsListRecordsRequest'}),
         ("cipher_aec.field.api", "field/schemas/api-v1.schema.json", {'create_record': 'FdCreateRecordRequest', 'revise_record': 'FdReviseRecordRequest', 'transition': 'FdTransitionRequest', 'get_record': 'FdGetRecordRequest', 'list_records': 'FdListRecordsRequest'}),
         ("cipher_aec.document_control.company_api", "document_control/schemas/api-v1.schema.json", {'set_rights': 'DcCompanySetRightsRequest', 'create_library': 'DcCompanyCreateLibraryRequest', 'revise_library': 'DcCompanyReviseLibraryRequest', 'get_record': 'DcCompanyGetRecordRequest', 'list_records': 'DcCompanyListRecordsRequest'}),
@@ -162,7 +163,7 @@ def generate():
             operation["responses"]["200"]={"description":"Authorized source bytes as attachment; no JSON envelope.","headers":{"Content-Disposition":{"schema":{"type":"string"}},"X-Content-Type-Options":{"schema":{"const":"nosniff"}}},"content":{"application/octet-stream":{"schema":{"type":"string","format":"binary"}}}}
         if route.method=="GET":
             operation["parameters"]=[{"name":name,"in":"query","required":name in required,"schema":value} for name,value in properties.items()]
-            if identifier=="cipher_aec.document_control.api.read_clause_target" or module in {"cipher_aec.field_offline.api", "cipher_aec.quality_safety.api"}:
+            if identifier=="cipher_aec.document_control.api.read_clause_target" or module in {"cipher_aec.field_offline.api", "cipher_aec.quality_safety.api", "cipher_aec.closeout.api"}:
                 # Separate query parameters cannot express sibling kind/ID
                 # conditions. Retain the exact closed request for tooling.
                 operation["x-request-schema"]=request_schema

@@ -1,6 +1,7 @@
 import { expect, test, type Page } from '@playwright/test';
 import { checkUi5Checkbox } from './ui5-controls';
 import { document, mockQuality, people, qualityPath } from './quality-safety-fixture';
+import { permissionFields, recordPermission, attachPrivate } from './quality-incident-rights-fixture';
 
 async function choose(page: Page, label: string, option: string) { await page.getByRole('combobox', { name: label, exact: true }).click(); await page.getByRole('option', { name: option, exact: true }).click(); }
 async function evidence(page: Page, label: string) { await choose(page, label, `${document.title} · Rev. 1`); await page.getByRole('textbox', { name: label + ' locator', exact: true }).fill('Exact documentary observation'); await page.getByRole('button', { name: 'Attach ' + label.toLowerCase(), exact: true }).click(); }
@@ -47,9 +48,9 @@ test('restricted incident private upload, source attachment and saved record sta
   for (const [label,value] of Object.entries({ 'People as recorded, one per line': 'Synthetic Person', 'Restricted account': 'Private synthetic account', 'Immediate response': 'Synthetic first response' })) await page.getByRole('textbox', { name: label, exact: true }).fill(value);
   await page.getByLabel('Private evidence file', { exact: true }).setInputFiles({ name: 'private-observation.txt', mimeType: 'text/plain', buffer: Buffer.from('Private fixture evidence bytes') });
   for (const [label,value] of Object.entries({ 'Private evidence title': 'Private original', 'Private evidence rights basis': 'Synthetic permission fixture only', 'Private evidence locator': 'Private source paragraph 1' })) await page.getByRole('textbox', { name: label, exact: true }).fill(value);
-  await evidence(page, 'Upload permission evidence'); await page.getByRole('button', { name: 'Upload private original', exact: true }).click(); await expect(page.getByRole('note', { name: /Private evidence saved and attached/ })).toBeVisible(); await save(page);
+  await evidence(page, 'Upload permission evidence'); await page.getByRole('button', { name: 'Upload private original', exact: true }).click(); await expect(page.getByText(/Private original stored\. Current content permission/)).toBeVisible(); await permissionFields(page); await recordPermission(page); await attachPrivate(page); await save(page);
   await page.getByRole('button', { name: 'Open saved record', exact: true }).click(); await expect(page.getByText('Private synthetic account', { exact: true })).toBeVisible(); await page.getByRole('button', { name: 'View original evidence', exact: true }).click(); await expect(page.getByText('Private fixture evidence bytes', { exact: true })).toBeVisible();
-  expect(fixture.writes.map(row => row.method)).toEqual(['upload_evidence','create_record']); expect([...fixture.receipts.values()].every(row => row.history_id === null)).toBe(true); expect(fixture.records.has('record')).toBe(false); expect(fixture.uploads.size).toBe(1);
+  expect(fixture.writes.map(row => row.method)).toEqual(['upload_evidence','create_record']); expect(fixture.rightsWrites).toHaveLength(1); expect(fixture.rightsWrites[0].body.definition.distribute_allowed).toBe(false); expect([...fixture.receipts.values()].every(row => row.history_id === null)).toBe(true); expect(fixture.records.has('record')).toBe(false); expect(fixture.uploads.size).toBe(1);
   const browserStorage = await page.evaluate(() => ({ local: Object.entries(localStorage), session: Object.entries(sessionStorage) })); expect(JSON.stringify(browserStorage)).not.toMatch(/Private synthetic|Private fixture|restricted_account/);
 });
 test('stale Quality successor preserves inputs and requires fresh review rather than automatic rebasing', async ({ page }) => {

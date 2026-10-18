@@ -20,5 +20,10 @@ export function useMutation<I extends { operation_id?: string }, O extends { ope
       if (unknown || isUnknownResult(failure)) setUnknown(true); else pending.current = undefined;
     } finally { inFlight.current = false; setBusy(false); }
   };
-  return { run: (input: I) => perform(input), recover: () => perform(), busy, unknown, error, locked: busy || unknown };
+  // Explicit form dismissal must never discard an active or uncertain request.
+  const clearKnownError = (status: number) => {
+    if (inFlight.current || pending.current || unknown) return;
+    setError(current => current?.status === status && !isUnknownResult(current) ? undefined : current);
+  };
+  return { run: (input: I) => perform(input), recover: () => perform(), clearKnownError, busy, unknown, error, locked: busy || unknown };
 }

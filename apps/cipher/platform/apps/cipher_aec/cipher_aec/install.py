@@ -61,6 +61,8 @@ def after_migrate():
     offline_indexes()
     from cipher_aec.quality_safety.install import after_migrate as quality_safety_migrate
     quality_safety_migrate()
+    from cipher_aec.closeout.install import after_migrate as closeout_migrate
+    closeout_migrate()
     from cipher_aec.governance.approvals import install_policy
     for doctype in ("Cipher Approval Policy Revision", "Cipher Approval Packet", "Cipher Approval Decision", "Cipher Approval Consumption"):
         frappe.db.sql("UPDATE `tab" + doctype + "` SET scope_type='Project' WHERE scope_type IS NULL OR scope_type=''")
@@ -167,7 +169,7 @@ def seed_synthetic(passwords=None):
             projects[key] = name
         for ability in ("project.read", "approval.decide"):
             _grant(people["reviewer"], company_name, projects["project"], ability)
-        for ability in sorted(PROJECT_ABILITIES - ENGINEERING_ABILITIES - DOCUMENT_CONTROL_ABILITIES - FIELD_ABILITIES - SEMANTIC_ABILITIES - QUALITY_SAFETY_ABILITIES):
+        for ability in sorted(PROJECT_ABILITIES - ENGINEERING_ABILITIES - DOCUMENT_CONTROL_ABILITIES - FIELD_ABILITIES - SEMANTIC_ABILITIES - QUALITY_SAFETY_ABILITIES - {'closeout.read', 'closeout.write', 'closeout.check', 'closeout.accept'}):
             _grant(people["primary"], company_name, projects["project"], ability)
             _grant(people["outsider"], company_name, projects["other_project"], ability)
             for project in projects.values():

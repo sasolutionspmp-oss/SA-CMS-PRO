@@ -265,6 +265,17 @@ _module('cipher_aec.quality_safety.api', {
     'list_records': ('GET', 'QsListResponse'),
 })
 
+_module('cipher_aec.closeout.api', {
+    'create_package': ('POST', 'CloseoutCommandResult', True),
+    'revise_package': ('POST', 'CloseoutCommandResult', True),
+    'record_result': ('POST', 'CloseoutCommandResult', True),
+    'accept_result': ('POST', 'CloseoutCommandResult', True),
+    'assemble_turnover': ('POST', 'CloseoutCommandResult', True),
+    'accept_turnover': ('POST', 'CloseoutCommandResult', True),
+    'get_record': ('GET', 'CloseoutRecordResult'),
+    'list_records': ('GET', 'CloseoutListResult'),
+})
+
 AUTH_RPC = frozenset({"login", "logout", "frappe.auth.login", "frappe.auth.logout", "frappe.auth.get_logged_user"})
 RPC = frozenset(ROUTES) | AUTH_RPC
 

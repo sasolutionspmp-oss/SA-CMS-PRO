@@ -22,6 +22,13 @@ def readable(event, actor, company, project):
     """
     subject, identifier = event.subject_type, event.subject_id
     try:
+        from cipher_aec.closeout.contracts import KINDS as CLOSEOUT_KINDS
+        if subject in CLOSEOUT_KINDS.values():
+            if project is None: return False
+            from cipher_aec.closeout.service import authorize_history as authorize_closeout_history
+            authorize_closeout_history(next(k for k,v in CLOSEOUT_KINDS.items() if v==subject), identifier,
+                company, project, actor, json.loads(event.details_json), event=event.event)
+            return True
         from cipher_aec.document_control.contracts import KINDS as DOCUMENTARY_KINDS
         if subject in DOCUMENTARY_KINDS.values():
             kind=next(k for k,v in DOCUMENTARY_KINDS.items() if v==subject)

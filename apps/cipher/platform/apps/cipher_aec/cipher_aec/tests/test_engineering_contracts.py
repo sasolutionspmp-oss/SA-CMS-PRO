@@ -103,7 +103,8 @@ class EngineeringContractsTests(unittest.TestCase):
         loops=[n for n in ast.walk(seed) if isinstance(n,ast.For) and isinstance(n.target,ast.Name) and n.target.id=='ability' and any(isinstance(c,ast.Name) and c.id=='PROJECT_ABILITIES' for c in ast.walk(n.iter))]
         self.assertEqual(len(loops),1)
         granted=set(eval(compile(ast.Expression(loops[0].iter),'<default Project grants>','eval'),{'__builtins__':{},'sorted':sorted},abilities))
-        restricted=set().union(*(abilities.get(name,set()) for name in ('ENGINEERING_ABILITIES','DOCUMENT_CONTROL_ABILITIES','FIELD_ABILITIES','SEMANTIC_ABILITIES','QUALITY_SAFETY_ABILITIES')))
+        from cipher_aec.closeout.contracts import ABILITIES as closeout_abilities
+        restricted=set().union(*(abilities.get(name,set()) for name in ('ENGINEERING_ABILITIES','DOCUMENT_CONTROL_ABILITIES','FIELD_ABILITIES','SEMANTIC_ABILITIES','QUALITY_SAFETY_ABILITIES'))) | set(closeout_abilities)
         self.assertEqual(granted,abilities['PROJECT_ABILITIES']-restricted)
         self.assertFalse(granted & restricted)
         self.assertIn('project.write',granted)

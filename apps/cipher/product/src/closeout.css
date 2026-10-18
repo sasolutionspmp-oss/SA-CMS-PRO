@@ -1,0 +1,12 @@
+.closeout-page { display:grid; gap:1.25rem; max-width:96rem; margin:auto; }
+.closeout-heading,.closeout-actions { display:flex; align-items:center; justify-content:space-between; gap:.75rem; flex-wrap:wrap; }
+.closeout-facts { display:grid; grid-template-columns:repeat(auto-fit,minmax(12rem,1fr)); gap:1rem; margin-block:1.25rem; }
+.closeout-form-section,.closeout-field { display:grid; gap:.5rem; margin-block:1rem; }
+.closeout-requirement { border:1px solid var(--sapGroup_ContentBorderColor); border-radius:var(--sapElement_BorderCornerRadius); padding:1rem; margin-block:1rem; display:grid; gap:.5rem; }
+.closeout-command-state { display:grid; gap:.75rem; padding:1rem 2rem; }
+.closeout-reference { overflow-wrap:anywhere; margin-block:.5rem; }
+.closeout-result { border-inline-start:3px solid var(--sapContent_ForegroundBorderColor); padding-inline-start:1rem; }
+.closeout-table { overflow-x:auto; }
+.closeout-page p { white-space:pre-wrap; overflow-wrap:anywhere; }
+.closeout-page ui5-input,.closeout-page ui5-textarea,.closeout-page ui5-select { width:100%; max-width:52rem; }
+@media(max-width:599px){.closeout-command-state{padding:1rem}.closeout-heading{align-items:flex-start}.closeout-actions{width:100%}.closeout-requirement{padding:.75rem}.closeout-facts{grid-template-columns:1fr}}

@@ -11,6 +11,7 @@ for (const [sourcePath, destination, title] of [
   ['field/schemas/api-v1.schema.json', 'field.generated.ts', 'CipherFieldContract'],
   ['field_offline/schemas/api-v1.schema.json', 'field-offline.generated.ts', 'CipherFieldOfflineContract'],
   ['quality_safety/schemas/api-v1.schema.json', 'quality-safety.generated.ts', 'CipherQualitySafetyContract'],
+  ['closeout/schemas/api-v1.schema.json', 'closeout.generated.ts', 'CipherCloseoutContract'],
   ['document_control/schemas/api-v1.schema.json', 'document-control.generated.ts', 'CipherDocumentControlContract'],
   ['engineering/schemas/api-v1.schema.json', 'engineering.generated.ts', 'CipherEngineeringContract'],
   ['engineering_packages/schemas/api-v1.schema.json', 'engineering-packages.generated.ts', 'CipherEngineeringPackagesContract'],
@@ -98,7 +99,7 @@ for (const [sourcePath, destination, title] of [
     published = { ...published, $defs: definitions };
   }
   const schema = JSON.parse(JSON.stringify(published).replaceAll('"$defs"', '"definitions"').replaceAll('#/$defs/', '#/definitions/'));
-  if (['field.generated.ts', 'field-offline.generated.ts', 'quality-safety.generated.ts'].includes(destination)) {
+  if (['field.generated.ts', 'field-offline.generated.ts', 'quality-safety.generated.ts', 'closeout.generated.ts'].includes(destination)) {
     // Runtime validates the unchanged original. Fold refinements for compiler
     // input so nonblank string constraints do not become object intersections.
     const typeShape = node => {
@@ -127,7 +128,7 @@ for (const [sourcePath, destination, title] of [
   const hash = createHash('sha256').update(sourceTexts.length === 1 ? source : JSON.stringify(sourceTexts)).digest('hex');
   let generated = await compile(schema, title, {
     unreachableDefinitions: true,
-    ...(['company-ricky-proposals.generated.ts', 'company-draft-saves.generated.ts', 'engineering-packages.generated.ts', 'document-control.generated.ts', 'field.generated.ts', 'field-offline.generated.ts', 'quality-safety.generated.ts'].includes(destination) ? { ignoreMinAndMaxItems: true } : {}),
+    ...(['company-ricky-proposals.generated.ts', 'company-draft-saves.generated.ts', 'engineering-packages.generated.ts', 'document-control.generated.ts', 'field.generated.ts', 'field-offline.generated.ts', 'quality-safety.generated.ts', 'closeout.generated.ts'].includes(destination) ? { ignoreMinAndMaxItems: true } : {}),
     bannerComment: `/* Generated from cipher_aec/${sourcePath}. Do not edit.\n * Source SHA-256: ${hash}\n * Regenerate: npm run generate:api\n */`,
   });
   for (const name of documentContracts) {

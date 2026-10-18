@@ -1,0 +1,85 @@
+{
+  "doctype": "DocType",
+  "name": "Cipher Turnover Revision",
+  "module": "Cipher Closeout",
+  "custom": 0,
+  "istable": 0,
+  "is_submittable": 0,
+  "track_changes": 0,
+  "allow_rename": 0,
+  "engine": "InnoDB",
+  "field_order": [
+    "company",
+    "project",
+    "author_person",
+    "record_digest",
+    "data_json",
+    "parent_id",
+    "package_revision",
+    "scope_type",
+    "status"
+  ],
+  "fields": [
+    {
+      "fieldname": "company",
+      "fieldtype": "Link",
+      "options": "Company",
+      "label": "Company",
+      "reqd": 1
+    },
+    {
+      "fieldname": "project",
+      "fieldtype": "Link",
+      "options": "Project",
+      "label": "Project",
+      "reqd": 1
+    },
+    {
+      "fieldname": "author_person",
+      "fieldtype": "Link",
+      "options": "Cipher Person",
+      "label": "Author Person",
+      "reqd": 1
+    },
+    {
+      "fieldname": "record_digest",
+      "fieldtype": "Data",
+      "length": 64,
+      "label": "Record Digest",
+      "reqd": 1
+    },
+    {
+      "fieldname": "data_json",
+      "fieldtype": "Long Text",
+      "label": "Canonical Data",
+      "hidden": 1,
+      "reqd": 1
+    },
+    {
+      "fieldname": "parent_id",
+      "fieldtype": "Data",
+      "label": "Parent Id"
+    },
+    {
+      "fieldname": "package_revision",
+      "fieldtype": "Data",
+      "label": "Package Revision"
+    },
+    {
+      "fieldname": "scope_type",
+      "fieldtype": "Data",
+      "label": "Scope Type"
+    },
+    {
+      "fieldname": "status",
+      "fieldtype": "Data",
+      "label": "Status"
+    }
+  ],
+  "permissions": [],
+  "autoname": "Prompt",
+  "naming_rule": "Set by user",
+  "sort_field": "creation",
+  "sort_order": "DESC",
+  "index_web_pages_for_search": 0
+}

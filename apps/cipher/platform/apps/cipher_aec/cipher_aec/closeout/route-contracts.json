@@ -1,0 +1,23 @@
+{
+  "schema": "cipher.closeout.routes.v1",
+  "requests": {
+    "create_package": "CreatePackageRequest",
+    "revise_package": "RevisePackageRequest",
+    "record_result": "RecordResultRequest",
+    "accept_result": "AcceptResultRequest",
+    "assemble_turnover": "AssembleTurnoverRequest",
+    "accept_turnover": "AcceptTurnoverRequest",
+    "get_record": "GetRecordRequest",
+    "list_records": "ListRecordsRequest"
+  },
+  "responses": {
+    "create_package": "CloseoutCommandResult",
+    "revise_package": "CloseoutCommandResult",
+    "record_result": "CloseoutCommandResult",
+    "accept_result": "CloseoutCommandResult",
+    "assemble_turnover": "CloseoutCommandResult",
+    "accept_turnover": "CloseoutCommandResult",
+    "get_record": "CloseoutRecordResult",
+    "list_records": "CloseoutListResult"
+  }
+}
