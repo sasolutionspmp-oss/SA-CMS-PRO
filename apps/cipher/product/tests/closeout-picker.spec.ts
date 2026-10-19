@@ -194,7 +194,7 @@ test('a filtered-empty Quality page keeps Next usable and the next page offers t
   f.state.filtered = true;
   await openResult(page, f.closeout.seedId!);
   await chooseType(page, 'Quality closure');
-  await expect(page.getByText('No permitted records on this page.', { exact: true })).toBeVisible();
+  await expect(page.getByText('No records available.', { exact: true })).toBeVisible();
   await expect(recordSelect(page)).toBeDisabled();
   await expect(attach(page)).toBeDisabled();
   await expect(page.getByRole('button', { name: 'Next page', exact: true })).toBeEnabled();
