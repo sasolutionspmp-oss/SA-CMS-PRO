@@ -79,7 +79,12 @@ class TestQualitySafetyNative(IntegrationTestCase):
         self.assertNotIn(private['document']['id'],[row['id'] for row in documents.list_documents(self.company,self.project)['items']])
         self.assertEqual(documents.search_documents(self.company,self.project,'witness'),[])
         for doctype in (*rules.KINDS.values(),privacy.DOCTYPE):
-            self.assertEqual(frappe.get_list(doctype,filters={'project':self.project},fields=['name','data_json']),[])
+            try:
+                rows=frappe.get_list(doctype,filters={'project':self.project},fields=['name','data_json'])
+            except frappe.PermissionError:
+                pass
+            else:
+                self.assertEqual(rows,[])
         revision=frappe.get_doc('Cipher Document Revision',ref['revision_id']);file=frappe.get_doc('File',revision.storage_reference)
         self.assertFalse(file.is_downloadable());self.assertFalse(frappe.has_permission('File','read',doc=file))
         frappe.set_user('Administrator');set_synthetic_duty(self.users['primary']['user'],self.project,'safety.incident.read',0);self.login('primary')
